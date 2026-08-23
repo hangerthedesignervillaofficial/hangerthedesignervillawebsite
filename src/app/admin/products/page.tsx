@@ -1,0 +1,286 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Search,
+  Package,
+  AlertTriangle,
+  Eye,
+} from "lucide-react";
+import {
+  adminProductService,
+  ProductWithDetails,
+  CreateProductData,
+  UpdateProductData,
+} from "@/services/admin/adminProductService";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { toast } from "sonner";
+import Image from "next/image";
+import Link from "next/link";
+import { ProductFormModal } from "@/components/admin/ProductFormModal";
+import { DeleteConfirmModal } from "@/components/admin/DeleteConfirmModal";
+
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<ProductWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingProduct, setEditingProduct] =
+    useState<ProductWithDetails | null>(null);
+  const [deletingProduct, setDeletingProduct] =
+    useState<ProductWithDetails | null>(null);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await adminProductService.getAllProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateProduct = async (productData: CreateProductData) => {
+    try {
+      await adminProductService.createProduct(productData);
+      toast.success("Product created successfully");
+      setShowCreateModal(false);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error creating product:", error);
+      toast.error("Failed to create product");
+    }
+  };
+
+  const handleUpdateProduct = async (
+    productId: string,
+    productData: UpdateProductData,
+  ) => {
+    try {
+      await adminProductService.updateProduct(productId, productData);
+      toast.success("Product updated successfully");
+      setEditingProduct(null);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error("Failed to update product");
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      await adminProductService.deleteProduct(productId);
+      toast.success("Product deleted successfully");
+      setDeletingProduct(null);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("Failed to delete product");
+    }
+  };
+
+  const filteredProducts = products.filter(
+    (product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku?.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  if (loading) {
+    return (
+      <div className="bg-[#FDFBF7] min-h-screen container mx-auto py-8">
+        <div className="flex h-64 items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#FDFBF7] min-h-screen">
+      <div className="container mx-auto space-y-6 py-8 md:py-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-6 h-[1px] bg-[#D4AF37]" />
+              <span className="text-[8px] font-sans font-bold tracking-[0.3em] text-[#D4AF37] uppercase">
+                Admin Panel
+              </span>
+            </div>
+            <h1 className="font-serif text-3xl font-normal tracking-wide text-[#2C1810]" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+              Product Management
+            </h1>
+            <p className="font-sans text-[11px] text-[#7A6B5D] tracking-wider uppercase mt-1">Manage your luxury catalog</p>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center justify-center gap-2 bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] hover:text-white px-6 py-3 font-sans text-[9px] font-bold tracking-[0.2em] uppercase border border-[#D4AF37]/35 cursor-pointer transition-all hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <Plus className="h-3.5 w-3.5 stroke-[2]" />
+            Add Product
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="bg-white border border-[#D4AF37]/20 p-1 shadow-sm">
+          <div className="border border-[#D4AF37]/10 p-4 bg-[#FFFCF7]">
+            <div className="flex items-center gap-3">
+              <Search className="text-[#D4AF37] h-4 w-4 stroke-[2]" />
+              <input
+                placeholder="Search products by title, SKU, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-transparent outline-none h-10 font-sans text-xs tracking-wider text-[#2C1810] placeholder:text-[#7A6B5D]/40"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredProducts.map((product) => (
+            <div key={product.product_id} className="group relative bg-[#FFFCF7] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 transition-all duration-300">
+              <div className="relative h-56 bg-[#f4f0ea] overflow-hidden">
+                {product.image ? (
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-[#D4AF37]/40">
+                    <Package className="h-10 w-10 stroke-[1]" />
+                  </div>
+                )}
+                
+                {/* Stock badge */}
+                <div className="absolute top-3 right-3 flex flex-col gap-2">
+                  {product.stock <= 5 ? (
+                    <div className="bg-[#4A0E17] text-white px-2 py-1 flex items-center gap-1.5 text-[8px] font-sans tracking-[0.1em] uppercase shadow-sm">
+                      <AlertTriangle className="h-2.5 w-2.5" />
+                      Low Stock ({product.stock})
+                    </div>
+                  ) : (
+                    <div className="bg-[#FDFBF7] text-[#2C1810] border border-[#D4AF37]/20 px-2 py-1 flex items-center gap-1.5 text-[8px] font-sans tracking-[0.1em] uppercase shadow-sm">
+                      In Stock
+                    </div>
+                  )}
+                  {product.tags?.includes('bestseller') && (
+                    <div className="bg-[#D4AF37] text-white px-2 py-1 text-center text-[8px] font-sans tracking-[0.1em] uppercase shadow-sm">
+                      Bestseller
+                    </div>
+                  )}
+                  {product.tags?.includes('new_arrival') && (
+                    <div className="bg-white border border-[#D4AF37]/50 text-[#D4AF37] px-2 py-1 text-center text-[8px] font-sans tracking-[0.1em] uppercase shadow-sm">
+                      New Arrival
+                    </div>
+                  )}
+                </div>
+              </div>
+  
+              <div className="p-5">
+                <h3 className="font-serif text-base text-[#2C1810] mb-2 line-clamp-1 truncate" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                  {product.title}
+                </h3>
+                
+                <div className="flex items-center justify-between mb-4">
+                  <span className="font-sans text-sm font-bold text-[#D4AF37]">
+                    {formatCurrency(product.price)}
+                  </span>
+                  {product.sku && (
+                    <span className="font-sans text-[9px] text-[#7A6B5D] tracking-widest uppercase">
+                      SKU: {product.sku}
+                    </span>
+                  )}
+                </div>
+  
+                <div className="flex space-x-2 pt-4 border-t border-[#D4AF37]/15">
+                  <Link href={`/products/${product.product_id}`} className="flex-1">
+                    <button className="w-full h-8 bg-transparent border border-[#D4AF37]/25 text-[#7A6B5D] hover:text-[#2C1810] hover:border-[#D4AF37] font-sans text-[9px] font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 cursor-pointer transition-all">
+                      <Eye className="h-3 w-3 stroke-[2]" />
+                      View
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => setEditingProduct(product)}
+                    className="flex-1 h-8 bg-transparent border border-[#D4AF37]/25 text-[#7A6B5D] hover:text-[#2C1810] hover:border-[#D4AF37] font-sans text-[9px] font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  >
+                    <Edit className="h-3 w-3 stroke-[2]" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setDeletingProduct(product)}
+                    className="w-10 h-8 bg-[#4A0E17]/5 border border-[#4A0E17]/20 text-[#4A0E17] hover:bg-[#4A0E17] hover:text-white flex items-center justify-center cursor-pointer transition-all"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 stroke-[1.5]" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredProducts.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center py-20 border border-[#D4AF37]/15 bg-white shadow-sm">
+            <Package className="text-[#D4AF37]/40 h-16 w-16 mb-4 stroke-[1]" />
+            <h3 className="font-serif text-lg text-[#2C1810] tracking-wide mb-2" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+              No products found
+            </h3>
+            <p className="font-sans text-[11px] text-[#7A6B5D] tracking-wide mb-6">
+              {searchTerm
+                ? "Try adjusting your search terms."
+                : "Get started by adding your first product to the collection."}
+            </p>
+            {!searchTerm && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center justify-center gap-2 bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] hover:text-white px-6 py-3 font-sans text-[9px] font-bold tracking-[0.2em] uppercase border border-[#D4AF37]/35 cursor-pointer transition-all hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Plus className="mr-2 h-4 w-4 stroke-[2]" />
+                Add Product
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Modals */}
+      <ProductFormModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateProduct}
+        title="Create New Product"
+      />
+
+      <ProductFormModal
+        isOpen={!!editingProduct}
+        onClose={() => setEditingProduct(null)}
+        onSubmit={(data) =>
+          handleUpdateProduct(editingProduct!.product_id, data)
+        }
+        product={editingProduct}
+        title="Edit Product"
+      />
+
+      <DeleteConfirmModal
+        isOpen={!!deletingProduct}
+        onClose={() => setDeletingProduct(null)}
+        onConfirm={() => handleDeleteProduct(deletingProduct!.product_id)}
+        title="Delete Product"
+        description={`Are you sure you want to delete "${deletingProduct?.title}"? This action cannot be undone.`}
+      />
+    </div>
+  );
+}
