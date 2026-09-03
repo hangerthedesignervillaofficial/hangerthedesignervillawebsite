@@ -14,6 +14,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 
 // Revalidate every 30 seconds so admin changes (product flags, CMS) reflect on live site quickly
 export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const products = await productServerService.getProducts();
@@ -66,8 +67,6 @@ export default async function Home() {
           
           <MomentsBanner initialData={homepageMedia.moments_banner} />
           
-          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical_grid} />
-
           <ShopByMood initialMoods={homepageMedia.shop_by_mood} />
           
           {/* Hanger Edits: always shown — tagged products first, bestsellers as fallback */}
@@ -82,6 +81,8 @@ export default async function Home() {
               products={bestsellers} 
             />
           )}
+
+          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical_grid} />
           
           <DressedToMakeImpression initialData={homepageMedia.dressed_to_impress} />
           <Testimonials initialMedia={homepageMedia.couch} />

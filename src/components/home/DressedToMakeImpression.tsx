@@ -57,130 +57,126 @@ export function DressedToMakeImpression({ initialData }: { initialData?: any }) 
       <div className="container mx-auto px-4 lg:px-8">
         
         {/* Desktop Layout (md and up) */}
-        <div className="hidden md:grid grid-cols-12 gap-10 lg:gap-16 items-center">
-          {/* Left Column: Heading & Description */}
-          <div className="col-span-7 space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="space-y-3"
-            >
-              <span className="font-sans text-[8.5px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase block">
-                {settings.subtitle}
-              </span>
-              <h2 className="font-serif text-[36px] lg:text-[44px] font-normal leading-[1.1] text-[#2C1810] tracking-wide uppercase" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                {settings.title.split('\n').map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
-              </h2>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="space-y-6"
-            >
-              <p className="font-sans text-[12px] lg:text-[13px] font-light leading-relaxed text-[#7A6B5D] max-w-xl">
-                {settings.desc}
-              </p>
-              <div className="pt-2">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 font-sans text-[9px] font-bold tracking-[0.2em] border border-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#1A0A0E] text-[#2C1810] px-6 py-3 transition-all duration-300 uppercase cursor-pointer"
-                >
-                  OUR STORY <span className="text-xs">✦</span>
-                </Link>
-              </div>
-            </motion.div>
+        <div className="hidden md:flex relative items-center justify-center min-h-[500px] lg:min-h-[600px] py-12">
+          
+          {/* Background subtle elements */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+            <h1 className="text-[12rem] lg:text-[18rem] font-serif text-[#D4AF37]/10 tracking-widest whitespace-nowrap select-none">HANGER</h1>
           </div>
 
-          {/* Right Column: Framed Editorial Image */}
-          <div className="col-span-5">
+          <div className="w-full max-w-6xl mx-auto flex items-center relative z-10">
+            {/* Left side text block that overlaps the image */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="w-[45%] bg-white/90 backdrop-blur-md p-10 lg:p-16 border-l-2 border-t-2 border-[#D4AF37]/30 shadow-2xl relative z-20 translate-x-12 lg:translate-x-24"
+            >
+              <div className="space-y-4">
+                <span className="font-sans text-[10px] font-bold tracking-[0.4em] text-[#D4AF37] uppercase">
+                  {settings.subtitle}
+                </span>
+                <h2 className="font-serif text-[40px] lg:text-[52px] font-normal leading-[1.05] text-[#1a1a1a] tracking-wide uppercase">
+                  {settings.title.split('\n').map((line, i) => (
+                    <span key={i} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </h2>
+                <div className="w-12 h-[2px] bg-[#D4AF37] my-6" />
+                <p className="font-sans text-[13px] lg:text-[14px] font-light leading-relaxed text-[#5a5a5a] max-w-md">
+                  {settings.desc}
+                </p>
+                <div className="pt-6">
+                  <Link
+                    href="/about"
+                    className="inline-flex items-center gap-3 font-sans text-[10px] font-bold tracking-[0.25em] bg-[#1a1a1a] text-white hover:bg-[#D4AF37] px-8 py-4 transition-all duration-300 uppercase cursor-pointer"
+                  >
+                    Explore <span>→</span>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right side large framed image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative w-full h-[320px] lg:h-[360px] border-2 border-[#D4AF37]/25 p-2 overflow-hidden bg-white shadow-xl shadow-[#D4AF37]/5 group"
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="w-[55%] relative h-[450px] lg:h-[550px] overflow-hidden group shadow-xl"
             >
-              {/* Inner gold frame border */}
-              <div className="absolute inset-2 border border-[#D4AF37]/15 pointer-events-none z-10 group-hover:border-[#D4AF37]/35 transition-colors duration-300" />
-              
-              <div className="w-full h-full relative overflow-hidden bg-gray-100">
-                {media?.portrait?.type === 'video' ? (
-                <video src={media.portrait.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]" />
+              {media?.portrait?.type === 'video' ? (
+                <video src={media.portrait.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105" />
               ) : (
                 <Image 
                   src={media?.portrait?.mediaUrl || "/images/jewellery.jpg"} 
                   alt="Editorial Look" 
                   fill 
-                  className="object-cover object-top transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] filter contrast-105 saturate-110" 
-                  sizes="(max-width: 768px) 100vw, 40vw"
+                  className="object-cover object-top transition-transform duration-[1.5s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105" 
+                  sizes="(max-width: 768px) 100vw, 55vw"
                   priority
                 />
               )}
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
-              </div>
+              {/* Inner gold frame overlay */}
+              <div className="absolute inset-4 border border-[#D4AF37]/30 pointer-events-none z-10 transition-colors duration-500 group-hover:border-[#D4AF37]/70" />
             </motion.div>
           </div>
         </div>
 
         {/* Mobile Layout (sm screens) */}
-        <div className="block md:hidden">
+        <div className="block md:hidden relative w-full overflow-hidden">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="flex flex-col items-center text-center space-y-4"
+            transition={{ duration: 0.8 }}
+            className="w-full relative h-[75vh] min-h-[500px]"
           >
-            <span className="font-sans text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-              {settings.subtitle}
-            </span>
-            <h2 className="font-serif text-[24px] font-normal leading-tight text-[#2C1810] tracking-wide uppercase" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-              {settings.title.split('\n').map((line, i) => (
-                  <span key={i}>
+            {media?.portrait?.type === 'video' ? (
+              <video src={media.portrait.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <Image 
+                src={media?.portrait?.mediaUrl || "/images/jewellery.jpg"} 
+                alt="Editorial Look" 
+                fill 
+                className="object-cover object-center" 
+                sizes="100vw"
+                priority
+              />
+            )}
+            
+            {/* Gradient Overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+            
+            {/* Inner frame */}
+            <div className="absolute inset-3 border border-[#D4AF37]/40 pointer-events-none z-10" />
+
+            <div className="absolute inset-0 flex flex-col justify-end p-8 z-20">
+              <span className="font-sans text-[9px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase mb-3">
+                {settings.subtitle}
+              </span>
+              <h2 className="font-serif text-[32px] font-normal leading-[1.1] text-white tracking-wide uppercase mb-4" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                {settings.title.split('\n').map((line, i) => (
+                  <span key={i} className="block">
                     {line}
-                    <br />
                   </span>
                 ))}
-            </h2>
-
-            {/* Framed Editorial Campaign Image */}
-            <div className="relative w-full h-[220px] border-2 border-[#D4AF37]/25 p-1.5 overflow-hidden bg-white shadow-md my-2">
-              <div className="absolute inset-1.5 border border-[#D4AF37]/10 pointer-events-none z-10" />
-              <div className="w-full h-full relative overflow-hidden bg-gray-100">
-                {media?.landscape?.type === 'video' ? (
-                  <video src={media.landscape.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-700 ease-out" />
-                ) : (
-                  <Image
-                    src={media?.landscape?.mediaUrl || "/images/jewellery.jpg"}
-                    alt="Jewelry Detail"
-                    fill
-                    className="object-cover transition-transform duration-700 ease-out"
-                  />
-                )}
+              </h2>
+              <div className="w-8 h-[2px] bg-[#D4AF37] mb-4" />
+              <p className="font-sans text-[12px] text-white/80 leading-relaxed max-w-[280px] mb-6">
+                {settings.desc}
+              </p>
+              
+              <div>
+                <Link
+                  href="/about"
+                  className="inline-flex items-center justify-center gap-2 font-sans text-[10px] font-bold tracking-[0.2em] bg-white text-[#1a1a1a] px-8 py-3.5 uppercase w-full"
+                >
+                  Explore <span className="text-[#D4AF37]">✦</span>
+                </Link>
               </div>
-            </div>
-
-            <p className="font-sans text-[11px] text-[#7A6B5D] leading-relaxed px-2 pt-2">
-              {settings.desc}
-            </p>
-            
-            <div className="pt-2">
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 font-sans text-[8.5px] font-bold tracking-[0.18em] border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-[#1A0A0E] text-[#2C1810] px-5 py-2.5 transition-all duration-300 uppercase cursor-pointer"
-              >
-                OUR STORY <span>✦</span>
-              </Link>
             </div>
           </motion.div>
         </div>

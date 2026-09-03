@@ -56,50 +56,50 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
           </motion.div>
         </div>
 
-        {/* Product grid — large + right column */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8 lg:gap-10 items-start">
+        {/* Product grid — Ultra Premium Staggered Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center mt-12 lg:mt-24">
           {/* Main Large Item (Left) */}
           {displayProducts[0] && (
             <motion.div
-              className="md:col-span-6 lg:col-span-7 group"
-              initial={{ opacity: 0, x: -25 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="md:col-span-7 group relative z-20"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             >
               <Link
                 href={`/products/${displayProducts[0].product_id}`}
-                className="block relative aspect-[4/5] overflow-hidden bg-[#f4f0ea]"
+                className="block relative aspect-[3/4] lg:aspect-[4/5] overflow-hidden bg-[#1a1a1a] shadow-2xl"
               >
                 {displayProducts[0].image && (
                   <Image
                     src={displayProducts[0].image}
                     alt={displayProducts[0].title}
                     fill
-                    className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+                    className="object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110 filter brightness-[0.85] group-hover:brightness-100"
                   />
                 )}
                 {/* Dark gradient bottom overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+                
                 {/* Gold frame on hover */}
-                <div className="absolute inset-4 border border-[#D4AF37]/0 group-hover:border-[#D4AF37]/40 transition-all duration-700 pointer-events-none" />
+                <div className="absolute inset-4 lg:inset-6 border border-[#D4AF37]/0 group-hover:border-[#D4AF37]/50 transition-all duration-700 pointer-events-none scale-95 group-hover:scale-100" />
 
                 {/* Text at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 p-7 md:p-10 flex flex-col justify-end translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
-                  <span className="font-sans text-[8px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase mb-2">
-                    Featured Piece
+                <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
+                  <span className="font-sans text-[9px] font-bold tracking-[0.4em] text-[#D4AF37] uppercase mb-3">
+                    Hero Piece
                   </span>
-                  <h3 className="text-white font-serif text-2xl md:text-3xl tracking-wide mb-3 line-clamp-1 leading-tight">
+                  <h3 className="text-white font-serif text-3xl lg:text-5xl tracking-wide mb-4 line-clamp-2 leading-[1.1] drop-shadow-md">
                     {displayProducts[0].title}
                   </h3>
-                  <div className="flex items-center gap-3 text-white/80">
-                    <span className="font-sans text-xs font-semibold tracking-[0.15em] uppercase">
+                  <div className="flex items-center gap-4 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
+                    <span className="font-sans text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase">
                       ₹{displayProducts[0].price.toLocaleString("en-IN")}
                     </span>
-                    <span className="w-5 h-[1px] bg-white/40" />
-                    <span className="font-sans text-[10px] tracking-[0.15em] uppercase flex items-center gap-1.5 text-[#D4AF37] group-hover:gap-2.5 transition-all duration-300">
-                      Explore <ArrowRight className="h-3 w-3" />
+                    <span className="w-8 h-[1px] bg-[#D4AF37]" />
+                    <span className="font-sans text-[10px] tracking-[0.2em] uppercase flex items-center gap-2 text-white hover:text-[#D4AF37] transition-all duration-300">
+                      Explore <ArrowRight className="h-4 w-4" />
                     </span>
                   </div>
                 </div>
@@ -107,51 +107,49 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
             </motion.div>
           )}
 
-          {/* Right Column — 3 items */}
-          <div className="md:col-span-6 lg:col-span-5 flex flex-col gap-5 md:gap-7">
+          {/* Right Column — Staggered Smaller Items */}
+          <div className="md:col-span-5 flex flex-col gap-10 lg:gap-16 relative z-10 md:-ml-12 lg:-ml-20 mt-10 md:mt-32">
             {displayProducts.slice(1).map((product, idx) => (
               <motion.div
                 key={product.product_id}
-                className={`group flex ${idx === 1 ? "flex-row-reverse" : "flex-row"} items-center gap-5 md:gap-6`}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                className={`group flex ${idx === 1 ? "flex-row" : "flex-row-reverse md:flex-row"} items-center gap-6 md:gap-8 ${idx === 1 ? "md:ml-12 lg:ml-24" : ""}`}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: idx * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.8, delay: idx * 0.2, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Link
                   href={`/products/${product.product_id}`}
-                  className="w-[48%] shrink-0 relative aspect-[3/4] overflow-hidden bg-[#f4f0ea]"
+                  className={`w-[55%] md:w-[60%] shrink-0 relative aspect-[3/4] overflow-hidden bg-[#1a1a1a] shadow-lg group-hover:shadow-xl transition-shadow duration-500`}
                 >
                   {product.image && (
                     <Image
                       src={product.image}
                       alt={product.title}
                       fill
-                      className="object-cover transition-transform duration-[1000ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
+                      className="object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                     />
                   )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
                 </Link>
 
-                <div className={`flex-1 flex flex-col min-w-0 ${idx === 1 ? "text-right items-end" : "text-left items-start"}`}>
-                  <span className="text-[#D4AF37] text-[8px] font-sans font-bold tracking-[0.25em] uppercase mb-2">
-                    {idx === 0 ? "Trending" : idx === 1 ? "Signature" : "New Classic"}
+                <div className={`flex-1 flex flex-col min-w-0 ${idx === 1 ? "text-left items-start" : "text-right items-end md:text-left md:items-start"}`}>
+                  <span className="text-[#D4AF37] text-[9px] font-sans font-bold tracking-[0.3em] uppercase mb-2">
+                    {idx === 0 ? "Trending" : idx === 1 ? "Signature" : "Classic"}
                   </span>
                   <Link href={`/products/${product.product_id}`}>
-                    <h3 className="font-serif text-base lg:text-lg text-[#2C1810] tracking-wide mb-2 hover:text-[#4A0E17] transition-colors line-clamp-2 leading-snug">
+                    <h3 className="font-serif text-lg lg:text-xl text-[#2C1810] tracking-wide mb-3 hover:text-[#D4AF37] transition-colors line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
                   </Link>
-                  <p className="font-sans text-xs font-semibold text-[#7A6B5D] tracking-wider mb-4">
+                  <p className="font-sans text-[11px] font-semibold text-[#7A6B5D] tracking-[0.15em] mb-4">
                     ₹{product.price.toLocaleString("en-IN")}
                   </p>
                   <Link
                     href={`/products/${product.product_id}`}
-                    className={`text-[9px] uppercase tracking-[0.2em] font-bold text-[#2C1810] hover:text-[#D4AF37] transition-all duration-300 flex items-center gap-2 group/link`}
+                    className="w-8 h-8 rounded-full border border-[#2C1810] flex items-center justify-center text-[#2C1810] group-hover:bg-[#2C1810] group-hover:text-[#D4AF37] transition-all duration-300"
                   >
-                    {idx === 1 && <span className="w-4 h-[1px] bg-current transition-all duration-300 group-hover/link:w-6" />}
-                    Shop Now
-                    {idx !== 1 && <span className="w-4 h-[1px] bg-current transition-all duration-300 group-hover/link:w-6" />}
+                    <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>
               </motion.div>

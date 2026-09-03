@@ -68,37 +68,42 @@ export function Testimonials({ initialTestimonials, initialMedia }: { initialTes
       <div className="container mx-auto px-4 lg:px-8">
  
         {/* Top: Curated section (image + text) with Luxury Frame */}
-        <div className="flex flex-col md:flex-row border-2 border-[#D4AF37]/25 mb-8 md:mb-12 overflow-hidden bg-gradient-to-br from-[#FFFDFC] to-[#FDFBF7] shadow-lg shadow-[#D4AF37]/5 w-full relative">
-          {/* Inner decorative border */}
-          <div className="absolute inset-3 border border-[#D4AF37]/10 pointer-events-none z-10" />
+        <div className="relative w-full h-[65vh] min-h-[450px] lg:min-h-[550px] mb-12 lg:mb-20 overflow-hidden shadow-2xl group flex items-center justify-center">
           
-          <div className="w-full md:w-[40%] p-8 md:p-12 lg:p-16 flex flex-col justify-center items-start relative z-20 bg-white/40 backdrop-blur-sm">
-            <span className="font-sans text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] mb-3 uppercase">
-              THE ART OF LUXURY
-            </span>
-            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal tracking-[0.06em] text-[#2C1810] uppercase leading-tight mb-4" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-              CURATED FOR<br />THE WAY<br />YOU LIVE.
-            </h2>
-            <p className="hidden md:block font-sans text-[11px] md:text-[12px] font-light leading-relaxed text-[#7A6B5D] mb-8">
-              Hanger, The Designer Shop brings together contemporary Indian fashion, handpicked pieces, and thoughtfully selected details—designed to move effortlessly from everyday moments to celebrations.
-            </p>
-            <Link href="/about" className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase flex items-center gap-2 hover:text-[#D4AF37] transition-all hover-gold-underline py-1 mt-auto">
-              OUR STORY <span className="text-sm transition-transform duration-300 hover:translate-x-1">→</span>
-            </Link>
-          </div>
-          <div className="w-full md:w-[60%] relative overflow-hidden bg-[#f4f0ea] min-h-[200px] md:min-h-[320px]">
+          <div className="absolute inset-0 z-0">
             {media?.type === 'video' ? (
-              <video src={media.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-700 ease-out" />
+              <video src={media.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-105 filter brightness-75" />
             ) : (
               <Image
                 src={media?.mediaUrl || "/images/curated-couch.jpg"}
                 alt="Curated Lifestyle"
                 fill
-                className="object-cover transition-transform duration-700 ease-out hover:scale-105"
+                className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-105 filter brightness-75"
+                priority
               />
             )}
-            {/* Subtle luxury overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
+            {/* Luxury gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a]/90 via-[#1a1a1a]/40 to-transparent" />
+          </div>
+          
+          {/* Inner frame */}
+          <div className="absolute inset-4 lg:inset-6 border border-[#D4AF37]/40 pointer-events-none z-10" />
+
+          {/* Text Content Centered & Elegant */}
+          <div className="relative z-20 flex flex-col items-center justify-center text-center px-6 max-w-3xl mx-auto mt-20">
+            <span className="font-sans text-[10px] lg:text-[11px] font-bold tracking-[0.4em] text-[#D4AF37] mb-5 uppercase">
+              THE ART OF LUXURY
+            </span>
+            <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl font-normal tracking-wide text-white uppercase leading-[1.1] mb-6 drop-shadow-lg" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+              CURATED FOR<br />THE WAY YOU LIVE.
+            </h2>
+            <div className="w-12 h-[1px] bg-[#D4AF37] mb-6" />
+            <p className="font-sans text-[12px] lg:text-[14px] font-light leading-relaxed text-white/90 mb-8 max-w-xl hidden md:block drop-shadow-md">
+              Hanger, The Designer Shop brings together contemporary Indian fashion, handpicked pieces, and thoughtfully selected details—designed to move effortlessly from everyday moments to celebrations.
+            </p>
+            <Link href="/about" className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#1a1a1a] bg-white px-8 py-3.5 uppercase hover:bg-[#D4AF37] hover:text-white transition-all duration-300">
+              OUR STORY
+            </Link>
           </div>
         </div>
  
