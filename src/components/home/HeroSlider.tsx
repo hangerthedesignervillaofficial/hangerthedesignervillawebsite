@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
