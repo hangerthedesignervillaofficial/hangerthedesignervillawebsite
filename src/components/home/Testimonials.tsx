@@ -68,37 +68,37 @@ export function Testimonials({ initialTestimonials, initialMedia }: { initialTes
       <div className="container mx-auto px-4 lg:px-8">
  
         {/* Top: Curated section (image + text) with Luxury Frame */}
-        <div className="flex flex-col-reverse md:flex-row border border-[#D4AF37]/20 mb-8 md:mb-12 overflow-hidden bg-gradient-to-br from-[#FFFDFC] to-[#FDFBF7] shadow-md w-full relative">
-          {/* Text Section */}
-          <div className="w-full md:w-[45%] p-8 md:p-12 lg:p-16 flex flex-col justify-center items-center md:items-start text-center md:text-left relative z-20 bg-white/60 backdrop-blur-sm">
-            <span className="font-sans text-[7px] font-bold tracking-[0.3em] text-[#D4AF37] mb-3 uppercase">
+        <div className="flex flex-col md:flex-row border-2 border-[#D4AF37]/25 mb-8 md:mb-12 overflow-hidden bg-gradient-to-br from-[#FFFDFC] to-[#FDFBF7] shadow-lg shadow-[#D4AF37]/5 w-full relative">
+          {/* Inner decorative border */}
+          <div className="absolute inset-3 border border-[#D4AF37]/10 pointer-events-none z-10" />
+          
+          <div className="w-full md:w-[40%] p-8 md:p-12 lg:p-16 flex flex-col justify-center items-start relative z-20 bg-white/40 backdrop-blur-sm">
+            <span className="font-sans text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] mb-3 uppercase">
               THE ART OF LUXURY
             </span>
-            <h2 className="font-serif text-[22px] sm:text-[26px] md:text-3xl font-normal tracking-[0.08em] text-[#2C1810] uppercase leading-[1.3] mb-4" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal tracking-[0.06em] text-[#2C1810] uppercase leading-tight mb-4" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
               CURATED FOR<br />THE WAY<br />YOU LIVE.
             </h2>
             <p className="hidden md:block font-sans text-[11px] md:text-[12px] font-light leading-relaxed text-[#7A6B5D] mb-8">
               Hanger, The Designer Shop brings together contemporary Indian fashion, handpicked pieces, and thoughtfully selected details—designed to move effortlessly from everyday moments to celebrations.
             </p>
-            <Link href="/about" className="font-sans text-[8px] font-bold tracking-[0.25em] text-[#2C1810] uppercase flex items-center justify-center md:justify-start gap-2 hover:text-[#D4AF37] transition-all hover-gold-underline py-1 mt-2 md:mt-auto">
-              OUR STORY <span className="text-[10px] transition-transform duration-300 hover:translate-x-1">→</span>
+            <Link href="/about" className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase flex items-center gap-2 hover:text-[#D4AF37] transition-all hover-gold-underline py-1 mt-auto">
+              OUR STORY <span className="text-sm transition-transform duration-300 hover:translate-x-1">→</span>
             </Link>
           </div>
-          
-          {/* Image Section */}
-          <div className="w-full md:w-[55%] relative overflow-hidden bg-[#f4f0ea] aspect-video md:aspect-auto md:min-h-[360px]">
+          <div className="w-full md:w-[60%] relative overflow-hidden bg-[#f4f0ea] min-h-[200px] md:min-h-[320px]">
             {media?.type === 'video' ? (
-              <video src={media.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out" />
+              <video src={media.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-700 ease-out" />
             ) : (
               <Image
                 src={media?.mediaUrl || "/images/curated-couch.jpg"}
                 alt="Curated Lifestyle"
                 fill
-                className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105"
+                className="object-cover transition-transform duration-700 ease-out hover:scale-105"
               />
             )}
             {/* Subtle luxury overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
           </div>
         </div>
  

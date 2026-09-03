@@ -85,56 +85,49 @@ export function AsymmetricalFeatureGrid({ initialData }: { initialData?: any[] }
           ))}
         </div>
 
-        {/* Mobile Layout: Editorial Overlapping Magazine Style */}
-        <div className="flex md:hidden flex-col gap-12 pt-4 pb-8">
-          {categories.map((cat, index) => {
-            const isEven = index % 2 === 0;
-            return (
-              <motion.div
-                key={cat.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="relative flex flex-col"
-              >
-                {/* Image Section */}
-                <div className={`relative w-[85%] aspect-[4/5] shadow-sm border border-[#D4AF37]/15 overflow-hidden ${isEven ? 'self-start' : 'self-end'}`}>
-                  {cat.type === 'video' ? (
-                    <video src={cat.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
-                  ) : (
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${cat.mediaUrl})` }}
-                    />
-                  )}
-                  {/* Subtle inner gold border */}
-                  <div className="absolute inset-2 border border-[#D4AF37]/20 pointer-events-none" />
-                </div>
-
-                {/* Overlapping Text Card */}
+        {/* Mobile Layout: Stacked Category Banners with Image Backgrounds */}
+        <div className="flex md:hidden flex-col gap-4">
+          {categories.map((cat, index) => (
+            <motion.div
+              key={cat.title}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group relative overflow-hidden h-[140px] shadow-sm border border-[#D4AF37]/15"
+            >
+              {/* Background Media */}
+              {cat.type === 'video' ? (
+                <video src={cat.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+              ) : (
                 <div 
-                  className={`absolute top-1/2 -translate-y-1/2 w-[70%] bg-[#FDFBF7]/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(44,24,16,0.08)] border border-[#D4AF37]/20 ${
-                    isEven ? 'right-0 text-right items-end' : 'left-0 text-left items-start'
-                  } flex flex-col`}
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  style={{ backgroundImage: `url(${cat.mediaUrl})` }}
+                />
+              )}
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-black/45" />
+              
+              {/* Inner thin gold border */}
+              <div className="absolute inset-2.5 border border-[#D4AF37]/20 pointer-events-none" />
+
+              {/* Text Left-Aligned */}
+              <div className="absolute inset-0 flex flex-col justify-center items-start px-8 py-4">
+                <span className="font-sans text-[8px] font-bold tracking-[0.2em] text-[#D4AF37] mb-1.5 uppercase">
+                  {cat.title === "CLOTHING" ? "DESIGNER WEAR" : cat.title === "JEWELLERY" ? "ROYAL ORNAMENTS" : "LUXURY FOOTWEAR"}
+                </span>
+                <h3 className="font-serif text-lg font-normal tracking-[0.15em] text-white uppercase mb-2" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                  {cat.title}
+                </h3>
+                <Link 
+                  href={cat.link}
+                  className="font-sans text-[8.5px] font-bold tracking-[0.18em] text-[#D4AF37] uppercase flex items-center gap-1.5 border-b border-[#D4AF37]/40 pb-0.5 cursor-pointer"
                 >
-                  <span className="font-sans text-[7px] font-bold tracking-[0.25em] text-[#D4AF37] mb-1.5 uppercase">
-                    {cat.title === "CLOTHING" ? "DESIGNER WEAR" : cat.title === "JEWELLERY" ? "ROYAL ORNAMENTS" : "LUXURY FOOTWEAR"}
-                  </span>
-                  <h3 className="font-serif text-[17px] font-normal tracking-[0.12em] text-[#2C1810] uppercase mb-3 leading-tight" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                    {cat.title}
-                  </h3>
-                  <Link 
-                    href={cat.link}
-                    className="font-sans text-[8px] font-bold tracking-[0.18em] text-[#2C1810] uppercase flex items-center gap-1.5 group"
-                  >
-                    <span className="border-b border-[#D4AF37]/40 pb-0.5 group-hover:border-[#D4AF37]">SHOP NOW</span>
-                    <span className="text-[#D4AF37] transition-transform duration-300 group-hover:translate-x-1">→</span>
-                  </Link>
-                </div>
-              </motion.div>
-            );
-          })}
+                  SHOP NOW →
+                </Link>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
       </div>

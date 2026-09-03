@@ -131,7 +131,7 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
             {moods.map((mood, index) => (
               <motion.div
                 key={mood.title}
-                initial={{ opacity: 0, x: 15 }}
+                initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45, delay: index * 0.07 }}
@@ -140,43 +140,56 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
               >
                 <Link
                   href={mood.link}
-                  className="group relative block w-[160px] aspect-[3/4] overflow-hidden bg-gray-100 shadow-sm border border-[#D4AF37]/15"
+                  className="group flex flex-col items-center text-center gap-3 w-[120px]"
                 >
-                  {mood.type === "video" ? (
-                    <video
-                      src={mood.mediaUrl}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  ) : (
+                  {/* Circular image */}
+                  <div
+                    className="relative overflow-hidden bg-[#F0E6D8]/60 border border-[#D4AF37]/20 shadow-md transition-all duration-350 group-active:scale-95"
+                    style={{
+                      width: 112,
+                      height: 112,
+                      borderRadius: "50%",
+                      boxShadow: "0 4px 18px rgba(44,24,16,0.10)",
+                    }}
+                  >
+                    {/* Ring on hover/active */}
                     <div
-                      className="absolute inset-0 bg-cover bg-[center_top] transition-transform duration-700 ease-out group-hover:scale-105"
-                      style={{ backgroundImage: `url(${mood.mediaUrl})` }}
+                      className="absolute inset-0 rounded-full border-2 border-[#D4AF37] opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-300 z-10"
+                      style={{ borderRadius: "50%" }}
                     />
-                  )}
 
-                  {/* Dark gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                  
-                  {/* Subtle inner gold border */}
-                  <div className="absolute inset-2.5 border border-[#D4AF37]/30 pointer-events-none" />
+                    {mood.type === "video" ? (
+                      <video
+                        src={mood.mediaUrl}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="absolute inset-0 bg-cover bg-[center_top] transition-transform duration-500 ease-out group-hover:scale-110 group-active:scale-110"
+                        style={{ backgroundImage: `url(${mood.mediaUrl})` }}
+                      />
+                    )}
 
-                  {/* Text Overlay */}
-                  <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-col items-start gap-1">
-                    <span className="font-sans text-[7px] font-semibold tracking-[0.2em] text-[#D4AF37] uppercase">
-                      CURATED EDIT
-                    </span>
+                    {/* Subtle inner gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 rounded-full" />
+                  </div>
+
+                  {/* Label */}
+                  <div className="flex flex-col items-center gap-0.5">
                     <h3
-                      className="font-serif text-[13px] font-normal tracking-[0.1em] text-white uppercase leading-tight"
-                      style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
+                      className="font-sans text-[9.5px] font-bold tracking-[0.12em] text-[#2C1810] uppercase leading-tight group-hover:text-[#4A0E17] group-active:text-[#4A0E17] transition-colors"
+                      style={{ maxWidth: 100 }}
                     >
-                      {mood.title}
+                      {mood.title.split(" ").map((word: string, idx: number) => (
+                        <span key={idx} className="block leading-[1.4]">{word}</span>
+                      ))}
                     </h3>
-                    <span className="text-[7px] font-semibold tracking-[0.1em] text-white/90 uppercase mt-0.5 border-b border-white/30 pb-0.5">
-                      EXPLORE →
+                    <span className="text-[7.5px] font-semibold tracking-[0.1em] text-[#D4AF37] uppercase mt-0.5">
+                      Explore →
                     </span>
                   </div>
                 </Link>
