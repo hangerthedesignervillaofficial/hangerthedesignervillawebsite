@@ -26,7 +26,20 @@ export default async function Home() {
   const hangerEditTagged = products.filter(
     p => p.display_tags?.includes('The Hanger Edit')
   ).slice(0, 4);
-  const theHangerEdit = hangerEditTagged.length >= 2 ? hangerEditTagged : bestsellers.slice(0, 4);
+  
+  // Premium fallback data for Hanger Edit if no products are tagged
+  const dummyHangerEdit = [
+    { product_id: 'edit-1', title: 'Midnight Velvet Obsidian Gown', price: 145000, image: '/images/hero-banner.jpg', type: 'dummy' },
+    { product_id: 'edit-2', title: 'Golden Zari Handwoven Saree', price: 85000, image: '/images/moments-banner.jpg', type: 'dummy' },
+    { product_id: 'edit-3', title: 'Polki Emerald Choker Set', price: 215000, image: '/images/jewellery.jpg', type: 'dummy' },
+    { product_id: 'edit-4', title: 'Royal Maroon Bridal Lehenga', price: 325000, image: '/images/clothing.jpg', type: 'dummy' }
+  ];
+
+  const theHangerEdit = hangerEditTagged.length >= 2 
+    ? hangerEditTagged 
+    : bestsellers.length >= 4 
+      ? bestsellers.slice(0, 4) 
+      : dummyHangerEdit as any[];
 
   const supabase = await createServerSupabase();
   const { data: siteSettings } = await supabase.from('site_settings').select('*');
