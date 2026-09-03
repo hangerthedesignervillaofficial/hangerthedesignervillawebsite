@@ -26,7 +26,11 @@ export default async function Home() {
   const hangerEditTagged = products.filter(
     p => p.display_tags?.includes('The Hanger Edit')
   ).slice(0, 4);
-  const theHangerEdit = hangerEditTagged.length >= 2 ? hangerEditTagged : bestsellers.slice(0, 4);
+  const theHangerEdit = hangerEditTagged.length >= 2 
+    ? hangerEditTagged 
+    : bestsellers.length >= 4 
+      ? bestsellers.slice(0, 4) 
+      : products.slice(0, 4);
 
   const supabase = await createServerSupabase();
   const { data: siteSettings } = await supabase.from('site_settings').select('*');

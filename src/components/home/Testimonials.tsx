@@ -64,7 +64,7 @@ export function Testimonials({ initialTestimonials, initialMedia }: { initialTes
   }
 
   return (
-    <section className="pt-4 pb-8 md:pt-6 md:pb-12 bg-[#FDFBF7]">
+    <section className="pt-2 pb-4 md:pt-4 md:pb-6 bg-[#FDFBF7]">
       <div className="container mx-auto px-4 lg:px-8">
  
         {/* Top: Curated section (image + text) with Luxury Frame */}
