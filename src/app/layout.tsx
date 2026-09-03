@@ -54,14 +54,17 @@ export default function RootLayout({
           </TanStackQueryProvider>
         </ErrorBoundary>
         <Toaster
+          position="top-center"
+          maxToasts={1}
           theme="light"
           toastOptions={{
             unstyled: false,
+            className: "font-sans border border-[#D4AF37]/30 bg-[#FDFBF7] text-[#2C1810] shadow-[0_8px_30px_rgba(212,175,55,0.08)] rounded-none tracking-[0.05em] text-[11px] uppercase font-bold",
             classNames: {
-              error: "bg-red-500 text-white border-red-600",
-              success: "bg-green-500 text-white border-green-600",
-              warning: "bg-yellow-500 text-black border-yellow-600",
-              info: "bg-blue-500 text-white border-blue-600",
+              error: "border-[#4A0E17]/30 bg-[#FDFBF7] text-[#4A0E17]",
+              success: "border-[#D4AF37]/50 bg-[#FDFBF7] text-[#2C1810]",
+              warning: "border-[#B89030]/40 bg-[#FDFBF7] text-[#2C1810]",
+              info: "border-[#D4AF37]/30 bg-[#FDFBF7] text-[#7A6B5D]",
             },
           }}
         />
