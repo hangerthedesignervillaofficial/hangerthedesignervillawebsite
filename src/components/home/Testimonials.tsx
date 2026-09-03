@@ -147,38 +147,38 @@ export function Testimonials({ initialTestimonials, initialMedia }: { initialTes
         </div>
  
         {/* Mobile Layout: Interactive Single Slide Carousel with Luxury Cards */}
-        <div className="flex md:hidden flex-col items-center max-w-sm mx-auto px-6 py-10 bg-gradient-to-b from-white to-[#FFFDF9] border-2 border-[#D4AF37]/25 shadow-md relative overflow-hidden">
+        <div className="flex md:hidden flex-col items-center w-full mx-auto px-4 py-8 bg-gradient-to-b from-white to-[#FDFBF7] border border-[#D4AF37]/20 shadow-sm relative overflow-hidden">
           {/* Inner border outline */}
-          <div className="absolute inset-2.5 border border-[#D4AF37]/10 pointer-events-none" />
+          <div className="absolute inset-2 border border-[#D4AF37]/5 pointer-events-none" />
           
-          <div className="text-[#D4AF37] font-serif text-4xl leading-none mb-3 select-none">&ldquo;</div>
+          <div className="text-[#D4AF37] font-serif text-3xl leading-none mb-2 select-none">&ldquo;</div>
           
-          <div className="min-h-[90px] flex items-center justify-center text-center px-2 z-10">
-            <p className="font-serif italic text-[12.5px] text-[#7A6B5D] leading-relaxed" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+          <div className="min-h-[70px] flex items-center justify-center text-center px-2 z-10 w-full">
+            <p className="font-serif italic text-[13px] text-[#7A6B5D] leading-relaxed" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
               {testimonials[activeSlide]?.content}
             </p>
           </div>
           
-          <div className="mt-6 flex flex-col items-center gap-2 z-10">
-            <div className="w-6 h-[1px] bg-[#D4AF37]/30 mb-1" />
-            <span className="font-sans text-[9.5px] font-bold tracking-[0.15em] text-[#2C1810] uppercase">
+          <div className="mt-5 flex flex-col items-center gap-1.5 z-10">
+            <div className="w-4 h-[1px] bg-[#D4AF37]/40 mb-1" />
+            <span className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase">
               {testimonials[activeSlide]?.name}
             </span>
             <div className="flex gap-0.5 mt-0.5">
               {[...Array(testimonials[activeSlide]?.rating || 5)].map((_, idx) => (
-                <Star key={idx} className="h-2.5 w-2.5 fill-[#D4AF37] text-[#D4AF37] stroke-none" />
+                <Star key={idx} className="h-2 w-2 fill-[#D4AF37] text-[#D4AF37] stroke-none" />
               ))}
             </div>
           </div>
  
           {/* Pagination and Luxury Gold Arrows */}
-          <div className="flex items-center gap-6 mt-8 z-10">
+          <div className="flex items-center gap-4 mt-6 z-10">
             <button 
               onClick={handlePrev} 
-              className="h-7 w-7 flex items-center justify-center rounded-full border border-[#D4AF37]/25 text-[#7A6B5D] hover:border-[#D4AF37] hover:text-[#4A0E17] transition-all bg-white cursor-pointer active:scale-90"
+              className="h-6 w-6 flex items-center justify-center rounded-full border border-[#D4AF37]/20 text-[#7A6B5D] hover:border-[#D4AF37] hover:text-[#4A0E17] transition-all bg-white cursor-pointer active:scale-90"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft className="h-4 w-4 stroke-[1.5]" />
+              <ChevronLeft className="h-3.5 w-3.5 stroke-[1.5]" />
             </button>
             <div className="flex gap-1.5">
               {testimonials.map((_, idx) => (
@@ -194,10 +194,10 @@ export function Testimonials({ initialTestimonials, initialMedia }: { initialTes
             </div>
             <button 
               onClick={handleNext} 
-              className="h-7 w-7 flex items-center justify-center rounded-full border border-[#D4AF37]/25 text-[#7A6B5D] hover:border-[#D4AF37] hover:text-[#4A0E17] transition-all bg-white cursor-pointer active:scale-90"
+              className="h-6 w-6 flex items-center justify-center rounded-full border border-[#D4AF37]/20 text-[#7A6B5D] hover:border-[#D4AF37] hover:text-[#4A0E17] transition-all bg-white cursor-pointer active:scale-90"
               aria-label="Next testimonial"
             >
-              <ChevronRight className="h-4 w-4 stroke-[1.5]" />
+              <ChevronRight className="h-3.5 w-3.5 stroke-[1.5]" />
             </button>
           </div>
         </div>

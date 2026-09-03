@@ -237,7 +237,7 @@ export default function Sidebar() {
         } as React.CSSProperties
       }
     >
-      <SidebarContent className="relative bg-[#F7F2EC] text-[#2C1810] flex flex-col justify-between h-[100dvh] overflow-y-auto scrollbar-none p-5 pb-16 sm:p-6 sm:pb-8 z-10 select-none">
+      <SidebarContent className="relative bg-[#F7F2EC] text-[#2C1810] flex flex-col justify-between h-[100dvh] overflow-y-auto scrollbar-none p-5 pb-32 sm:p-6 sm:pb-20 z-10 select-none">
         {/* Background Floral Watermarks */}
         <TopRightFloral />
         <BottomLeftFloral />
