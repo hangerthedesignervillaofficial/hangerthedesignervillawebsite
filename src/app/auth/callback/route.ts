@@ -8,6 +8,15 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") || "/";
 
+  const urlError = requestUrl.searchParams.get("error");
+  const urlErrorDescription = requestUrl.searchParams.get("error_description");
+
+  if (urlError || urlErrorDescription) {
+    return NextResponse.redirect(
+      new URL(`/signin?error=${encodeURIComponent(urlErrorDescription || urlError || "Unknown Google Auth Error")}`, request.url)
+    );
+  }
+
   if (code) {
     const supabase = await createServerSupabase();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -15,11 +24,15 @@ export async function GET(request: NextRequest) {
     if (!error) {
       // Redirect to home or intended page after successful sign in
       return NextResponse.redirect(new URL(next, request.url));
+    } else {
+      return NextResponse.redirect(
+        new URL(`/signin?error=${encodeURIComponent(error.message)}`, request.url)
+      );
     }
   }
 
   // If something went wrong, redirect to sign-in with error message
   return NextResponse.redirect(
-    new URL("/signin?error=Could+not+authenticate+with+Google", request.url)
+    new URL("/signin?error=No+authentication+code+found", request.url)
   );
 }
