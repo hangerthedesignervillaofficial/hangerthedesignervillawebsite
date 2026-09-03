@@ -8,6 +8,7 @@ type SignInProps = {
 export default async function SignIn({ searchParams }: SignInProps) {
   const params = await searchParams;
   const message = params.message ? String(params.message) : null;
+  const errorParam = params.error ? String(params.error) : null;
  
   return (
     <div className="bg-[#FDFBF7] flex min-h-screen items-center justify-center p-4">
@@ -42,7 +43,7 @@ export default async function SignIn({ searchParams }: SignInProps) {
         </div>
         
         <div className="relative z-10">
-          <SignInForm message={message} />
+          <SignInForm message={message} initialError={errorParam} />
         </div>
       </div>
     </div>

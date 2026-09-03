@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuthForm } from "@/hooks/useAuthForm";
 
-export function SignInForm({ message }: { message: string | null }) {
+export function SignInForm({ message, initialError }: { message: string | null; initialError?: string | null }) {
   const {
     formData,
     loading,
@@ -21,9 +21,9 @@ export function SignInForm({ message }: { message: string | null }) {
   return (
     <div className="flex flex-col gap-5">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
+        {(error || initialError) && (
           <div className="bg-[#4A0E17]/5 border border-[#4A0E17]/25 text-[#4A0E17] rounded-none p-3 text-[11px] tracking-wide text-center">
-            {error}
+            {error || initialError}
           </div>
         )}
         {message && (

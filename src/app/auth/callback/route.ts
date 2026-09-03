@@ -20,6 +20,6 @@ export async function GET(request: NextRequest) {
 
   // If something went wrong, redirect to sign-in with error message
   return NextResponse.redirect(
-    new URL("/signin?message=Could+not+authenticate+with+Google", request.url)
+    new URL("/signin?error=Could+not+authenticate+with+Google", request.url)
   );
 }
