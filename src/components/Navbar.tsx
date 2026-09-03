@@ -365,135 +365,65 @@ export function Navbar() {
         </div>
 
         {/* ─── MOBILE HEADER ──────────────────────────────────────────── */}
-        <div className="xl:hidden relative bg-[#FDFBF7]">
-          <div className="flex items-center justify-between px-3 md:px-8 h-[70px] gap-1 w-full max-w-full overflow-hidden">
+        <div className="xl:hidden bg-[#FDFBF7] shadow-sm">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center px-3 md:px-6 h-[64px] sm:h-[70px] w-full">
             {/* Left: Hamburger */}
-            <div className="flex-shrink-0 w-[44px]">
+            <div className="flex justify-start">
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-[#2C1810] cursor-pointer hover:text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all duration-300 rounded-full h-10 w-10 flex items-center justify-center active:scale-90"
+                className="text-[#2C1810] hover:text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all duration-300 rounded-full h-10 w-10 flex items-center justify-center active:scale-90"
                 onClick={toggleSidebar}
               >
-                <Menu className="h-[22px] w-[22px] stroke-[1.5]" />
+                <Menu className="h-5 w-5 sm:h-[22px] sm:w-[22px] stroke-[1.5]" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </div>
 
-            {/* Center: Brand logo (Absolutely Centered) */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex justify-center items-center">
-              <Link href="/" className="flex items-center gap-2 group shrink-0">
+            {/* Center: Brand logo */}
+            <div className="flex justify-center">
+              <Link href="/" className="flex items-center gap-1.5 sm:gap-2 group shrink-0">
                 <img
                   src="/images/logo-icon.png"
                   alt="HANGER"
-                  className="h-9 sm:h-10 w-auto object-contain transition-transform duration-300 group-active:scale-95 shrink-0"
+                  className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-active:scale-95 shrink-0"
                 />
                 <div className="flex flex-col items-start min-w-0">
                   <span
-                    className="font-serif text-[17px] sm:text-[19px] font-bold tracking-[0.24em] text-[#2C1810] uppercase leading-none whitespace-nowrap"
+                    className="font-serif text-[15px] sm:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.24em] text-[#2C1810] uppercase leading-none whitespace-nowrap"
                     style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
                   >
                     HANGER
                   </span>
-                  <span className="font-sans text-[6px] sm:text-[7px] uppercase tracking-[0.28em] text-[#D4AF37] mt-[3px] font-bold whitespace-nowrap">
+                  <span className="font-sans text-[5.5px] sm:text-[6.5px] uppercase tracking-[0.28em] text-[#D4AF37] mt-[3px] font-bold whitespace-nowrap">
                     THE DESIGNER VILLA
                   </span>
                 </div>
               </Link>
             </div>
 
-            {/* Right: Icon group */}
-            <div className="flex items-center gap-0.5 flex-shrink-0 justify-end w-auto">
+            {/* Right: Icon group (Search & Bag only, Account is in bottom nav) */}
+            <div className="flex items-center justify-end gap-0.5 sm:gap-1">
               {/* Search */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`flex items-center justify-center h-10 w-10 rounded-full transition-all duration-300 active:scale-90 cursor-pointer shrink-0 ${
+                className={`flex items-center justify-center h-10 w-10 rounded-full transition-all duration-300 active:scale-90 shrink-0 ${
                   isSearchOpen ? "text-[#D4AF37]" : "text-[#2C1810] hover:text-[#D4AF37]"
                 }`}
               >
                 {isSearchOpen ? (
-                  <X className="h-[20px] w-[20px] stroke-[1.5]" />
+                  <X className="h-5 w-5 stroke-[1.5]" />
                 ) : (
-                  <Search className="h-[20px] w-[20px] stroke-[1.5]" />
+                  <Search className="h-5 w-5 stroke-[1.5]" />
                 )}
               </button>
 
-              {/* Account */}
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center justify-center h-10 w-10 rounded-full text-[#2C1810] hover:text-[#D4AF37] active:scale-90 transition-all duration-300 shrink-0 outline-none cursor-pointer border-none bg-transparent">
-                    <User className="h-[20px] w-[20px] stroke-[1.5]" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    sideOffset={12}
-                    className="w-64 bg-white/95 backdrop-blur-xl border border-[#D4AF37]/20 rounded-none shadow-2xl p-0 z-[100] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 duration-200"
-                  >
-                    <div className="px-6 py-5 bg-[#FDFBF7] border-b border-[#D4AF37]/10 flex flex-col gap-1">
-                      <span className="font-serif text-[#2C1810] text-lg tracking-wide">
-                        Welcome, {user.email?.split("@")[0] || "Guest"}
-                      </span>
-                      <span className="font-sans text-[#7A6B5D] text-[9px] uppercase tracking-[0.2em] font-bold">
-                        Atelier Member
-                      </span>
-                    </div>
-                    <div className="py-2 flex flex-col">
-                      <DropdownMenuItem className="cursor-pointer focus:bg-[#FDFBF7] focus:text-[#2C1810] rounded-none p-0 group">
-                        <Link href="/profile" className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.15em] text-[#2C1810] font-bold px-6 py-3 w-full transition-all group-hover:pl-8">
-                          <Package className="h-4 w-4 text-[#D4AF37] stroke-[1.5]" />
-                          My Orders
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="cursor-pointer focus:bg-[#FDFBF7] focus:text-[#2C1810] rounded-none p-0 group w-full outline-none"
-                        onClick={() => wishlistTriggerRef.current?.click()}
-                      >
-                        <div className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.15em] text-[#2C1810] font-bold px-6 py-3 w-full transition-all group-hover:pl-8 text-left outline-none">
-                          <Heart className="h-4 w-4 text-[#D4AF37] stroke-[1.5]" />
-                          Wishlist
-                        </div>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer focus:bg-[#FDFBF7] focus:text-[#2C1810] rounded-none p-0 group">
-                        <Link href="/contact" className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.15em] text-[#2C1810] font-bold px-6 py-3 w-full transition-all group-hover:pl-8">
-                          <MessageSquare className="h-4 w-4 text-[#D4AF37] stroke-[1.5]" />
-                          Help & Support
-                        </Link>
-                      </DropdownMenuItem>
-                      {isAdmin && (
-                        <DropdownMenuItem className="cursor-pointer focus:bg-[#D4AF37]/5 focus:text-[#2C1810] rounded-none p-0 group mt-1 border-t border-[#D4AF37]/10">
-                          <Link href="/admin" className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.15em] text-[#D4AF37] font-bold px-6 py-3 w-full transition-all group-hover:pl-8">
-                            <Settings className="h-4 w-4 stroke-[1.5]" />
-                            Admin Dashboard
-                          </Link>
-                        </DropdownMenuItem>
-                      )}
-                    </div>
-                    <div className="p-4 border-t border-[#D4AF37]/10 bg-[#FDFBF7]/50">
-                      <DropdownMenuItem
-                        onClick={() => signOut()}
-                        className="cursor-pointer focus:bg-red-50 focus:text-red-700 text-red-600 rounded-none font-sans text-[9px] uppercase tracking-[0.2em] font-bold flex items-center justify-center gap-2 py-2.5 transition-colors border border-red-100 hover:border-red-200"
-                      >
-                        <LogOut className="h-3 w-3 stroke-[2]" />
-                        Sign Out
-                      </DropdownMenuItem>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link
-                  href="/signin"
-                  className="flex items-center justify-center h-10 w-10 rounded-full text-[#2C1810] hover:text-[#D4AF37] active:scale-90 transition-all duration-300 shrink-0"
-                >
-                  <User className="h-[20px] w-[20px] stroke-[1.5]" />
-                </Link>
-              )}
-
-              {/* Cart */}
+              {/* Bag */}
               <CartDrawer>
-                <button className="relative flex items-center justify-center h-10 w-10 rounded-full text-[#2C1810] hover:text-[#D4AF37] active:scale-90 transition-all duration-300 outline-none cursor-pointer shrink-0">
-                  <ShoppingBag className="h-[20px] w-[20px] stroke-[1.5]" />
+                <button className="flex items-center justify-center h-10 w-10 rounded-full text-[#2C1810] hover:text-[#D4AF37] active:scale-90 transition-all duration-300 shrink-0 relative">
+                  <ShoppingBag className="h-5 w-5 stroke-[1.5]" />
                   {totalItems > 0 && (
-                    <span className="absolute top-1.5 right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#4A0E17] text-[7px] font-bold text-[#D4AF37] leading-none">
+                    <span className="absolute top-1.5 right-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4 bg-[#D4AF37] text-white text-[8px] sm:text-[9px] font-bold flex items-center justify-center rounded-full border-[1.5px] border-[#FDFBF7]">
                       {totalItems}
                     </span>
                   )}

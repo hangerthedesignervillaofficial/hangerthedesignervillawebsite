@@ -10,23 +10,14 @@ const defaultSlides = [
   {
     type: "image",
     mediaUrl: "/images/hero-banner.jpg",
-    subtitle: "NEW COLLECTION",
-    title: "THE ART OF\nBEING YOU",
-    description: "Contemporary indian fashion, thoughtfully curated for every expression.",
   },
   {
     type: "image",
     mediaUrl: "/images/moments-banner.jpg",
-    subtitle: "FESTIVE SEASON",
-    title: "DRESSED TO\nIMPRESS",
-    description: "Celebrate every occasion with timeless elegance and modern grace.",
   },
   {
     type: "image",
     mediaUrl: "/images/clothing.jpg",
-    subtitle: "THE EDIT",
-    title: "CURATED\nFOR YOU",
-    description: "Hand-picked pieces from India's finest designers, made for you.",
   },
 ];
 
@@ -157,26 +148,28 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
             </motion.p>
           )}
 
-          <motion.div
-            key={`btns-${currentIndex}`}
-            initial={{ y: 16, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.9 }}
-            className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pr-6 sm:pr-0"
-          >
-            <Link
-              href="/products"
-              className="btn-shine w-full sm:w-auto bg-gradient-to-r from-[#2C1810] to-[#4A0E17] hover:from-[#3A141A] hover:to-[#5A121E] text-[#D4AF37] border border-[#D4AF37]/50 hover:border-[#D4AF37] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] px-8 py-4 md:py-3.5 font-sans text-[10px] font-bold uppercase tracking-[0.22em] transition-all duration-500 text-center hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#D4AF37]/12"
+          {(titleText || bodyText || labelText) && (
+            <motion.div
+              key={`btns-${currentIndex}`}
+              initial={{ y: 16, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.9, duration: 0.9 }}
+              className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pr-6 sm:pr-0"
             >
-              SHOP THE COLLECTION
-            </Link>
-            <Link
-              href="/new-arrivals"
-              className="btn-shine w-full sm:w-auto backdrop-blur-md bg-[#FDFBF7]/10 border border-[#FDFBF7]/30 hover:bg-[#FDFBF7]/18 hover:border-[#D4AF37] hover:shadow-[0_0_15px_rgba(212,175,55,0.18)] text-[#FDFBF7] hover:text-[#D4AF37] px-8 py-4 md:py-3.5 font-sans text-[10px] font-bold uppercase tracking-[0.22em] transition-all duration-500 text-center hover:scale-[1.02] active:scale-95"
-            >
-              NEW ARRIVALS
-            </Link>
-          </motion.div>
+              <Link
+                href="/products"
+                className="btn-shine w-full sm:w-auto bg-gradient-to-r from-[#2C1810] to-[#4A0E17] hover:from-[#3A141A] hover:to-[#5A121E] text-[#D4AF37] border border-[#D4AF37]/50 hover:border-[#D4AF37] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] px-8 py-4 md:py-3.5 font-sans text-[10px] font-bold uppercase tracking-[0.22em] transition-all duration-500 text-center hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#D4AF37]/12"
+              >
+                SHOP THE COLLECTION
+              </Link>
+              <Link
+                href="/new-arrivals"
+                className="btn-shine w-full sm:w-auto backdrop-blur-md bg-[#FDFBF7]/10 border border-[#FDFBF7]/30 hover:bg-[#FDFBF7]/18 hover:border-[#D4AF37] hover:shadow-[0_0_15px_rgba(212,175,55,0.18)] text-[#FDFBF7] hover:text-[#D4AF37] px-8 py-4 md:py-3.5 font-sans text-[10px] font-bold uppercase tracking-[0.22em] transition-all duration-500 text-center hover:scale-[1.02] active:scale-95"
+              >
+                NEW ARRIVALS
+              </Link>
+            </motion.div>
+          )}
         </div>
       </div>
 
