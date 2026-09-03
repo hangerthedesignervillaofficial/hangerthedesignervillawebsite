@@ -55,7 +55,7 @@ export default function RootLayout({
         </ErrorBoundary>
         <Toaster
           position="top-center"
-          maxToasts={1}
+          visibleToasts={1}
           theme="light"
           toastOptions={{
             unstyled: false,
