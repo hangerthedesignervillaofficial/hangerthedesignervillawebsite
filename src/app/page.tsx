@@ -66,6 +66,8 @@ export default async function Home() {
           
           <MomentsBanner initialData={homepageMedia.moments_banner} />
           
+          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical_grid} />
+
           <ShopByMood initialMoods={homepageMedia.shop_by_mood} />
           
           {/* Hanger Edits: always shown — tagged products first, bestsellers as fallback */}
@@ -80,8 +82,6 @@ export default async function Home() {
               products={bestsellers} 
             />
           )}
-
-          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical_grid} />
           
           <DressedToMakeImpression initialData={homepageMedia.dressed_to_impress} />
           <Testimonials initialMedia={homepageMedia.couch} />
