@@ -438,7 +438,7 @@ export function Navbar() {
 
         {/* ─── SEARCH PANEL ────────────────────────────────────────────── */}
         <div
-          className={`overflow-hidden transition-all duration-300 ease-out bg-[#FDFBF7] border-t border-[#D4AF37]/10 ${
+          className={`absolute top-full left-0 w-full overflow-hidden transition-all duration-300 ease-out bg-[#FDFBF7]/95 backdrop-blur-md shadow-lg border-t border-[#D4AF37]/10 ${
             isSearchOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 border-t-0"
           }`}
         >

@@ -66,9 +66,9 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
   // CMS stores: subtitle (label chip), title (big headline), subtitle (body text)
   // Map: subtitle = the small badge label, title = big heading, description = body text
   // Fallback: if no description field, use subtitle as body text
-  const labelText = slide.subtitle || "";
-  const titleText = slide.title || "";
-  const bodyText = slide.description || "";
+  const labelText = (slide.subtitle || "").trim();
+  const titleText = (slide.title || "").trim();
+  const bodyText = (slide.description || "").trim();
 
   return (
     <div
@@ -104,9 +104,13 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
         </motion.div>
       </AnimatePresence>
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/40 to-transparent md:from-black/72 md:via-black/28" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25" />
+      {/* Gradient overlays - Only show if there is text/content to make text readable */}
+      {(labelText || titleText || bodyText) && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/40 to-transparent md:from-black/72 md:via-black/28 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25 pointer-events-none" />
+        </>
+      )}
 
       {/* Content */}
       <div className="absolute inset-0 container mx-auto px-5 md:px-12 flex flex-col justify-center items-start z-10 pointer-events-none">
