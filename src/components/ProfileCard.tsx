@@ -1,8 +1,5 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { User } from "@supabase/supabase-js";
 import { EmailChangeModal } from "@/components/EmailChangeModal";
@@ -18,9 +15,11 @@ interface ProfileCardProps {
   setAvatarUrl: (value: string) => void;
   email: string;
   setEmail: (value: string) => void;
+  phone?: string;
+  setPhone?: (value: string) => void;
   createdAt: string | null;
   isSaving: boolean;
-  onSaveProfile: (username: string, email: string, avatarUrl: string) => void;
+  onSaveProfile: (username: string, email: string, phone: string, avatarUrl: string) => void;
   onSignOut: () => void;
   onUpdateEmail?: (newEmail: string) => Promise<void>;
 }
@@ -33,6 +32,8 @@ export function ProfileCard({
   setAvatarUrl,
   email,
   setEmail,
+  phone = "",
+  setPhone = () => {},
   createdAt,
   isSaving,
   onSaveProfile,
@@ -41,6 +42,7 @@ export function ProfileCard({
 }: ProfileCardProps) {
   const [usernameInput, setUsernameInput] = useState(username);
   const [emailInput, setEmailInput] = useState(email);
+  const [phoneInput, setPhoneInput] = useState(phone);
   const [avatarUrlInput, setAvatarUrlInput] = useState(avatarUrl);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -51,21 +53,23 @@ export function ProfileCard({
   useEffect(() => {
     setUsernameInput(username);
     setEmailInput(email);
+    setPhoneInput(phone);
     setAvatarUrlInput(avatarUrl);
     // Clear preview when avatar URL changes from external source
     if (avatarUrl !== avatarUrlInput) {
       setPreviewUrl(null);
     }
-  }, [username, email, avatarUrl, avatarUrlInput]);
+  }, [username, email, phone, avatarUrl, avatarUrlInput]);
 
   const handleSave = async () => {
     // Update local UI state
     setUsername(usernameInput);
     setAvatarUrl(avatarUrlInput);
     setEmail(emailInput);
+    setPhone(phoneInput);
 
     // Save profile data
-    onSaveProfile(usernameInput, emailInput, avatarUrlInput);
+    onSaveProfile(usernameInput, emailInput, phoneInput, avatarUrlInput);
   };
 
   const handleAvatarClick = () => {
@@ -170,135 +174,146 @@ export function ProfileCard({
   const displayImageUrl = previewUrl || avatarUrlInput || undefined;
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-          <div
-            className="group relative cursor-pointer"
-            onClick={handleAvatarClick}
-          >
-            <Avatar className="h-24 w-24">
-              <AvatarImage
-                src={displayImageUrl}
-                className="h-24 w-24 rounded-full object-cover"
-              />
-              <AvatarFallback className="h-24 w-24 text-xl">
-                {getInitials()}
-              </AvatarFallback>
-            </Avatar>
-
-            {/* Hidden file input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              disabled={uploading}
-              className="hidden"
+    <div className="mb-10 bg-[#FDFBF7] border border-[#D4AF37]/20 p-8 shadow-sm">
+      <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
+        <div
+          className="group relative cursor-pointer flex-shrink-0"
+          onClick={handleAvatarClick}
+        >
+          <Avatar className="h-32 w-32 border-2 border-[#D4AF37]/30 shadow-md">
+            <AvatarImage
+              src={displayImageUrl}
+              className="h-32 w-32 rounded-full object-cover"
             />
+            <AvatarFallback className="h-32 w-32 text-3xl font-serif text-[#2C1810] bg-[#F5F0E6]">
+              {getInitials()}
+            </AvatarFallback>
+          </Avatar>
 
-            {/* Overlay with upload icon/text */}
-            <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-full bg-black opacity-0 transition-opacity group-hover:opacity-100">
-              <span className="text-xs text-white">
-                {uploading ? "Uploading..." : "Change Photo"}
-              </span>
-            </div>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-6">
-          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <h3 className="mb-4 text-lg font-medium">Account Information</h3>
-              <p className="text-muted-foreground mb-4">{email}</p>
-            </div>
-            <div>
-              <p className="mb-4 text-lg font-medium">
-                {username
-                  ? "Your profile information"
-                  : "Please add your username"}
-              </p>
-              <p className="text-muted-foreground mb-4">
-                {username || "Please add your username"}
-              </p>
-            </div>
-          </div>
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            disabled={uploading}
+            className="hidden"
+          />
 
-          <div className="mb-4 grid grid-cols-1 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
+          {/* Overlay with upload icon/text */}
+          <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <span className="text-xs tracking-widest text-white uppercase">
+              {uploading ? "Wait..." : "Change"}
+            </span>
+          </div>
+        </div>
+
+        <div className="text-center md:text-left flex-1">
+          <h2 className="font-serif text-3xl text-[#2C1810] mb-2" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>
+            {usernameInput || "Welcome to The Villa"}
+          </h2>
+          <p className="font-sans text-sm tracking-wide text-[#7A6B5D] mb-4">
+            {email}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-6 max-w-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="relative pt-4">
+            <div className="flex items-center border-b border-[#D4AF37]/30 focus-within:border-[#D4AF37] transition-colors h-10 group">
+              <input
                 id="username"
                 value={usernameInput}
                 onChange={(e) => setUsernameInput(e.target.value)}
-                placeholder="Username"
+                placeholder=" "
+                className="peer flex-1 bg-transparent outline-none font-sans text-base text-[#2C1810]"
               />
+              <label 
+                htmlFor="username" 
+                className="absolute left-0 top-0 text-[10px] text-[#7A6B5D] font-sans uppercase tracking-[0.2em] transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-6 peer-placeholder-shown:text-[#7A6B5D]/50 peer-focus:top-0 peer-focus:text-[10px] peer-focus:text-[#D4AF37] pointer-events-none"
+              >
+                Display Name
+              </label>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="email"
-                  value={email}
-                  disabled
-                  className="bg-muted flex-1"
-                />
-                <Button
-                  type="button"
-                  onClick={() => setIsEmailModalOpen(true)}
-                  variant="outline"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                >
-                  Change Email
-                </Button>
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Email changes require verification
-              </p>
-            </div>
-
-            {/* <div className="space-y-2">
-              <Label htmlFor="avatarUrl">Avatar URL</Label>
-              <Input
-                id="avatarUrl"
-                value={avatarUrlInput}
-                onChange={(e) => setAvatarUrlInput(e.target.value)}
-                placeholder="https://example.com/your-avatar.jpg"
-              />
-            </div> */}
           </div>
 
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mb-4 cursor-pointer"
-          >
-            {isSaving ? "Saving..." : "Save Changes"}
-          </Button>
-
-          <div className="text-muted-foreground space-y-1 text-sm">
-            {createdAt && (
-              <span className="block">
-                Account created:{" "}
-                {new Date(createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                })}
-              </span>
-            )}
-            <span className="block">Profile ID: {user?.id}</span>
+          <div className="relative pt-4">
+            <div className="flex items-center border-b border-[#D4AF37]/30 focus-within:border-[#D4AF37] transition-colors h-10 group">
+              <span className="font-sans text-base text-[#7A6B5D] pr-2 border-r border-[#D4AF37]/20 mr-3 select-none">+91</span>
+              <input
+                id="phone"
+                value={phoneInput}
+                onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ''))}
+                maxLength={10}
+                placeholder=" "
+                className="peer flex-1 bg-transparent outline-none font-sans text-base text-[#2C1810]"
+              />
+              <label 
+                htmlFor="phone" 
+                className="absolute left-10 top-0 text-[10px] text-[#7A6B5D] font-sans uppercase tracking-[0.2em] transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-6 peer-placeholder-shown:text-[#7A6B5D]/50 peer-focus:top-0 peer-focus:text-[10px] peer-focus:text-[#D4AF37] pointer-events-none"
+              >
+                Contact Number
+              </label>
+            </div>
+          </div>
+          
+          <div className="relative pt-4 flex gap-4 items-end">
+            <div className="flex items-center border-b border-[#D4AF37]/30 h-10 flex-1 opacity-70">
+              <input
+                id="email"
+                value={email}
+                disabled
+                placeholder=" "
+                className="peer flex-1 bg-transparent outline-none font-sans text-base text-[#2C1810]"
+              />
+              <label 
+                htmlFor="email" 
+                className="absolute left-0 top-0 text-[10px] text-[#7A6B5D] font-sans uppercase tracking-[0.2em] pointer-events-none"
+              >
+                Registered Email
+              </label>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsEmailModalOpen(true)}
+              className="h-10 px-4 border border-[#D4AF37]/50 text-[#7A6B5D] hover:bg-[#D4AF37]/10 hover:text-[#2C1810] text-[10px] font-bold tracking-[0.1em] uppercase transition-colors"
+            >
+              Update
+            </button>
           </div>
         </div>
+      </div>
+      <div className="mt-8">
         <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="w-full sm:w-auto bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white cursor-pointer rounded-none h-12 text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300"
+        >
+          {isSaving ? "SAVING..." : "SAVE CHANGES"}
+        </Button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-[#D4AF37]/20 pt-6 mt-6">
+        <div className="text-[#7A6B5D] text-xs tracking-wider mb-4 sm:mb-0">
+          {createdAt && (
+            <span className="flex items-center gap-2">
+              <span className="h-1 w-1 rounded-full bg-[#D4AF37]"></span>
+              MEMBER SINCE: {new Date(createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+              }).toUpperCase()}
+            </span>
+          )}
+        </div>
+        
+        <button
           onClick={onSignOut}
-          className="hover:bg-accent hover:text-accent-foreground bg-primary text-primary-foreground cursor-pointer"
+          className="text-[#7A6B5D] hover:text-[#4A0E17] text-xs font-bold tracking-[0.1em] uppercase transition-colors flex items-center gap-2"
         >
           Sign Out
-        </Button>
-      </CardContent>
+        </button>
+      </div>
 
       {onUpdateEmail && (
         <EmailChangeModal
@@ -309,6 +324,6 @@ export function ProfileCard({
           setEmail={setEmail}
         />
       )}
-    </Card>
+    </div>
   );
 }

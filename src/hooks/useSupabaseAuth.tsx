@@ -11,27 +11,12 @@ export function useSupabaseAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if we have a mocked session
-    const cachedMock = typeof window !== 'undefined' ? localStorage.getItem('hanger_mock_session') : null;
-    if (cachedMock) {
-      try {
-        const parsed = JSON.parse(cachedMock);
-        if (typeof window !== 'undefined') {
-          document.cookie = "hanger_mock_session_active=true; path=/; max-age=86400";
-        }
-        setSession(parsed);
-        setUser(parsed.user);
-        setLoading(false);
-        return; // Skip normal supabase setup since we are in mock mode
-      } catch (e) {
-        console.error("Error parsing cached mock session", e);
-      }
-    }
+
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (typeof window !== 'undefined' && localStorage.getItem('hanger_mock_session')) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
       // If user logs in, ensure they exist in our profiles table
@@ -42,7 +27,7 @@ export function useSupabaseAuth() {
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (typeof window !== 'undefined' && localStorage.getItem('hanger_mock_session')) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
       // If we have a user, ensure they exist in our profiles table
@@ -99,6 +84,9 @@ export function useSupabaseAuth() {
         return;
       }
 
+      // Determine role based on email
+      const role = userEmail === 'hangerthedesignervillaofficial@gmail.com' ? 'admin' : 'user';
+
       // Create profile directly with Supabase
       const { error: createError } = await supabase
         .from('profiles')
@@ -107,6 +95,7 @@ export function useSupabaseAuth() {
           username: '',
           avatar_url: '',
           email: userEmail,
+          role: role,
           created_at: new Date().toISOString(),
         })
         .select()
@@ -119,11 +108,11 @@ export function useSupabaseAuth() {
           return;
         }
 
-        console.error('Error creating user profile:', createError);
+        console.error('Error creating user profile:', createError, JSON.stringify(createError));
         throw createError;
       }
     } catch (error) {
-      console.error('Error in ensureUserProfile:', error);
+      console.error('Error in ensureUserProfile:', error, JSON.stringify(error, null, 2));
       // Don't throw - we'll handle this on profile page visit
     }
   };
@@ -132,46 +121,7 @@ export function useSupabaseAuth() {
     try {
       setLoading(true);
 
-      const normalizedEmail = (email || '').trim().toLowerCase();
-      const normalizedPassword = (password || '').trim();
-
-      // Check for mock accounts
-      if (
-        (normalizedEmail === 'customer@gmail.com' && normalizedPassword === '12345678') ||
-        (normalizedEmail === 'admin@gmail.com' && normalizedPassword === '12345678')
-      ) {
-        const isAdminUser = normalizedEmail === 'admin@gmail.com';
-        const mockUser: User = {
-          id: isAdminUser ? 'mock-admin-id-1111111111111111' : 'mock-customer-id-0000000000000000',
-          email: normalizedEmail,
-          role: 'authenticated',
-          aud: 'authenticated',
-          app_metadata: { provider: 'email' },
-          user_metadata: {},
-          created_at: new Date().toISOString(),
-        };
-        const mockSession: Session = {
-          access_token: 'mock-token-' + (isAdminUser ? 'admin' : 'customer'),
-          refresh_token: 'mock-refresh-token',
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-          token_type: 'bearer',
-          user: mockUser,
-        };
-
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('hanger_mock_session', JSON.stringify(mockSession));
-          document.cookie = "hanger_mock_session_active=true; path=/; max-age=86400";
-        }
-        setSession(mockSession);
-        setUser(mockUser);
-
-        // Ensure user profile exists in database if Supabase is connected
-        await ensureUserProfile(mockUser);
-
-        toast.success('Signed in successfully (Demo Mode)');
-        return;
-      }
+      setLoading(true);
 
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -217,16 +167,9 @@ export function useSupabaseAuth() {
       setLoading(true);
       console.log('Signing out user:', user?.email);
       
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('hanger_mock_session');
-        document.cookie = "hanger_mock_session_active=; path=/; max-age=-1";
-      }
 
-      try {
-        await supabase.auth.signOut();
-      } catch (e) {
-        console.error("Supabase signOut error (expected if mock):", e);
-      }
+
+      await supabase.auth.signOut();
 
       // Explicitly clear user and session state
       setUser(null);

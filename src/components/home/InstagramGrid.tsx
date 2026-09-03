@@ -2,18 +2,44 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
 
-const images = [
-  "/images/instagram/instagram1.jpg",
-  "/images/instagram/instagram2.jpg",
-  "/images/instagram/instagram3.jpg",
-  "/images/instagram/instagram4.jpg",
-  "/images/instagram/instagram5.jpg",
-  "/images/instagram/instagram6.jpg",
-];
+export function InstagramGrid({ initialData }: { initialData?: any[] }) {
+  const defaultItems = [
+    { id: 'ig1', mediaUrl: '/images/instagram/instagram1.jpg', type: 'image', link: 'https://instagram.com' },
+    { id: 'ig2', mediaUrl: '/images/instagram/instagram2.jpg', type: 'image', link: 'https://instagram.com' },
+    { id: 'ig3', mediaUrl: '/images/instagram/instagram3.jpg', type: 'image', link: 'https://instagram.com' },
+    { id: 'ig4', mediaUrl: '/images/instagram/instagram4.jpg', type: 'image', link: 'https://instagram.com' },
+  ];
+  
+  const parsedInitial = initialData ? initialData.filter((item: any) => item.mediaUrl).slice(0, 6) : null;
+  const [items, setItems] = useState<any[]>(parsedInitial && parsedInitial.length > 0 ? parsedInitial : defaultItems);
 
-export function InstagramGrid() {
+  useEffect(() => {
+    if (initialData) return;
+    async function fetchSettings() {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "homepage_media")
+          .single();
+
+        if (data && data.value?.instagram) {
+          // Filter to only items that have a mediaUrl
+          const withMedia = data.value.instagram.filter((item: any) => item.mediaUrl);
+          if (withMedia.length > 0) {
+            setItems(withMedia.slice(0, 6));
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchSettings();
+  }, []);
+
   return (
     <section className="pt-2 pb-6 bg-[#FDFBF7]">
       <div className="container mx-auto px-4 lg:px-8">
@@ -29,10 +55,10 @@ export function InstagramGrid() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {images.slice(0, 4).map((img, idx) => (
+          {items.slice(0, 4).map((item, idx) => (
             <Link 
-              key={idx} 
-              href="https://www.instagram.com/hanger_thedesignervilla" 
+              key={item.id || idx} 
+              href={item.link || "https://www.instagram.com/hanger_thedesignervilla"} 
               target="_blank"
               className="block"
             >
@@ -43,12 +69,21 @@ export function InstagramGrid() {
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
                 className="relative aspect-square w-full overflow-hidden bg-[#f4f0ea] group cursor-pointer border border-[#D4AF37]/15 shadow-sm"
               >
-                <Image
-                  src={img}
-                  alt="Instagram Feed"
-                  fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                />
+                {item.type === 'video' ? (
+                  <video 
+                    src={item.mediaUrl} 
+                    autoPlay 
+                    muted 
+                    loop 
+                    playsInline 
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108" 
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                    style={{ backgroundImage: `url(${item.mediaUrl})` }}
+                  />
+                )}
                 {/* Overlay with black opacity */}
                 <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   {/* Gold inner frame border */}

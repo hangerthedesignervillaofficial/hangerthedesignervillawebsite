@@ -41,10 +41,15 @@ interface FormData {
   description: string;
   price: string;
   image: string;
+  video_url: string;
   stock: string;
   sku: string;
   category_id: string;
   tags: string[];
+  is_bestseller: boolean;
+  is_new_arrival: boolean;
+  sizes: string;
+  display_tags: string[];
 }
 
 export function ProductFormModal({
@@ -59,15 +64,23 @@ export function ProductFormModal({
     description: "",
     price: "",
     image: "",
+    video_url: "",
     stock: "",
     sku: "",
     category_id: "no-category",
     tags: [],
+    is_bestseller: false,
+    is_new_arrival: false,
+    sizes: "",
+    display_tags: [],
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -75,7 +88,7 @@ export function ProductFormModal({
     data: categories,
     isLoading: categoriesLoading,
     error: categoriesError,
-    refetch: refetchCategories,
+
   } = useCategories();
 
   useEffect(() => {
@@ -85,24 +98,36 @@ export function ProductFormModal({
         description: product.description || "",
         price: product.price?.toString() || "",
         image: product.image || "",
+        video_url: product.video_url || "",
         stock: product.stock?.toString() || "",
         sku: product.sku || "",
         category_id: product.category_id?.toString() || "no-category",
         tags: product.tags || [],
+        is_bestseller: product.is_bestseller || false,
+        is_new_arrival: product.is_new_arrival || false,
+        sizes: (product.sizes || []).join(", "),
+        display_tags: product.display_tags || [],
       });
       setImagePreview(product.image || null);
+      setVideoPreview(product.video_url || null);
     } else {
       setFormData({
         title: "",
         description: "",
         price: "",
         image: "",
+        video_url: "",
         stock: "",
         sku: "",
-        category_id: "no-category",
+        category_id: "",
         tags: [],
+        display_tags: [],
+        is_bestseller: false,
+        is_new_arrival: false,
+        sizes: "",
       });
       setImagePreview(null);
+      setVideoPreview(null);
     }
     setErrors({});
   }, [product, isOpen]);
@@ -138,15 +163,13 @@ export function ProductFormModal({
   };
 
   const uploadImageToSupabase = async (file: File): Promise<string | null> => {
-    // Validate file type
-    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "video/mp4", "video/webm"];
     if (!validTypes.includes(file.type)) {
-      toast.error("Please upload a valid image (JPG, PNG, WebP, GIF)");
+      toast.error("Please upload a valid image or video (JPG, PNG, WebP, MP4)");
       return null;
     }
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be under 5MB");
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("File must be under 20MB");
       return null;
     }
 
@@ -171,7 +194,6 @@ export function ProductFormModal({
   };
 
   const handleFileSelect = useCallback(async (file: File) => {
-    // Immediate local preview
     const localUrl = URL.createObjectURL(file);
     setImagePreview(localUrl);
     setUploading(true);
@@ -183,7 +205,6 @@ export function ProductFormModal({
         setImagePreview(publicUrl);
         toast.success("Image uploaded successfully");
       } else {
-        // Revert preview on failure
         setImagePreview(formData.image || null);
       }
     } finally {
@@ -191,10 +212,40 @@ export function ProductFormModal({
     }
   }, [formData.image]);
 
+  
+  const handleVideoSelect = useCallback(async (file: File) => {
+    const localUrl = URL.createObjectURL(file);
+    setVideoPreview(localUrl);
+    setVideoUploading(true);
+
+    try {
+      const publicUrl = await uploadImageToSupabase(file);
+      if (publicUrl) {
+        setFormData((prev) => ({ ...prev, video_url: publicUrl }));
+        setVideoPreview(publicUrl);
+        toast.success("Video uploaded successfully");
+      } else {
+        setVideoPreview(formData.video_url || null);
+      }
+    } finally {
+      setVideoUploading(false);
+    }
+  }, [formData.video_url]);
+
+  const handleVideoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleVideoSelect(file);
+    e.target.value = "";
+  };
+
+  const clearVideo = () => {
+    setVideoPreview(null);
+    setFormData((prev) => ({ ...prev, video_url: "" }));
+  };
+
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleFileSelect(file);
-    // Reset input so same file can be re-selected
     e.target.value = "";
   };
 
@@ -223,11 +274,16 @@ export function ProductFormModal({
 
     setLoading(true);
     try {
+      const sizesArray = formData.sizes
+        ? formData.sizes.split(",").map((s) => s.trim()).filter((s) => s !== "")
+        : [];
+
       const submitData: CreateProductData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         price: parseFloat(formData.price),
         image: formData.image.trim() || undefined,
+        video_url: formData.video_url?.trim() || undefined,
         stock: parseInt(formData.stock),
         sku: formData.sku.trim() || undefined,
         category_id:
@@ -235,6 +291,10 @@ export function ProductFormModal({
             ? parseInt(formData.category_id)
             : undefined,
         tags: formData.tags,
+        is_bestseller: formData.is_bestseller,
+        is_new_arrival: formData.is_new_arrival,
+        sizes: sizesArray,
+        display_tags: formData.display_tags,
       };
       await onSubmit(submitData);
     } catch (error) {
@@ -244,17 +304,16 @@ export function ProductFormModal({
     }
   };
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
+  const handleInputChange = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+    if (errors[field as string]) {
+      setErrors((prev) => ({ ...prev, [field as string]: "" }));
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto border-[#D4AF37]/20 bg-[#FDFBF7] rounded-none p-0">
-        {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-[#D4AF37]/15">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-4 h-[1px] bg-[#D4AF37]" />
@@ -274,7 +333,6 @@ export function ProductFormModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
-
           {/* Image Upload Zone */}
           <div>
             <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
@@ -349,7 +407,6 @@ export function ProductFormModal({
               </div>
             )}
 
-            {/* Hidden native file input — triggers camera roll / gallery on mobile */}
             <input
               ref={fileInputRef}
               type="file"
@@ -358,7 +415,6 @@ export function ProductFormModal({
               onChange={handleFileInputChange}
             />
 
-            {/* Manual URL fallback */}
             <div className="mt-2">
               <p className="font-sans text-[8px] text-[#7A6B5D]/60 mb-1 tracking-wide">
                 Or paste an image URL:
@@ -374,8 +430,72 @@ export function ProductFormModal({
               />
             </div>
           </div>
+          
+          
+          {/* Video Upload Zone */}
+          <div>
+            <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
+              Product Video (Optional)
+            </Label>
+            {videoPreview ? (
+              <div className="relative group">
+                <video
+                  src={videoPreview}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-48 object-cover border border-[#D4AF37]/20 bg-black"
+                />
+                {videoUploading && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-2 text-white">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span className="text-[10px] tracking-wider uppercase">Uploading...</span>
+                    </div>
+                  </div>
+                )}
+                {!videoUploading && (
+                  <button
+                    type="button"
+                    onClick={clearVideo}
+                    className="absolute top-2 right-2 w-7 h-7 bg-[#2C1810]/80 hover:bg-[#4A0E17] text-white flex items-center justify-center transition-colors cursor-pointer z-10"
+                  >
+                    <X className="w-3.5 h-3.5 stroke-[2]" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div
+                onClick={() => videoInputRef.current?.click()}
+                className="w-full h-32 border-2 border-dashed border-[#D4AF37]/25 hover:border-[#D4AF37]/60 hover:bg-[#D4AF37]/3 bg-[#FFFDFC] flex flex-col items-center justify-center cursor-pointer transition-all duration-200"
+              >
+                <div className="flex flex-col items-center gap-2.5 text-center px-4">
+                  <div className="w-8 h-8 border border-[#D4AF37]/25 flex items-center justify-center">
+                    {videoUploading ? (
+                      <Loader2 className="w-4 h-4 text-[#D4AF37] animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-[#D4AF37] stroke-[1.5]" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-sans text-[10px] font-semibold text-[#2C1810]">
+                      Upload MP4 Video
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
-          {/* Title */}
+            <input
+              ref={videoInputRef}
+              type="file"
+              accept="video/mp4,video/webm"
+              className="hidden"
+              onChange={handleVideoInputChange}
+            />
+          </div>
+
           <div>
             <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
               Product Title <span className="text-[#D4AF37]">•</span>
@@ -391,7 +511,6 @@ export function ProductFormModal({
             {errors.title && <p className="mt-1 text-[10px] text-red-500">{errors.title}</p>}
           </div>
 
-          {/* Description */}
           <div>
             <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
               Description <span className="text-[#D4AF37]">•</span>
@@ -399,16 +518,14 @@ export function ProductFormModal({
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Describe the product — fabric, craft, occasion..."
+              placeholder="Describe the product..."
               rows={3}
               className={`w-full bg-transparent border-b border-t-0 border-l-0 border-r-0 px-0 py-2 font-sans text-sm text-[#2C1810] placeholder:text-[#7A6B5D]/30 focus:outline-none resize-none focus:border-[#D4AF37] transition-colors ${
                 errors.description ? "border-red-400" : "border-[#D4AF37]/25"
               }`}
             />
-            {errors.description && <p className="mt-1 text-[10px] text-red-500">{errors.description}</p>}
           </div>
 
-          {/* Price + Stock */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
@@ -425,7 +542,6 @@ export function ProductFormModal({
                   errors.price ? "border-red-400" : "border-[#D4AF37]/25"
                 }`}
               />
-              {errors.price && <p className="mt-1 text-[10px] text-red-500">{errors.price}</p>}
             </div>
             <div>
               <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
@@ -441,40 +557,13 @@ export function ProductFormModal({
                   errors.stock ? "border-red-400" : "border-[#D4AF37]/25"
                 }`}
               />
-              {errors.stock && <p className="mt-1 text-[10px] text-red-500">{errors.stock}</p>}
             </div>
           </div>
 
-          {/* SKU */}
-          <div>
-            <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
-              SKU
-            </Label>
-            <Input
-              value={formData.sku}
-              onChange={(e) => handleInputChange("sku", e.target.value)}
-              placeholder="HNGR-001 (optional)"
-              className="border-b border-[#D4AF37]/25 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent h-10 px-0 text-sm focus-visible:ring-0 focus:border-[#D4AF37] text-[#2C1810] placeholder:text-[#7A6B5D]/30"
-            />
-          </div>
-
-          {/* Category */}
           <div>
             <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
               Category
             </Label>
-            {categoriesError && (
-              <div className="mb-2 p-2 border border-red-200 bg-red-50 text-[10px] text-red-600 flex items-center justify-between">
-                <span>Failed to load categories</span>
-                <button
-                  type="button"
-                  onClick={() => void refetchCategories()}
-                  className="text-[9px] font-bold underline cursor-pointer"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
             <Select
               value={formData.category_id}
               onValueChange={(value) => handleInputChange("category_id", value ?? "")}
@@ -494,23 +583,54 @@ export function ProductFormModal({
             </Select>
           </div>
 
-          {/* Tags */}
           <div>
             <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
-              Collections / Tags
+              Sizes (Comma separated)
             </Label>
-            <div className="flex gap-4">
+            <Input
+              value={formData.sizes}
+              onChange={(e) => handleInputChange("sizes", e.target.value)}
+              placeholder="e.g. XS, S, M, L, XL"
+              className="border-b border-t-0 border-l-0 border-r-0 rounded-none bg-transparent h-10 px-0 text-sm focus-visible:ring-0 focus:border-[#D4AF37] text-[#2C1810] placeholder:text-[#7A6B5D]/30 border-[#D4AF37]/25"
+            />
+          </div>
+
+
+          <div>
+            <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
+              Display Locations
+            </Label>
+            <div className="flex flex-wrap gap-4 mt-3">
+              {["Everyday Edit", "Festive Edit", "Occasion Edit", "Statement Edit", "The Hanger Edit"].map(tag => (
+                <label key={tag} className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.display_tags.includes(tag)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        handleInputChange("display_tags", [...formData.display_tags, tag]);
+                      } else {
+                        handleInputChange("display_tags", formData.display_tags.filter(t => t !== tag));
+                      }
+                    }}
+                    className="accent-[#D4AF37] w-4 h-4"
+                  />
+                  <span className="font-sans text-xs text-[#2C1810]">{tag}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
+              Collections
+            </Label>
+            <div className="flex gap-6 mt-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input 
                   type="checkbox" 
-                  checked={formData.tags.includes('new_arrival')}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      handleInputChange("tags", [...formData.tags, 'new_arrival'] as any);
-                    } else {
-                      handleInputChange("tags", formData.tags.filter(t => t !== 'new_arrival') as any);
-                    }
-                  }}
+                  checked={formData.is_new_arrival}
+                  onChange={(e) => handleInputChange("is_new_arrival", e.target.checked)}
                   className="accent-[#D4AF37] w-4 h-4"
                 />
                 <span className="font-sans text-sm text-[#2C1810]">New Arrival</span>
@@ -518,14 +638,8 @@ export function ProductFormModal({
               <label className="flex items-center gap-2 cursor-pointer">
                 <input 
                   type="checkbox" 
-                  checked={formData.tags.includes('bestseller')}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      handleInputChange("tags", [...formData.tags, 'bestseller'] as any);
-                    } else {
-                      handleInputChange("tags", formData.tags.filter(t => t !== 'bestseller') as any);
-                    }
-                  }}
+                  checked={formData.is_bestseller}
+                  onChange={(e) => handleInputChange("is_bestseller", e.target.checked)}
                   className="accent-[#D4AF37] w-4 h-4"
                 />
                 <span className="font-sans text-sm text-[#2C1810]">Bestseller</span>
@@ -533,20 +647,19 @@ export function ProductFormModal({
             </div>
           </div>
 
-          {/* Footer buttons */}
           <DialogFooter className="pt-2 border-t border-[#D4AF37]/10 flex gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={loading || uploading}
+              disabled={loading || uploading || videoUploading}
               className="flex-1 rounded-none border-[#D4AF37]/25 text-[#7A6B5D] hover:border-[#D4AF37]/50 hover:text-[#2C1810] font-sans text-[9px] font-bold tracking-[0.18em] uppercase h-11 cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={loading || uploading}
+              disabled={loading || uploading || videoUploading}
               className="flex-1 rounded-none bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] hover:text-white border border-[#D4AF37]/35 font-sans text-[9px] font-bold tracking-[0.18em] uppercase h-11 cursor-pointer transition-all"
             >
               {uploading ? (

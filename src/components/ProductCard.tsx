@@ -10,7 +10,7 @@ import { useWishlist } from "@/context/WishlistContext";
 
 interface ProductCardProps {
   product: ProductType;
-  badge?: "NEW" | "BESTSELLER";
+  badge?: "NEW" | "BESTSELLER" | "OUT OF STOCK";
 }
 
 export function ProductCard({ product, badge }: ProductCardProps) {
@@ -35,13 +35,23 @@ export function ProductCard({ product, badge }: ProductCardProps) {
 
   return (
     <motion.div
-      className="group relative flex flex-col h-full bg-[#FDFBF7] cursor-pointer hover-lift border border-[#D4AF37]/5 p-2 transition-all duration-300"
+      className="group relative flex flex-col h-full bg-[#FDFBF7] cursor-pointer hover-lift transition-all duration-300"
       whileTap={{ scale: 0.98 }}
     >
-      {/* Image Container */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f4f0ea] mb-3">
-        <Link href={`/products/${product.product_id}`} className="block h-full w-full">
-          {product.image ? (
+      {/* Image / Video Container */}
+      <div className={`relative aspect-[3/4] w-full overflow-hidden bg-[#f4f0ea] ${product.stock <= 0 ? "opacity-70 grayscale-[20%]" : ""}`}>
+        <Link href={`/products/${product.product_id}`} className="block h-full w-full pointer-events-auto">
+          {product.video_url ? (
+            <video
+              src={product.video_url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-108"
+              style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1)' }}
+            />
+          ) : product.image ? (
             <>
               {/* Shimmer placeholder */}
               {!imageLoaded && (
@@ -52,10 +62,10 @@ export function ProductCard({ product, badge }: ProductCardProps) {
                 alt={product.title}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className={`object-cover object-center transition-all duration-700 ease-out group-hover:scale-108 ${
+                className={`object-cover object-center transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-108 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
-                style={{ transform: 'scale(1)', transition: 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease' }}
+                style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease' }}
                 onLoad={() => setImageLoaded(true)}
               />
             </>
@@ -67,17 +77,21 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         </Link>
 
         {/* Inner gold frame overlay on hover */}
-        <div className="absolute inset-3 border border-[#D4AF37]/35 scale-[0.96] opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none z-10" />
+        <div className="absolute inset-3 border border-[#D4AF37]/35 scale-[0.96] opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none z-10" />
         
         {/* Top Left Badge */}
-        {badge && (
+        {(badge || product.stock <= 0) && (
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.3 }}
-            className="absolute top-3 left-3 bg-[#FDFBF7] px-2.5 py-1 text-[8px] font-sans font-bold tracking-[0.15em] text-[#2C1810] uppercase shadow-sm z-10 border border-[#D4AF37]/10"
+            className={`absolute top-3 left-3 px-2.5 py-1 text-[8px] font-sans font-bold tracking-[0.15em] uppercase shadow-sm z-10 border ${
+              product.stock <= 0 
+                ? "bg-[#2C1810] text-white border-[#2C1810]" 
+                : "bg-[#FDFBF7] text-[#2C1810] border-[#D4AF37]/10"
+            }`}
           >
-            {badge}
+            {product.stock <= 0 ? "OUT OF STOCK" : badge}
           </motion.div>
         )}
 
@@ -106,12 +120,12 @@ export function ProductCard({ product, badge }: ProductCardProps) {
       </div>
 
       {/* Product Details */}
-      <div className="flex flex-col flex-1 px-1 md:px-2 pt-1 md:pt-2">
+      <div className="flex flex-col flex-1 px-1 md:px-2 py-3 bg-[#FDFBF7]">
         <Link href={`/products/${product.product_id}`} className="group-hover:text-[#4A0E17] transition-colors duration-300">
-          <h3 className="font-sans text-[12px] md:text-[13px] font-semibold text-[#2C1810] leading-tight mb-1 truncate transition-colors duration-300 group-hover:text-[#4A0E17]">
+          <h3 className="font-serif text-[14px] md:text-[15px] font-medium tracking-wide text-[#2C1810] leading-tight mb-1 truncate transition-colors duration-300 group-hover:text-[#4A0E17]" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
             {product.title}
           </h3>
-          <p className="font-sans text-[10px] md:text-[11px] text-[#7A6B5D] truncate mb-1.5 md:mb-2">
+          <p className="font-sans text-[10px] md:text-[11px] tracking-wide font-light text-[#7A6B5D] truncate mb-2 md:mb-3">
             {product.description || "Premium Design"}
           </p>
         </Link>
@@ -135,17 +149,17 @@ export function ProductCard({ product, badge }: ProductCardProps) {
                 );
               })}
             </div>
-            <span className="text-[8px] md:text-[9px] font-sans text-[#7A6B5D] font-medium">
+            <span className="text-[9px] md:text-[10px] font-sans text-[#7A6B5D] font-medium">
               {ratingData.rating} ({ratingData.reviews}+)
             </span>
           </div>
         )}
         
-        <p className="font-sans text-[12px] md:text-[13px] text-[#2C1810] font-bold mb-3 md:mb-4">
+        <p className="font-serif text-[14px] md:text-[15px] tracking-wide text-[#2C1810] font-medium mb-3 md:mb-4">
           ₹{product.price.toLocaleString("en-IN")}
         </p>
         
-        <div className="mt-auto flex items-center gap-1.5 pb-2">
+        <div className="mt-auto flex items-center gap-1.5">
           {colors.map((color, i) => (
             <div 
               key={i} 

@@ -3,8 +3,55 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 
-export function DressedToMakeImpression() {
+export function DressedToMakeImpression({ initialData }: { initialData?: any }) {
+
+  const [settings, setSettings] = useState({
+    subtitle: "EDITORIAL",
+    title: "DRESSED TO MAKE\nAN IMPRESSION.",
+    desc: "Discover our latest collection of premium clothing."
+  });
+  const [media, setMedia] = useState<any>(initialData || null);
+
+  useEffect(() => {
+    if (initialData) return;
+    async function fetchSettings() {
+      try {
+        const { data: generalData } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "general_settings")
+          .single();
+          
+        if (generalData && generalData.value) {
+          setSettings({
+            subtitle: generalData.value.dressed_subtitle || "EDITORIAL",
+            title: generalData.value.dressed_title || "DRESSED TO MAKE\nAN IMPRESSION.",
+            desc: generalData.value.dressed_desc || "Discover our latest collection of premium clothing."
+          });
+        }
+
+        const { data: mediaData } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "homepage_media")
+          .single();
+          
+        if (mediaData && mediaData.value) {
+          setMedia({
+            portrait: mediaData.value.impression_portrait,
+            landscape: mediaData.value.impression_landscape
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchSettings();
+  }, []);
+
   return (
     <section className="pt-8 pb-10 md:pt-14 md:pb-16 bg-[#FDFBF7]">
       <div className="container mx-auto px-4 lg:px-8">
@@ -21,10 +68,15 @@ export function DressedToMakeImpression() {
               className="space-y-3"
             >
               <span className="font-sans text-[8.5px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase block">
-                THE HANGER SPIRIT
+                {settings.subtitle}
               </span>
               <h2 className="font-serif text-[36px] lg:text-[44px] font-normal leading-[1.1] text-[#2C1810] tracking-wide uppercase" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                DRESSED TO MAKE<br />AN IMPRESSION.
+                {settings.title.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
               </h2>
             </motion.div>
 
@@ -36,7 +88,7 @@ export function DressedToMakeImpression() {
               className="space-y-6"
             >
               <p className="font-sans text-[12px] lg:text-[13px] font-light leading-relaxed text-[#7A6B5D] max-w-xl">
-                At Hanger, we believe fashion is an extension of who you are. Our collections bring together contemporary Indian elegance and timeless craftsmanship, handpicked for the modern woman who values the luxury of detail.
+                {settings.desc}
               </p>
               <div className="pt-2">
                 <Link
@@ -62,12 +114,18 @@ export function DressedToMakeImpression() {
               <div className="absolute inset-2 border border-[#D4AF37]/15 pointer-events-none z-10 group-hover:border-[#D4AF37]/35 transition-colors duration-300" />
               
               <div className="w-full h-full relative overflow-hidden bg-gray-100">
-                <Image
-                  src="/images/jewellery.jpg"
-                  alt="Jewelry Detail"
-                  fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                {media?.portrait?.type === 'video' ? (
+                <video src={media.portrait.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]" />
+              ) : (
+                <Image 
+                  src={media?.portrait?.mediaUrl || "/images/jewellery.jpg"} 
+                  alt="Editorial Look" 
+                  fill 
+                  className="object-cover object-top transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] filter contrast-105 saturate-110" 
+                  sizes="(max-width: 768px) 100vw, 40vw"
+                  priority
                 />
+              )}
                 <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
               </div>
             </motion.div>
@@ -84,27 +142,36 @@ export function DressedToMakeImpression() {
             className="flex flex-col items-center text-center space-y-4"
           >
             <span className="font-sans text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-              THE HANGER SPIRIT
+              {settings.subtitle}
             </span>
             <h2 className="font-serif text-[24px] font-normal leading-tight text-[#2C1810] tracking-wide uppercase" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-              DRESSED TO MAKE<br />AN IMPRESSION.
+              {settings.title.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
             </h2>
 
             {/* Framed Editorial Campaign Image */}
             <div className="relative w-full h-[220px] border-2 border-[#D4AF37]/25 p-1.5 overflow-hidden bg-white shadow-md my-2">
               <div className="absolute inset-1.5 border border-[#D4AF37]/10 pointer-events-none z-10" />
               <div className="w-full h-full relative overflow-hidden bg-gray-100">
-                <Image
-                  src="/images/jewellery.jpg"
-                  alt="Jewelry Detail"
-                  fill
-                  className="object-cover"
-                />
+                {media?.landscape?.type === 'video' ? (
+                  <video src={media.landscape.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-700 ease-out" />
+                ) : (
+                  <Image
+                    src={media?.landscape?.mediaUrl || "/images/jewellery.jpg"}
+                    alt="Jewelry Detail"
+                    fill
+                    className="object-cover transition-transform duration-700 ease-out"
+                  />
+                )}
               </div>
             </div>
 
             <p className="font-sans text-[11px] text-[#7A6B5D] leading-relaxed px-2 pt-2">
-              At Hanger, we believe fashion is an extension of who you are. Our collections bring together contemporary Indian elegance and timeless craftsmanship for the way you live today.
+              {settings.desc}
             </p>
             
             <div className="pt-2">

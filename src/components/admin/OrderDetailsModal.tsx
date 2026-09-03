@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, MapPin, Calendar, Package, DollarSign } from "lucide-react";
+import { User, MapPin, Calendar, Package, IndianRupee } from "lucide-react";
 import { OrderWithDetails } from "@/services/admin/adminOrderService";
 import { useOrder } from "@/hooks/queries";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -58,7 +58,7 @@ export function OrderDetailsModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            Order #{order.id}
+            {order.display_id || `Order #${order.id}`}
           </DialogTitle>
           <DialogDescription>
             View detailed order information, customer details, and items
@@ -87,7 +87,7 @@ export function OrderDetailsModal({
               </div>
 
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-slate-500" />
+                <IndianRupee className="h-4 w-4 text-slate-500" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">
                     Total Amount

@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isMockSessionActive = request.cookies.get('hanger_mock_session_active')?.value === 'true';
+
 
   // Protect routes that require authentication (removed /checkout and /cart to allow guest checkouts)
   const protectedPaths = ['/profile', '/admin', '/dashboard'];
@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith(path)
   );
 
-  if (isProtectedPath && !user && !isMockSessionActive) {
+  if (isProtectedPath && !user) {
     // Store the original URL to redirect back after login
     const returnTo = encodeURIComponent(request.nextUrl.pathname);
     return NextResponse.redirect(

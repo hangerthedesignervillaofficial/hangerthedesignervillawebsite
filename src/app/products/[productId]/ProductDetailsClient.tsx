@@ -19,8 +19,10 @@ import {
   Shield,
   RotateCcw,
   Check,
+  Bell
 } from "lucide-react";
 import { ReviewTab } from "./_components/review-tab";
+import { NotifyMeModal } from "@/components/NotifyMeModal";
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -48,9 +50,10 @@ export default function ProductDetailsClient({
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
   const isFavorited = isInWishlist(product.product_id);
   const [activeTab, setActiveTab] = useState<"description" | "reviews">("description");
 
@@ -160,9 +163,17 @@ export default function ProductDetailsClient({
     : ["/placeholder-product.jpg"];
 
   const handleAddToCart = async () => {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      alert("Please select a size before adding to bag");
+      return;
+    }
+
     try {
       for (let i = 0; i < quantity; i++) {
-        addToCart(product);
+        addToCart({
+          ...product,
+          selected_size: selectedSize || undefined
+        } as any);
       }
       setIsAddedToCart(true);
       setTimeout(() => setIsAddedToCart(false), 2000);
@@ -400,7 +411,7 @@ export default function ProductDetailsClient({
             </div>
 
             {/* Size Selector */}
-            {(product.category_id === 1 || product.category_id === 4) && (
+            {(product.sizes && product.sizes.length > 0) && (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <h3 className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase">
@@ -414,7 +425,7 @@ export default function ProductDetailsClient({
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {(product.category_id === 1 ? ["XS", "S", "M", "L", "XL"] : ["36", "37", "38", "39", "40"]).map((size) => (
+                  {product.sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
@@ -464,24 +475,33 @@ export default function ProductDetailsClient({
 
             {/* Actions Stack */}
             <div className="space-y-3 pt-2">
-              {/* Add to Cart Button */}
-              <button
-                className="w-full h-13 flex items-center justify-center gap-2.5 bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] hover:text-white font-sans text-[10px] font-bold tracking-[0.22em] uppercase border border-[#D4AF37]/35 shadow-md transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                disabled={!product.stock || product.stock === 0}
-                onClick={handleAddToCart}
-              >
-                {isAddedToCart ? (
-                  <>
-                    <Check className="h-4 w-4 stroke-[2]" />
-                    ADDED TO BAG
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="h-4 w-4 stroke-[1.5]" />
-                    ADD TO BAG — ₹{(product.price * quantity).toLocaleString("en-IN")}
-                  </>
-                )}
-              </button>
+              {/* Add to Cart / Notify Me Button */}
+              {(!product.stock || product.stock === 0) ? (
+                <button
+                  onClick={() => setIsNotifyModalOpen(true)}
+                  className="w-full h-13 flex items-center justify-center gap-2.5 bg-[#4A0E17] hover:bg-[#2C1810] text-[#D4AF37] font-sans text-[10px] font-bold tracking-[0.22em] uppercase border border-[#D4AF37]/35 shadow-md transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                >
+                  <Bell className="h-4 w-4 stroke-[1.5]" />
+                  NOTIFY ME WHEN AVAILABLE
+                </button>
+              ) : (
+                <button
+                  className="w-full h-13 flex items-center justify-center gap-2.5 bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] hover:text-white font-sans text-[10px] font-bold tracking-[0.22em] uppercase border border-[#D4AF37]/35 shadow-md transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                  onClick={handleAddToCart}
+                >
+                  {isAddedToCart ? (
+                    <>
+                      <Check className="h-4 w-4 stroke-[2]" />
+                      ADDED TO BAG
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="h-4 w-4 stroke-[1.5]" />
+                      ADD TO BAG — ₹{(product.price * quantity).toLocaleString("en-IN")}
+                    </>
+                  )}
+                </button>
+              )}
 
               {/* Wishlist Button */}
               <button
@@ -666,23 +686,32 @@ export default function ProductDetailsClient({
           </div>
         </div>
 
-        <button
-          onClick={handleAddToCart}
-          disabled={!product.stock || product.stock === 0}
-          className="bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white font-sans text-[9px] font-bold tracking-[0.2em] uppercase px-5 py-3 border border-[#D4AF37]/35 flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
-        >
-          {isAddedToCart ? (
-            <>
-              <Check className="h-3 w-3 stroke-[2]" />
-              Added
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="h-3 w-3 stroke-[1.5]" />
-              Add to Bag
-            </>
-          )}
-        </button>
+        {(!product.stock || product.stock === 0) ? (
+          <button
+            onClick={() => setIsNotifyModalOpen(true)}
+            className="bg-[#4A0E17] text-[#D4AF37] hover:bg-[#2C1810] hover:text-[#D4AF37] font-sans text-[9px] font-bold tracking-[0.2em] uppercase px-5 py-3 border border-[#D4AF37]/35 flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
+          >
+            <Bell className="h-3 w-3 stroke-[1.5]" />
+            Notify Me
+          </button>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            className="bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white font-sans text-[9px] font-bold tracking-[0.2em] uppercase px-5 py-3 border border-[#D4AF37]/35 flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
+          >
+            {isAddedToCart ? (
+              <>
+                <Check className="h-3 w-3 stroke-[2]" />
+                Added
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-3 w-3 stroke-[1.5]" />
+                Add to Bag
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Size Guide Modal */}
@@ -817,6 +846,13 @@ export default function ProductDetailsClient({
           </div>
         )}
       </AnimatePresence>
+      {/* Notify Me Modal */}
+      <NotifyMeModal
+        isOpen={isNotifyModalOpen}
+        onClose={() => setIsNotifyModalOpen(false)}
+        productId={product.product_id}
+        productName={product.title}
+      />
     </div>
   );
 }

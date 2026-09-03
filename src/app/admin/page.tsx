@@ -5,16 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useAuth } from "@/context/AuthContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import {
-  Users,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  AlertTriangle,
-  DollarSign,
-  Activity,
-  Settings,
-} from "lucide-react";
+import { Users, Activity, ShoppingCart, Package, IndianRupee, AlertTriangle, Bell, TrendingUp } from "lucide-react";
 import { adminProductService } from "@/services/admin/adminProductService";
 import { adminOrderService } from "@/services/admin/adminOrderService";
 import { adminUserService } from "@/services/admin/adminUserService";
@@ -32,6 +23,7 @@ interface DashboardStats {
     revenue: number;
     averageValue: number;
     pending: number;
+    recentOrders?: any[];
   };
   users: {
     total: number;
@@ -51,7 +43,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
-      router.push("/dashboard");
+      router.push("/profile");
       return;
     }
 
@@ -83,6 +75,7 @@ export default function AdminDashboard() {
           revenue: orderAnalytics.totalRevenue,
           averageValue: orderAnalytics.averageOrderValue,
           pending: orderAnalytics.ordersByStatus.pending || 0,
+          recentOrders: (orderAnalytics as any).recentOrders || [],
         },
         users: {
           total: userAnalytics.totalUsers,
@@ -116,9 +109,9 @@ export default function AdminDashboard() {
           <p className="font-sans text-xs text-[#7A6B5D] mb-8">
             You don't have admin privileges to access this page.
           </p>
-          <Link href="/dashboard">
+          <Link href="/profile">
             <button className="bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] px-6 py-3 font-sans text-[9px] font-bold tracking-[0.2em] uppercase transition-colors">
-              Go to User Dashboard
+              Go to My Profile
             </button>
           </Link>
         </div>
@@ -168,7 +161,7 @@ export default function AdminDashboard() {
           {/* Revenue */}
           <div className="bg-white border border-[#D4AF37]/20 p-6 flex flex-col hover:border-[#D4AF37]/50 transition-colors relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <DollarSign className="h-24 w-24 text-[#D4AF37]" />
+              <IndianRupee className="h-24 w-24 text-[#D4AF37]" />
             </div>
             <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-[#7A6B5D] mb-4">Total Revenue</span>
             <span className="font-serif text-3xl text-[#2C1810] tracking-wide">{formatCurrency(stats.orders.revenue)}</span>
@@ -239,9 +232,9 @@ export default function AdminDashboard() {
                   </thead>
                   <tbody>
                     {stats.orders.recentOrders?.slice(0, 6).map((order) => (
-                      <tr key={order.order_id} className="border-b border-[#D4AF37]/10 hover:bg-[#FFFCF7]/50 transition-colors">
+                      <tr key={order.id} className="border-b border-[#D4AF37]/10 hover:bg-[#FFFCF7]/50 transition-colors">
                         <td className="px-6 py-4 font-sans text-xs text-[#2C1810]">
-                          #{order.order_id}
+                          #{order.id}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
@@ -306,6 +299,12 @@ export default function AdminDashboard() {
                     <Activity className="h-4 w-4" />
                   </div>
                   <span className="font-sans text-[10px] font-bold tracking-[0.15em] uppercase text-[#2C1810]">Moderate Reviews</span>
+                </Link>
+                <Link href="/admin/notifications" className="flex items-center gap-3 p-3 border border-[#D4AF37]/20 hover:bg-[#FFFCF7] hover:border-[#D4AF37] transition-all group">
+                  <div className="bg-[#FDFBF7] p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-white transition-colors">
+                    <Bell className="h-4 w-4" />
+                  </div>
+                  <span className="font-sans text-[10px] font-bold tracking-[0.15em] uppercase text-[#2C1810]">Restock Requests</span>
                 </Link>
               </div>
             </div>

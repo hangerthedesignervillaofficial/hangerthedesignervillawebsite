@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { ProductType } from '../../types';
 import { isNoRowsError, toUserFacingQueryError } from '@/utils/errorHandling';
-import { getProductsWithCategories } from '@/utils/mockData';
 
 export const productService = {
   async getProducts(): Promise<ProductType[]> {
@@ -11,15 +10,16 @@ export const productService = {
         .select('*, category:categories(*)')
         .order('title');
 
-      if (error || !data || data.length === 0) {
-        console.warn('Falling back to mock products:', error);
-        return getProductsWithCategories() as ProductType[];
+      if (error) {
+        throw toUserFacingQueryError('Products', error);
       }
 
-      return data as ProductType[];
+      return data as ProductType[] || [];
     } catch (error) {
-      console.warn('Falling back to mock products after catch:', error);
-      return getProductsWithCategories() as ProductType[];
+      console.error('Error in getProducts:', error);
+      throw error instanceof Error
+        ? error
+        : toUserFacingQueryError('Products', {});
     }
   },
 
@@ -33,20 +33,14 @@ export const productService = {
 
       if (error) {
         if (isNoRowsError(error)) {
-          const mockMatch = getProductsWithCategories().find(p => p.product_id === id);
-          return (mockMatch as ProductType) || null;
+          return null;
         }
-        console.warn('Falling back to mock product due to error:', error);
-        const mockMatch = getProductsWithCategories().find(p => p.product_id === id);
-        if (mockMatch) return mockMatch as ProductType;
         throw toUserFacingQueryError('Product', error);
       }
 
       return data as ProductType;
     } catch (error) {
-      console.warn('Falling back to mock product after catch:', error);
-      const mockMatch = getProductsWithCategories().find(p => p.product_id === id);
-      if (mockMatch) return mockMatch as ProductType;
+      console.error('Error in getProductById:', error);
       throw error instanceof Error
         ? error
         : toUserFacingQueryError('Product', {});
@@ -61,15 +55,37 @@ export const productService = {
         .eq('category_id', categoryId)
         .order('title');
 
-      if (error || !data || data.length === 0) {
-        console.warn('Falling back to mock products by category:', error);
-        return getProductsWithCategories().filter(p => p.category_id === categoryId) as ProductType[];
+      if (error) {
+        throw toUserFacingQueryError('Products', error);
       }
 
-      return data as ProductType[];
+      return data as ProductType[] || [];
     } catch (error) {
-      console.warn('Falling back to mock products by category after catch:', error);
-      return getProductsWithCategories().filter(p => p.category_id === categoryId) as ProductType[];
+      console.error('Error in getProductsByCategory:', error);
+      throw error instanceof Error
+        ? error
+        : toUserFacingQueryError('Products', {});
+    }
+  },
+
+  async searchProducts(query: string): Promise<ProductType[]> {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*, category:categories(*)')
+        .ilike('title', `%${query}%`)
+        .order('title');
+
+      if (error) {
+        throw toUserFacingQueryError('Products', error);
+      }
+
+      return data as ProductType[] || [];
+    } catch (error) {
+      console.error('Error in searchProducts:', error);
+      throw error instanceof Error
+        ? error
+        : toUserFacingQueryError('Products', {});
     }
   },
 };

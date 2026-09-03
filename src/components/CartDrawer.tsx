@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Minus, Plus, Trash2, Tag, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface CartDrawerProps {
   children: React.ReactElement;
@@ -129,7 +130,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                         </button>
                       </div>
                       <span className="font-sans font-bold text-xs md:text-sm text-[#2C1810]">
-                        ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                        {formatCurrency(item.price * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -150,7 +151,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                 {qualifiesForFreeShipping ? (
                   <span className="text-green-600 font-bold uppercase tracking-wider flex items-center gap-1">Qualified</span>
                 ) : (
-                  <span className="text-[#D4AF37]">₹{(shippingThreshold - subtotal).toLocaleString("en-IN")} away</span>
+                  <span className="text-[#D4AF37]">{formatCurrency(shippingThreshold - subtotal)} away</span>
                 )}
               </div>
               <div className="w-full h-1.5 bg-[#D4AF37]/10 overflow-hidden relative rounded-none">
@@ -197,21 +198,21 @@ export function CartDrawer({ children }: CartDrawerProps) {
             <div className="space-y-2 font-sans text-[11px] md:text-xs text-[#7A6B5D]">
               <div className="flex justify-between">
                 <span className="uppercase tracking-wider">Subtotal</span>
-                <span className="font-semibold text-[#2C1810]">₹{subtotal.toLocaleString("en-IN")}</span>
+                <span className="font-semibold text-[#2C1810]">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="uppercase tracking-wider">Estimated Tax (18%)</span>
-                <span className="font-semibold text-[#2C1810]">₹{tax.toLocaleString("en-IN")}</span>
+                <span className="font-semibold text-[#2C1810]">{formatCurrency(tax)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="uppercase tracking-wider">Delivery</span>
                 <span className="font-semibold text-[#2C1810] uppercase tracking-wider">
-                  {shipping === 0 ? "Complimentary" : `₹${shipping.toLocaleString("en-IN")}`}
+                  {shipping === 0 ? "Complimentary" : formatCurrency(shipping)}
                 </span>
               </div>
               <div className="flex justify-between pt-3 border-t border-[#D4AF37]/15 font-serif font-medium text-base text-[#2C1810]">
                 <span className="uppercase tracking-[0.1em]">Total</span>
-                <span className="font-semibold">₹{total.toLocaleString("en-IN")}</span>
+                <span className="font-semibold">{formatCurrency(total)}</span>
               </div>
             </div>
 

@@ -4,7 +4,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { profileServerService } from "@/services/profile/profileServerService";
 import { orderServerService } from "@/services/order/orderServerService";
-import MockProfilePage from "./MockProfilePage";
+import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
   const supabase = await createServerSupabase();
@@ -14,14 +14,9 @@ export default async function ProfilePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If no real Supabase user, render the client-side mock-aware profile page
-  // (mock users are authenticated via localStorage — server can't see them)
+  // If no real Supabase user, redirect to login
   if (!user) {
-    return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <MockProfilePage />
-      </Suspense>
-    );
+    redirect('/auth');
   }
 
   // Fetch initial data for real Supabase users

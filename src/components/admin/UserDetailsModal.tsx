@@ -17,7 +17,7 @@ import {
   Mail,
   Calendar,
   ShoppingCart,
-  DollarSign,
+  IndianRupee,
   Shield,
   UserCheck,
   Activity,
@@ -157,7 +157,7 @@ export function UserDetailsModal({
 
                 <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    <IndianRupee className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                     <div>
                       <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
                         {formatCurrency(displayUser.total_spent || 0)}

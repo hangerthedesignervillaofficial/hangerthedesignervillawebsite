@@ -47,7 +47,7 @@ const columns = [
       return (
         <span
           className={`rounded-full px-2 py-1 text-xs font-medium ${
-            status === "delivered" || status === "shipped"
+            status === ("delivered" as any) || status === ("shipped" as any)
               ? "bg-green-100 text-green-800"
               : status === "processing"
                 ? "bg-blue-100 text-blue-800"

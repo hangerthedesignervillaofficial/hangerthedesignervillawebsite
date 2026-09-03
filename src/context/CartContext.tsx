@@ -10,6 +10,7 @@ import { ProductType } from '../types';
 import * as cartService from '@/services/cart/cartService';
 import { toast } from 'sonner';
 import { useAuth } from './AuthContext';
+import { supabase } from "@/lib/supabase/client";
 
 // Define CartItem interface extending ProductType with quantity for UI consumption
 export interface CartItem extends ProductType {
@@ -80,8 +81,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }));
 
           setCartItems(formattedItems);
-          setSubtotal(cart.total_price);
-          setTotalItems(cart.total_items);
+          setSubtotal(cart.total_price || 0);
+          setTotalItems(cart.total_items || 0);
         }
       } catch (error) {
         console.error('Error loading cart:', error);
@@ -99,6 +100,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!user && !isLoading) {
       localStorage.setItem("hanger_guest_cart", JSON.stringify(cartItems));
     }
+  }, [cartItems, user, isLoading]);
+
+  
+  // Sync abandoned carts
+  useEffect(() => {
+    if (isLoading || cartItems.length === 0) return;
+    
+    const syncToDatabase = async () => {
+      try {
+        const sessionId = localStorage.getItem("hanger_session_id") || 
+          `sess-${Math.random().toString(36).substring(2, 15)}`;
+          
+        if (!localStorage.getItem("hanger_session_id")) {
+          localStorage.setItem("hanger_session_id", sessionId);
+        }
+
+        const cartData = cartItems.map(item => ({
+          product_id: item.product_id,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          selected_size: (item as any).selected_size || null
+        }));
+
+        await supabase.from('abandoned_carts').upsert({
+          session_id: sessionId,
+          email: user?.email || null,
+          cart_data: cartData,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'session_id' });
+      } catch (err) {
+        console.error("Failed to sync abandoned cart", err);
+      }
+    };
+
+    const timeoutId = setTimeout(syncToDatabase, 3000);
+    return () => clearTimeout(timeoutId);
   }, [cartItems, user, isLoading]);
 
   // Calculate totals when cartItems change

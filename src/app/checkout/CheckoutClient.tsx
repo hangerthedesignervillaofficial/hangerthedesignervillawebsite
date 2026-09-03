@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { orderService } from "@/services/order/orderService";
 import { addressService } from "@/services/address/addressService";
-import { RazorpayModal } from "@/components/RazorpayModal";
 import { motion } from "motion/react";
-import { ShoppingBag, Lock } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
 
 export function CheckoutClient() {
@@ -17,7 +17,6 @@ export function CheckoutClient() {
   const { cartItems, subtotal, clearCart } = useCart();
   const { user } = useAuth();
   
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -40,6 +39,23 @@ export function CheckoutClient() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Sync phone number to abandoned cart
+  useEffect(() => {
+    if (!formData.phone) return;
+    
+    const sessionId = localStorage.getItem("hanger_session_id");
+    if (!sessionId) return;
+    
+    const timeoutId = setTimeout(() => {
+      supabase.from('abandoned_carts')
+        .update({ phone: formData.phone })
+        .eq('session_id', sessionId)
+        .then(() => {});
+    }, 1500); // 1.5s debounce
+    
+    return () => clearTimeout(timeoutId);
+  }, [formData.phone]);
+
   const validateForm = () => {
     if (!formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.postalCode) {
       toast.error("Please fill in all shipping details");
@@ -61,12 +77,11 @@ export function CheckoutClient() {
       return;
     }
     
-    setIsModalOpen(true);
+    handlePaymentSuccess(`cod_payment_${Date.now()}`);
   };
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
     setIsProcessing(true);
-    setIsModalOpen(false);
 
     try {
       // Save the shipping address to Supabase to obtain a valid DB ID
@@ -100,6 +115,20 @@ export function CheckoutClient() {
 
       await orderService.updateOrderStatus(order.id.toString(), "processing");
       await clearCart();
+      
+      // If guest user, store the order ID in localStorage to allow them to track it later
+      if (!user) {
+        try {
+          const storedGuestOrders = localStorage.getItem("hanger_guest_orders");
+          const guestOrders = storedGuestOrders ? JSON.parse(storedGuestOrders) : [];
+          if (!guestOrders.includes(order.id)) {
+            guestOrders.push(order.id);
+            localStorage.setItem("hanger_guest_orders", JSON.stringify(guestOrders));
+          }
+        } catch (e) {
+          console.error("Failed to save guest order to localStorage", e);
+        }
+      }
       
       toast.success("Order placed successfully!");
       router.push(`/checkout/success?checkout_id=${order.id}`);
@@ -424,25 +453,18 @@ export function CheckoutClient() {
                   disabled={isProcessing}
                   className="w-full mt-2 py-3.5 flex items-center justify-center gap-2 bg-gradient-to-r from-[#2C1810] to-[#4A0E17] text-[#D4AF37] font-sans text-[10px] font-bold tracking-[0.2em] uppercase cursor-pointer transition-all hover:from-[#4A0E17] hover:to-[#6B1A24] hover:shadow-lg hover:shadow-[#D4AF37]/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Lock className="h-3 w-3 stroke-[2]" />
-                  {isProcessing ? "PROCESSING..." : "PAY WITH RAZORPAY"}
+                  <ShoppingBag className="h-3 w-3 stroke-[2]" />
+                  {isProcessing ? "PROCESSING..." : "PLACE ORDER (CASH ON DELIVERY)"}
                 </button>
 
                 <p className="text-center font-sans text-[8px] text-[#7A6B5D]/60 tracking-wide">
-                  Your payment is secured with SSL encryption
+                  Pay with cash when your order arrives
                 </p>
               </div>
             </motion.div>
           </div>
         </div>
       </div>
-
-      <RazorpayModal 
-        amount={total} 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={handlePaymentSuccess} 
-      />
     </div>
   );
 }

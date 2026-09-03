@@ -7,6 +7,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   useEffect(() => {
     if (!loading && !isAdmin) {
-      router.push("/dashboard");
+      router.push("/profile");
     }
   }, [isAdmin, loading, router]);
 
@@ -43,8 +44,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <p className="mb-4">
               You don&apos;t have admin privileges to access this page.
             </p>
-            <Link href="/dashboard">
-              <Button>Go to User Dashboard</Button>
+            <Link href="/profile">
+              <Button>Go to My Profile</Button>
             </Link>
           </CardContent>
         </Card>
@@ -52,5 +53,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen bg-[#FDFBF7] flex">
+      <AdminSidebar />
+      <div className="flex-1 lg:ml-64 bg-[#FDFBF7] pt-16 lg:pt-0">
+        {children}
+      </div>
+    </div>
+  );
 }

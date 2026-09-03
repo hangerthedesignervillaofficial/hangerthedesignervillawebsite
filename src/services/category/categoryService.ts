@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { CategoryType } from '../../types';
 import { isNoRowsError, toUserFacingQueryError } from '@/utils/errorHandling';
-import { mockCategories } from '@/utils/mockData';
 
 export const categoryService = {
   async getCategories(): Promise<CategoryType[]> {
@@ -11,15 +10,16 @@ export const categoryService = {
         .select('*')
         .order('name');
 
-      if (error || !data || data.length === 0) {
-        console.warn('Falling back to mock categories:', error);
-        return mockCategories as CategoryType[];
+      if (error) {
+        throw toUserFacingQueryError('Categories', error);
       }
 
-      return data as CategoryType[];
+      return data as CategoryType[] || [];
     } catch (error) {
-      console.warn('Falling back to mock categories after catch:', error);
-      return mockCategories as CategoryType[];
+      console.error('Error in getCategories:', error);
+      throw error instanceof Error
+        ? error
+        : toUserFacingQueryError('Categories', {});
     }
   },
 
@@ -33,20 +33,14 @@ export const categoryService = {
 
       if (error) {
         if (isNoRowsError(error)) {
-          const mockMatch = mockCategories.find(c => c.id === id);
-          return (mockMatch as CategoryType) || null;
+          return null;
         }
-        console.warn('Falling back to mock category due to error:', error);
-        const mockMatch = mockCategories.find(c => c.id === id);
-        if (mockMatch) return mockMatch as CategoryType;
         throw toUserFacingQueryError('Category', error);
       }
 
       return data as CategoryType;
     } catch (error) {
-      console.warn('Falling back to mock category after catch:', error);
-      const mockMatch = mockCategories.find(c => c.id === id);
-      if (mockMatch) return mockMatch as CategoryType;
+      console.error('Error in getCategoryById:', error);
       throw error instanceof Error
         ? error
         : toUserFacingQueryError('Category', {});

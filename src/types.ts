@@ -4,10 +4,16 @@ export interface ProductType {
   description: string;
   price: number;
   image?: string;
+  video_url?: string;
+  gallery?: string[];
   stock: number;
   sku?: string;
   category_id?: number;
   tags?: string[];
+  is_bestseller?: boolean;
+  is_new_arrival?: boolean;
+  sizes?: string[];
+  display_tags?: string[];
   created_at?: string;
   updated_at?: string;
 }
@@ -18,6 +24,7 @@ export interface CartItemType {
   product_id: string;
   quantity: number;
   price: number;
+  selected_size?: string;
   created_at: string;
   updated_at: string;
   product?: ProductType;
@@ -41,6 +48,7 @@ export interface OrderItemType {
   order_id: number;
   quantity: number;
   price: number;
+  selected_size?: string;
   product_id: string;
   product?: {
     product_id: string;
@@ -52,18 +60,24 @@ export interface OrderItemType {
 export type OrderStatus =
   | "pending"
   | "processing"
-  | "shipped"
+  | "packed"
+  | "dispatched"
+  | "out_for_delivery"
   | "delivered"
   | "cancelled";
 
 export interface OrderType {
   id: number;
+  display_id?: string;
   user_id: string;
   status: OrderStatus;
   total: number;
   shipping_address_id: number;
   payment_method?: string;
   payment_id?: string;
+  cancellation_reason?: string;
+  cancellation_status?: 'none' | 'requested' | 'approved' | 'rejected';
+  expected_delivery_date?: string;
   created_at?: string;
   updated_at?: string;
   order_items?: OrderItemType[];
@@ -85,6 +99,7 @@ export interface ProfileType {
   username?: string;
   avatar_url?: string;
   email?: string;
+  phone?: string;
   role: "admin" | "user";
   created_at: string;
   updated_at?: string;

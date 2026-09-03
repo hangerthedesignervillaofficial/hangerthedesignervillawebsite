@@ -41,6 +41,7 @@ export default function ProfileClientPage({
   const [username, setUsername] = useState(initialProfile?.username || "");
   const [avatarUrl, setAvatarUrl] = useState(initialProfile?.avatar_url || "");
   const [email, setEmail] = useState(initialProfile?.email || user.email || "");
+  const [phone, setPhone] = useState(initialProfile?.phone || "");
   const [orders, setOrders] = useState<OrderType[]>(initialOrders);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -48,6 +49,7 @@ export default function ProfileClientPage({
   const handleSaveProfile = async (
     usernameInput: string,
     emailInput: string,
+    phoneInput: string,
     avatarUrlInput: string,
   ) => {
     try {
@@ -58,6 +60,7 @@ export default function ProfileClientPage({
         .update({
           username: usernameInput,
           email: emailInput,
+          phone: phoneInput,
           avatar_url: avatarUrlInput,
         })
         .eq("profile_id", user.id)
@@ -68,6 +71,7 @@ export default function ProfileClientPage({
 
       setUsername(updatedProfile.username || "");
       setEmail(updatedProfile.email || "");
+      setPhone(updatedProfile.phone || "");
       setAvatarUrl(updatedProfile.avatar_url || "");
 
       toast.success("Profile updated successfully");
@@ -104,9 +108,7 @@ export default function ProfileClientPage({
 
   // Remove order from state immediately after deletion (optimistic UI)
   //the UI is updated immediately without waiting for the server to confirm the deletion
-  const handleOrderDeleted = (deletedOrderId: number) => {
-    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
-  };
+
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -142,6 +144,7 @@ export default function ProfileClientPage({
           onProfileUpdate: (profile: ProfileType) => {
             setUsername(profile.username || "");
             setEmail(profile.email || "");
+            setPhone(profile.phone || "");
             setAvatarUrl(profile.avatar_url || "");
           },
         };
@@ -204,6 +207,8 @@ export default function ProfileClientPage({
           setAvatarUrl={setAvatarUrl}
           email={email}
           setEmail={setEmail}
+          phone={phone}
+          setPhone={setPhone}
           createdAt={initialProfile?.created_at || null}
           isSaving={isSaving}
           onSaveProfile={handleSaveProfile}
@@ -236,7 +241,6 @@ export default function ProfileClientPage({
                 <OrderCard
                   key={order.id}
                   order={order}
-                  onDelete={handleOrderDeleted}
                 />
               ))}
             </div>

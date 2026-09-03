@@ -3,18 +3,41 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export function CategoryGrid() {
-  const categories = [
-    { title: "CLOTHING", image: "/images/clothing.jpg", href: "/clothing" },
-    { title: "FOOTWEAR", image: "/images/footwear.jpg", href: "/footwear" },
-    { title: "JEWELLERY", image: "/images/jewellery.jpg", href: "/jewellery" },
-    { title: "ACCESSORIES", image: "/images/accessories.jpg", href: "/accessories" },
-  ];
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
+
+export function CategoryGrid({ initialCategories }: { initialCategories?: any[] }) {
+  const [categories, setCategories] = useState<any[]>(initialCategories || [
+    { title: "CLOTHING", mediaUrl: "/images/clothing.jpg", link: "/clothing", type: "image" },
+    { title: "FOOTWEAR", mediaUrl: "/images/footwear.jpg", link: "/footwear", type: "image" },
+    { title: "JEWELLERY", mediaUrl: "/images/jewellery.jpg", link: "/jewellery", type: "image" },
+    { title: "ACCESSORIES", mediaUrl: "/images/accessories.jpg", link: "/accessories", type: "image" },
+  ]);
+
+  useEffect(() => {
+    if (initialCategories) return;
+    async function fetchSettings() {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "homepage_media")
+          .single();
+          
+        if (data && data.value?.category_grid) {
+          setCategories(data.value.category_grid);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchSettings();
+  }, []);
 
   return (
     <section className="pt-10 pb-6 md:pt-14 md:pb-8 bg-[#FDFBF7]">
       <div className="container mx-auto px-0 md:px-4 lg:px-8">
-        <div className="grid grid-cols-2 gap-[3px] md:gap-6">
+        <div className="grid grid-cols-2 gap-[4px] sm:gap-2 md:gap-6">
           {categories.map((category, index) => (
             <motion.div
               key={category.title}
@@ -25,14 +48,18 @@ export function CategoryGrid() {
               className="col-span-1"
             >
               <Link
-                href={category.href}
+                href={category.link}
                 className="group relative block w-full aspect-square md:aspect-[3/2] overflow-hidden bg-gray-100"
               >
-                {/* Background Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                  style={{ backgroundImage: `url(${category.image})` }}
-                />
+                {/* Background Media */}
+                {category.type === 'video' ? (
+                  <video src={category.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                ) : (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style={{ backgroundImage: `url(${category.mediaUrl})` }}
+                  />
+                )}
                 
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -40,14 +67,16 @@ export function CategoryGrid() {
                 {/* Inner gold frame overlay on hover */}
                 <div className="absolute inset-4 border border-[#D4AF37]/30 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 pointer-events-none" />
 
-                {/* Text Overlay - Top Left */}
-                <div className="absolute top-6 left-6 md:top-8 md:left-8 z-10">
-                  <h3 className="font-serif text-base sm:text-xl md:text-2xl lg:text-3xl font-normal tracking-[0.15em] text-white uppercase mb-1" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                {/* Text Overlay - Centered */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-4">
+                  <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal tracking-[0.25em] text-white uppercase mb-2 md:mb-3" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                     {category.title}
                   </h3>
-                  <span className="font-sans text-[8px] sm:text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-[#D4AF37] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    EXPLORE <span className="text-xs sm:text-sm">→</span>
-                  </span>
+                  <div className="overflow-hidden">
+                    <span className="block font-sans text-[9px] sm:text-[10px] md:text-[11px] font-bold tracking-[0.25em] text-white/90 uppercase border-b border-white/40 pb-1 group-hover:text-[#D4AF37] group-hover:border-[#D4AF37]/60 transition-colors duration-500 transform translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100">
+                      DISCOVER NOW
+                    </span>
+                  </div>
                 </div>
               </Link>
             </motion.div>

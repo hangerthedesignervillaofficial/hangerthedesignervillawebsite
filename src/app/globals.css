@@ -52,14 +52,14 @@
   --chart-4: #6B1A24;
   --chart-5: #C9A96E;
 
-  /* Sidebar */
-  --sidebar: #FFFCF7E6;
-  --sidebar-foreground: #2C1810;
-  --sidebar-primary: #4A0E17;
-  --sidebar-primary-foreground: #FFF8F0;
-  --sidebar-accent: #F0E6D8;
-  --sidebar-accent-foreground: #4A0E17;
-  --sidebar-border: #D4AF3733;
+  /* Sidebar (Always Dark for Premium Contrast) */
+  --sidebar: #1A0A0EE6;
+  --sidebar-foreground: #FDFBF7;
+  --sidebar-primary: #D4AF37;
+  --sidebar-primary-foreground: #1A0A0E;
+  --sidebar-accent: #2E1519;
+  --sidebar-accent-foreground: #D4AF37;
+  --sidebar-border: #D4AF3720;
   --sidebar-ring: #D4AF37;
 }
 
@@ -197,6 +197,12 @@
     50% { box-shadow: 0 0 0 8px rgba(212, 175, 55, 0); }
   }
 
+  @keyframes shine {
+    0% { left: -100%; opacity: 0; }
+    20% { opacity: 0.8; }
+    100% { left: 200%; opacity: 0; }
+  }
+
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
@@ -256,6 +262,24 @@
 
   .animate-gold-border {
     animation: gold-border-pulse 3s ease-in-out infinite;
+  }
+
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.4), transparent);
+    transform: skewX(-20deg);
+  }
+  .btn-shine:hover::after {
+    animation: shine 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
   }
 
   /* Stagger delays */
@@ -355,6 +379,30 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* scale-108 for product image hover */
+  .scale-108 {
+    --tw-scale-x: 1.08;
+    --tw-scale-y: 1.08;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+
+  /* Mega menu slide animation */
+  @keyframes mega-slide-down {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-mega-slide {
+    animation: mega-slide-down 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  /* Bottom nav safe area fix */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .bottom-nav-safe {
+      padding-bottom: max(env(safe-area-inset-bottom), 8px);
+    }
+  }
+
 }
 
 @theme inline {
@@ -415,6 +463,7 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 
   /* Luxury Gold Selection Highlight */

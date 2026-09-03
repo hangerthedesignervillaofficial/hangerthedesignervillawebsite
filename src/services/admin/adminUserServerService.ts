@@ -12,7 +12,8 @@ export interface UserFilters {
 export interface SanitizedUserWithStats {
   profile_id: string;
   username: string;
-  email: string; // Sanitized email (masked)
+  email: string;
+  phone: string;
   role: string;
   created_at: string;
   has_orders: boolean;
@@ -93,15 +94,14 @@ export const adminUserServerService = {
             (order) => new Date(order.created_at) > thirtyDaysAgo,
           );
 
-          // Sanitize sensitive data
+          // Return full details for admin
           return {
             profile_id: user.profile_id,
             username: user.username,
-            // Mask email for privacy
-            email: maskEmail(user.email),
+            email: user.email, // Admin should see full email
+            phone: user.phone || 'Not provided',
             role: user.role,
             created_at: user.created_at,
-            // Use ranges instead of exact values
             has_orders: totalOrders > 0,
             order_count_range: getOrderCountRange(totalOrders),
             spending_tier: getSpendingTier(totalSpent),
@@ -176,13 +176,6 @@ export const adminUserServerService = {
 };
 
 // Helper functions to sanitize sensitive data
-function maskEmail(email: string): string {
-  const [username, domain] = email.split("@");
-  if (username.length <= 3) {
-    return `${username.substring(0, 1)}***@${domain}`;
-  }
-  return `${username.substring(0, 3)}***@${domain}`;
-}
 
 function getOrderCountRange(count: number): string {
   if (count === 0) return "No orders";

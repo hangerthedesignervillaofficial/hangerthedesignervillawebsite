@@ -65,12 +65,18 @@ export const orderService = {
       // Idempotency: if a paymentId exists, try to find an existing order first
       let existingOrder: OrderType | null = null;
       if (paymentIntentId) {
-        const { data: foundOrders, error: findError } = await supabase
+        let query = supabase
           .from("orders")
           .select("*")
-          .eq("payment_id", paymentIntentId)
-          .eq("user_id", userId)
-          .limit(1);
+          .eq("payment_id", paymentIntentId);
+          
+        if (userId) {
+          query = query.eq("user_id", userId);
+        } else {
+          query = query.is("user_id", null);
+        }
+        
+        const { data: foundOrders, error: findError } = await query.limit(1);
         if (
           !findError &&
           Array.isArray(foundOrders) &&
@@ -105,12 +111,18 @@ export const orderService = {
         // Handle duplicate key (unique constraint) gracefully by fetching existing
         const maybeCode = orderError?.code;
         if (maybeCode === "23505" && paymentIntentId) {
-          const { data: foundOrders } = await supabase
+          let duplicateQuery = supabase
             .from("orders")
             .select("*")
-            .eq("payment_id", paymentIntentId)
-            .eq("user_id", userId)
-            .limit(1);
+            .eq("payment_id", paymentIntentId);
+            
+          if (userId) {
+            duplicateQuery = duplicateQuery.eq("user_id", userId);
+          } else {
+            duplicateQuery = duplicateQuery.is("user_id", null);
+          }
+          
+          const { data: foundOrders } = await duplicateQuery.limit(1);
           if (Array.isArray(foundOrders) && foundOrders.length > 0) {
             console.warn(
               "Duplicate payment_id detected. Returning existing order",

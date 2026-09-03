@@ -4,19 +4,15 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Navbar } from "@/components/Navbar";
-import Sidebar  from "@/components/Sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppShell } from "@/components/AppShell";
 import { TanStackQueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "sonner";
-import { MainLayout } from "@/components/MainLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DemoBanner } from "@/components/DemoBanner";
-import { Footer } from "@/components/Footer";
 import { Inter } from "next/font/google";
 import { Playfair_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { PhoneNumberModal } from "@/components/PhoneNumberModal";
+import { PresenceTracker } from "@/components/PresenceTracker";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-heading', weight: ['400', '500', '600', '700', '800', '900'] });
@@ -36,7 +32,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
       </head>
-      <body className="bg-background min-h-screen">
+      <body className="bg-background min-h-screen" suppressHydrationWarning>
         <ErrorBoundary>
           <TanStackQueryProvider>
             <AuthProvider>
@@ -48,16 +44,9 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                   >
-                    <SidebarProvider defaultOpen={false}>
-                      <Sidebar />
-                      <SidebarInset>
-                        <DemoBanner />
-                        <Navbar />
-                        <MainLayout>{children}</MainLayout>
-                        <Footer />
-                      </SidebarInset>
-                    </SidebarProvider>
-                    <MobileBottomNav />
+                    <PresenceTracker />
+                    <AppShell>{children}</AppShell>
+                    <PhoneNumberModal />
                   </ThemeProvider>
                 </WishlistProvider>
               </CartProvider>

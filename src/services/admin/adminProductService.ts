@@ -6,10 +6,16 @@ export interface CreateProductData {
   description: string;
   price: number;
   image?: string;
+  video_url?: string;
+  gallery?: string[];
   stock: number;
   sku?: string;
   category_id?: number;
   tags?: string[];
+  is_bestseller?: boolean;
+  is_new_arrival?: boolean;
+  sizes?: string[];
+  display_tags?: string[];
 }
 
 export interface UpdateProductData extends Partial<CreateProductData> {

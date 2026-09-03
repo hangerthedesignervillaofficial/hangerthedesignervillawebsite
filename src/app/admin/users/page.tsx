@@ -3,10 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
-  DollarSign,
+  IndianRupee,
   ShoppingCart,
   User,
   Mail,
+  Phone,
   Shield,
   UserCheck,
 } from "lucide-react";
@@ -115,6 +116,10 @@ export default async function AdminUsersPage({
                           <Mail className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">{user.email}</span>
                         </span>
+                        <span className="flex items-center gap-1 truncate">
+                          <Phone className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{user.phone}</span>
+                        </span>
                         <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
@@ -126,7 +131,7 @@ export default async function AdminUsersPage({
                             {user.order_count_range}
                           </span>
                           <span className="flex items-center gap-1">
-                            <DollarSign className="h-3 w-3" />
+                            <IndianRupee className="h-3 w-3" />
                             {user.spending_tier}
                           </span>
                         </div>

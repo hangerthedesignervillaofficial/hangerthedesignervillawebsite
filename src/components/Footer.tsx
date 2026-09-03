@@ -1,18 +1,60 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useNavigationMenu } from "@/hooks/useNavigationMenu";
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { data: menuData = [] } = useNavigationMenu();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email, status: 'subscribed' }]);
+        
+      if (error) {
+        if (error.code === '23505') {
+          toast.info("You are already subscribed to our newsletter!");
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success("Thank you for subscribing to Hanger!");
+        setEmail("");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to subscribe. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <footer className="bg-[#FDFBF7] pt-16 pb-8 border-t border-gray-200">
+    <footer className="bg-[#FDFBF7] pt-20 md:pt-28 pb-8 border-t border-[#D4AF37]/10 relative overflow-hidden">
+      {/* Subtle top background gradient */}
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#FFFDFC] to-transparent pointer-events-none" />
       <div className="container mx-auto px-4 lg:px-8">
         
         {/* Newsletter Section - Redesigned into a Compact Luxury Invite Card */}
-        <div className="max-w-3xl mx-auto text-center mb-10 md:mb-20 p-5 md:p-14 bg-gradient-to-br from-[#FFFDFC] to-[#FDFBF7] border-2 border-[#D4AF37]/25 shadow-lg shadow-[#D4AF37]/5 relative overflow-hidden">
+        <div className="max-w-3xl mx-auto text-center mb-10 md:mb-20 p-5 md:p-14 bg-gradient-to-br from-[#FFFDFC] to-[#FDFBF7] border border-[#D4AF37]/30 shadow-[0_10px_40px_rgba(212,175,55,0.05)] relative overflow-hidden">
           {/* Decorative inner gold border */}
           <div className="absolute inset-2 md:inset-3 border border-[#D4AF37]/10 pointer-events-none" />
           
-          <h2 className="font-serif text-base sm:text-2xl md:text-3xl tracking-[0.2em] text-[#2C1810] uppercase mb-3 md:mb-4 relative z-10" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+          <h2 className="font-serif text-base sm:text-2xl md:text-3xl tracking-[0.2em] md:tracking-[0.25em] text-[#2C1810] uppercase mb-3 md:mb-4 relative z-10" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
             ENTER THE HANGER WORLD
           </h2>
           
@@ -22,16 +64,23 @@ export function Footer() {
           <p className="font-sans text-[10px] md:text-xs tracking-widest text-[#7A6B5D] font-light max-w-md mx-auto mb-6 md:mb-10 leading-relaxed relative z-10">
             Be the first to discover new collections, private edits and special releases.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 max-w-lg mx-auto relative z-10 w-full px-2">
+          <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-6 max-w-lg mx-auto relative z-10 w-full px-1">
             <input 
               type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="ENTER YOUR EMAIL ADDRESS" 
-              className="w-full bg-transparent border-b border-[#D4AF37]/40 focus:border-[#D4AF37] outline-none h-12 md:h-11 font-sans text-[11px] md:text-[10px] tracking-widest px-1 text-[#2C1810] placeholder:text-[#7A6B5D]/50 transition-all duration-350 text-center sm:text-left"
+              className="w-full bg-transparent border-b border-[#D4AF37]/40 focus:border-[#D4AF37] outline-none h-10 md:h-11 font-sans text-[11px] md:text-[10px] tracking-[0.2em] px-0 text-[#2C1810] placeholder:text-[#7A6B5D]/60 transition-all duration-350 text-left"
+              disabled={loading}
             />
-            <button className="w-full sm:w-auto h-12 md:h-11 px-8 bg-gradient-to-r from-[#2C1810] to-[#4A0E17] text-[#D4AF37] border border-[#D4AF37]/25 font-sans text-[10px] md:text-[9px] font-bold tracking-[0.2em] uppercase transition-all duration-300 active:scale-95 shadow-md flex-shrink-0 cursor-pointer mt-2 sm:mt-0">
-              SUBSCRIBE
+            <button 
+              type="submit"
+              disabled={loading}
+              className="w-full md:w-auto h-11 md:h-11 px-8 bg-gradient-to-r from-[#2C1810] to-[#4A0E17] text-[#D4AF37] border border-[#D4AF37]/25 font-sans text-[10px] md:text-[9px] font-bold tracking-[0.25em] uppercase transition-all duration-300 active:scale-95 shadow-md flex-shrink-0 cursor-pointer disabled:opacity-70 flex items-center justify-center"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "SUBSCRIBE"}
             </button>
-          </div>
+          </form>
         </div>
 
         {/* Divider */}
@@ -40,23 +89,23 @@ export function Footer() {
         {/* Links Section */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-4 mb-12 border-t border-[#D4AF37]/10 pt-10">
           {/* Brand Column */}
-          <div className="col-span-12 md:col-span-3 flex flex-col items-center md:items-start text-center md:text-left">
-            <Link href="/" className="flex items-center gap-3 mb-8 md:mb-6 group">
+          <div className="col-span-12 md:col-span-3 flex flex-col items-start text-left">
+            <Link href="/" className="flex items-center gap-4 mb-8 md:mb-6 group">
               <img 
                 src="/images/logo-icon.png" 
                 alt="HANGER" 
-                className="h-14 md:h-11 w-auto object-contain dark:invert group-active:scale-95 transition-transform duration-350"
+                className="h-12 md:h-11 w-auto object-contain dark:invert group-active:scale-95 transition-transform duration-350"
               />
               <div className="flex flex-col items-start text-left">
-                <h1 className="font-serif text-[22px] md:text-lg font-bold tracking-[0.22em] text-[#2C1810] dark:text-[#FFF8F0] uppercase leading-none" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                <h1 className="font-serif text-[20px] md:text-lg font-bold tracking-[0.25em] text-[#2C1810] dark:text-[#FFF8F0] uppercase leading-none" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                   HANGER
                 </h1>
-                <span className="font-sans text-[7.5px] md:text-[6px] uppercase tracking-[0.3em] text-[#D4AF37] font-bold mt-[3px]">
+                <span className="font-sans text-[7px] md:text-[6px] uppercase tracking-[0.35em] text-[#D4AF37] font-bold mt-1 md:mt-[3px]">
                   THE DESIGNER VILLA
                 </span>
               </div>
             </Link>
-            <div className="flex gap-4 md:gap-3.5 justify-center md:justify-start w-full">
+            <div className="flex gap-4 md:gap-3.5 justify-start w-full">
               <button
                 aria-label="Facebook"
                 className="w-8 h-8 rounded-full border border-[#D4AF37]/25 flex items-center justify-center text-[#2C1810] hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all duration-300 hover:scale-110 cursor-pointer bg-transparent"
@@ -99,27 +148,29 @@ export function Footer() {
           </div>
 
           {/* Link Columns */}
-          <div className="col-span-12 md:col-span-6 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center md:text-left">
+          <div className="col-span-12 md:col-span-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6 text-left border-t border-[#D4AF37]/10 md:border-0 pt-10 md:pt-0 mt-2 md:mt-0">
             <div>
-              <h4 className="font-sans text-[9px] font-bold tracking-[0.15em] text-[#2C1810] uppercase mb-4">Shop</h4>
-              <ul className="space-y-2">
-                {[
-                  { label: 'Clothing', href: '/clothing' },
-                  { label: 'Footwear', href: '/footwear' },
-                  { label: 'Jewellery', href: '/jewellery' },
-                  { label: 'Accessories', href: '/accessories' },
-                  { label: 'New Arrivals', href: '/products?tag=new_arrival' },
-                  { label: 'Bestsellers', href: '/products?tag=bestseller' }
-                ].map((item) => (
-                  <li key={item.label}>
-                    <Link href={item.href} className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors">{item.label}</Link>
+              <h4 className="font-sans text-[11px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-5 md:mb-4 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-4 after:h-px after:bg-[#D4AF37]/50">Shop</h4>
+              <ul className="space-y-3 md:space-y-2">
+                {menuData.map((item) => (
+                  <li key={item.category.id}>
+                    <Link 
+                      href={
+                        item.category.id === -1 ? "/new-arrivals" :
+                        item.category.id === -2 ? "/bestsellers" :
+                        `/category/${item.category.id}`
+                      } 
+                      className="font-sans text-[11.5px] md:text-[9.5px] text-[#7A6B5D] hover:text-[#D4AF37] transition-all tracking-wide uppercase"
+                    >
+                      {item.category.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="font-sans text-[9px] font-bold tracking-[0.15em] text-[#2C1810] uppercase mb-4">Help</h4>
-              <ul className="space-y-2">
+              <h4 className="font-sans text-[11px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-5 md:mb-4 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-4 after:h-px after:bg-[#D4AF37]/50">Help</h4>
+              <ul className="space-y-3 md:space-y-2">
                 {[
                   { label: 'Contact Us', href: '/help/contact' },
                   { label: 'Shipping', href: '/help/shipping' },
@@ -128,14 +179,14 @@ export function Footer() {
                   { label: 'FAQs', href: '/help/faq' }
                 ].map((item) => (
                   <li key={item.label}>
-                    <Link href={item.href} className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors">{item.label}</Link>
+                    <Link href={item.href} className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-500">{item.label}</Link>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="font-sans text-[9px] font-bold tracking-[0.15em] text-[#2C1810] uppercase mb-4">About</h4>
-              <ul className="space-y-2">
+              <h4 className="font-sans text-[11px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-5 md:mb-4 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-4 after:h-px after:bg-[#D4AF37]/50">About</h4>
+              <ul className="space-y-3 md:space-y-2">
                 {[
                   { label: 'Our Story', href: '/about' },
                   { label: 'Careers', href: '/about' },
@@ -145,7 +196,7 @@ export function Footer() {
                     <Link 
                       href={item.href} 
                       target={item.label === 'Instagram' ? '_blank' : undefined}
-                      className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors"
+                      className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-500"
                     >
                       {item.label === 'Instagram' ? '@hanger_thedesignervilla' : item.label}
                     </Link>
@@ -154,15 +205,15 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <h4 className="font-sans text-[9px] font-bold tracking-[0.15em] text-[#2C1810] uppercase mb-4">Policies</h4>
-              <ul className="space-y-2">
+              <h4 className="font-sans text-[11px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-5 md:mb-4 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-4 after:h-px after:bg-[#D4AF37]/50">Policies</h4>
+              <ul className="space-y-3 md:space-y-2">
                 {[
                   { label: 'Privacy Policy', href: '/policies/privacy' },
                   { label: 'Terms', href: '/policies/privacy' },
                   { label: 'Refund Policy', href: '/help/returns' }
                 ].map((item) => (
                   <li key={item.label}>
-                    <Link href={item.href} className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors">{item.label}</Link>
+                    <Link href={item.href} className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-500">{item.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -170,9 +221,9 @@ export function Footer() {
           </div>
 
           {/* Payment Methods */}
-          <div className="col-span-12 md:col-span-3 text-center md:text-right flex flex-col items-center md:items-end gap-3 mt-4 md:mt-0">
-            <h4 className="font-sans text-[9px] font-bold tracking-[0.1em] text-[#2C1810] uppercase mb-1">We Accept</h4>
-            <div className="flex items-center justify-center md:justify-end gap-2 text-[6px] font-sans font-bold tracking-wider text-gray-400">
+          <div className="col-span-12 md:col-span-3 text-left md:text-right flex flex-col items-start md:items-end gap-3 mt-8 md:mt-0 pt-8 md:pt-0 border-t border-[#D4AF37]/10 md:border-0">
+            <h4 className="font-sans text-[10px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-1 md:mb-2">We Accept</h4>
+            <div className="flex items-center justify-start md:justify-end gap-2 text-[6px] md:text-[6px] font-sans font-bold tracking-wider text-gray-400">
               <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#1A1F71]">VISA</div>
               <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#EB001B]">MC</div>
               <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#0070CD]">AMEX</div>

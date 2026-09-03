@@ -28,7 +28,7 @@ export function useAdmin(): AdminData {
         return;
       }
 
-      if (user.email === 'admin@gmail.com' || user.id === 'mock-admin-id-1111111111111111') {
+      if (user.email === 'hangerthedesignervillaofficial@gmail.com' || user.id === 'mock-admin-id-1111111111111111') {
         setIsAdmin(true);
         setLoading(false);
         return;
@@ -38,10 +38,10 @@ export function useAdmin(): AdminData {
         setLoading(true);
         setError(null);
 
-        // Check if user exists in admin_users view
+        // Check if user has admin role in profiles table
         const { data, error: queryError } = await supabase
-          .from("admin_users")
-          .select("profile_id")
+          .from("profiles")
+          .select("role")
           .eq("profile_id", user.id)
           .single();
 
@@ -55,8 +55,8 @@ export function useAdmin(): AdminData {
             setIsAdmin(false);
           }
         } else {
-          // User found in admin_users view
-          setIsAdmin(!!data);
+          // User found in profiles table, check role
+          setIsAdmin(data?.role === 'admin');
         }
       } catch (err) {
         console.error("Unexpected error checking admin status:", err);

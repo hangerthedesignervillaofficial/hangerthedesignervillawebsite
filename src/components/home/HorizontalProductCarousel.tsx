@@ -52,11 +52,11 @@ export function HorizontalProductCarousel({ title, subtitle, products }: Horizon
           className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#D4AF37]/15 pb-4 mb-8 md:mb-10"
         >
           <div className="flex flex-col gap-1.5">
-            <h2 className="font-serif text-2xl md:text-3xl font-light tracking-[0.15em] text-[#2C1810] uppercase">
+            <h2 className="font-serif text-2xl md:text-[32px] font-normal tracking-[0.2em] text-[#2C1810] uppercase">
               {title}
             </h2>
             {subtitle && (
-              <p className="font-sans text-[10px] md:text-xs font-medium tracking-wider text-[#7A6B5D] uppercase">
+              <p className="font-sans text-[9px] md:text-[10px] font-bold tracking-[0.25em] text-[#7A6B5D] uppercase">
                 {subtitle}
               </p>
             )}
@@ -76,10 +76,17 @@ export function HorizontalProductCarousel({ title, subtitle, products }: Horizon
         >
           <div className="embla__viewport overflow-hidden -mx-4 px-4" ref={emblaRef}>
             <div className="embla__container flex gap-4 md:gap-6">
-              {products.map((product) => (
-                <div key={product.product_id} className="embla__slide flex-[0_0_48%] sm:flex-[0_0_45%] md:flex-[0_0_28%] lg:flex-[0_0_22%] min-w-0">
+              {products.map((product, index) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.1 * index }}
+                  key={product.product_id} 
+                  className="embla__slide flex-[0_0_48%] sm:flex-[0_0_45%] md:flex-[0_0_28%] lg:flex-[0_0_22%] min-w-0"
+                >
                   <ProductCard product={product} badge={title.includes("ARRIVALS") ? "NEW" : "BESTSELLER"} />
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>

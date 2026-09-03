@@ -4,9 +4,10 @@
  * @param currency - The currency code, defaults to 'USD'
  * @returns Formatted currency string
  */
-export function formatCurrency(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-  }).format(amount);
+export function formatCurrency(amount: number): string {
+  if (typeof amount !== 'number') return '₹0.00';
+  return `₹${amount.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }

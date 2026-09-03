@@ -1,36 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase/client";
 
-const testimonials = [
-  {
-    quote: "The quality, the fit, the details. Everything is beyond perfect. Hanger never disappoints!",
-    author: "ANANYA S.",
-  },
-  {
-    quote: "My new go-to for festive and everyday looks. So elegant and well-curated.",
-    author: "RIDDHI M.",
-  },
-  {
-    quote: "Finally a brand that gets contemporary Indian fashion so right.",
-    author: "NEHA K.",
-  },
-];
-
-export function Testimonials() {
+export function Testimonials({ initialTestimonials, initialMedia }: { initialTestimonials?: any[], initialMedia?: any }) {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [testimonials, setTestimonials] = useState<any[]>(initialTestimonials || []);
+  const [loading, setLoading] = useState(!initialTestimonials);
+  const [media, setMedia] = useState<any>(initialMedia || null);
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      try {
+        const { data, error: _error } = await supabase
+          .from('testimonials')
+          .select('*')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false });
+        
+        if (data && data.length > 0) {
+          setTestimonials(data);
+        } else {
+          setTestimonials([]);
+        }
+
+        const { data: mediaData } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "homepage_media")
+          .single();
+          
+        if (mediaData && mediaData.value?.couch) {
+          setMedia(mediaData.value.couch);
+        }
+      } catch (err) {
+        console.error("Failed to fetch testimonials", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTestimonials();
+  }, []);
 
   const handleNext = () => {
     setActiveSlide((prev) => (prev + 1) % testimonials.length);
   };
 
   const handlePrev = () => {
+    if (testimonials.length === 0) return;
     setActiveSlide((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
+
+  if (loading) {
+    return <div className="py-12 bg-[#FDFBF7]" />;
+  }
+
+  if (testimonials.length === 0) {
+    return null;
+  }
 
   return (
     <section className="pt-4 pb-8 md:pt-6 md:pb-12 bg-[#FDFBF7]">
@@ -56,12 +87,16 @@ export function Testimonials() {
             </Link>
           </div>
           <div className="w-full md:w-[60%] relative overflow-hidden bg-[#f4f0ea] min-h-[200px] md:min-h-[320px]">
-            <Image
-              src="/images/curated-couch.jpg"
-              alt="Curated Lifestyle"
-              fill
-              className="object-cover transition-transform duration-700 ease-out hover:scale-105"
-            />
+            {media?.type === 'video' ? (
+              <video src={media.mediaUrl} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-700 ease-out" />
+            ) : (
+              <Image
+                src={media?.mediaUrl || "/images/curated-couch.jpg"}
+                alt="Curated Lifestyle"
+                fill
+                className="object-cover transition-transform duration-700 ease-out hover:scale-105"
+              />
+            )}
             {/* Subtle luxury overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
           </div>
@@ -93,16 +128,16 @@ export function Testimonials() {
               
               <div className="text-[#D4AF37] font-serif text-4xl leading-none mb-4 select-none">&ldquo;</div>
               <p className="font-serif italic text-[11.5px] lg:text-[12.5px] text-[#7A6B5D] mb-6 leading-relaxed flex-1 z-10 px-2" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                {t.quote}
+                {t.content}
               </p>
               
               <div className="mt-auto flex flex-col items-center gap-2 z-10">
                 <div className="w-6 h-[1px] bg-[#D4AF37]/30 mb-1" />
                 <span className="font-sans text-[9px] lg:text-[9.5px] font-bold tracking-[0.15em] text-[#2C1810] uppercase">
-                  {t.author}
+                  {t.name}
                 </span>
                 <div className="flex gap-0.5 mt-0.5">
-                  {[...Array(5)].map((_, idx) => (
+                  {[...Array(t.rating || 5)].map((_, idx) => (
                     <Star key={idx} className="h-2.5 w-2.5 fill-[#D4AF37] text-[#D4AF37] stroke-none" />
                   ))}
                 </div>
@@ -120,17 +155,17 @@ export function Testimonials() {
           
           <div className="min-h-[90px] flex items-center justify-center text-center px-2 z-10">
             <p className="font-serif italic text-[12.5px] text-[#7A6B5D] leading-relaxed" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-              {testimonials[activeSlide].quote}
+              {testimonials[activeSlide]?.content}
             </p>
           </div>
           
           <div className="mt-6 flex flex-col items-center gap-2 z-10">
             <div className="w-6 h-[1px] bg-[#D4AF37]/30 mb-1" />
             <span className="font-sans text-[9.5px] font-bold tracking-[0.15em] text-[#2C1810] uppercase">
-              {testimonials[activeSlide].author}
+              {testimonials[activeSlide]?.name}
             </span>
             <div className="flex gap-0.5 mt-0.5">
-              {[...Array(5)].map((_, idx) => (
+              {[...Array(testimonials[activeSlide]?.rating || 5)].map((_, idx) => (
                 <Star key={idx} className="h-2.5 w-2.5 fill-[#D4AF37] text-[#D4AF37] stroke-none" />
               ))}
             </div>

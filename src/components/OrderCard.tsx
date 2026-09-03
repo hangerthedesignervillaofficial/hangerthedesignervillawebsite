@@ -2,44 +2,55 @@
 import { OrderItemType, OrderType } from "@/types";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useDeleteOrder } from "@/hooks/queries";
 import { format } from "date-fns";
-import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
-import { ChevronDown, Package, Trash2, Clock } from "lucide-react";
+import { ChevronDown, Package, Clock } from "lucide-react";
 
 interface OrderCardProps {
   order: OrderType;
-  onDelete?: (orderId: number) => void;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   delivered:  { label: "Delivered",  color: "text-emerald-700 bg-emerald-50 border-emerald-200",  dot: "bg-emerald-500" },
   shipped:    { label: "Shipped",    color: "text-sky-700 bg-sky-50 border-sky-200",              dot: "bg-sky-500 animate-pulse" },
+  dispatched: { label: "Dispatched", color: "text-indigo-700 bg-indigo-50 border-indigo-200",     dot: "bg-indigo-500 animate-pulse" },
+  out_for_delivery: { label: "Out for Delivery", color: "text-fuchsia-700 bg-fuchsia-50 border-fuchsia-200", dot: "bg-fuchsia-500 animate-pulse" },
+  packed:     { label: "Packed",     color: "text-orange-700 bg-orange-50 border-orange-200",     dot: "bg-orange-500" },
   processing: { label: "Processing", color: "text-amber-700 bg-amber-50 border-amber-200",        dot: "bg-amber-500 animate-pulse" },
   cancelled:  { label: "Cancelled",  color: "text-red-600 bg-red-50 border-red-200",              dot: "bg-red-400" },
   pending:    { label: "Pending",    color: "text-[#7A6B5D] bg-[#F5F0EA] border-[#D4AF37]/20",   dot: "bg-[#D4AF37]/60" },
 };
 
-export function OrderCard({ order, onDelete }: OrderCardProps) {
-  const { user } = useAuth();
-  const deleteOrder = useDeleteOrder();
+export function OrderCard({ order }: OrderCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const statusCfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
 
-  const handleDeleteOrder = async () => {
+  const handleCancelRequest = async () => {
+    const reason = window.prompt("Please provide a reason for cancellation:");
+    if (reason === null) return; // user cancelled prompt
+    
+    if (reason.trim() === "") {
+      toast.error("Reason is required to request cancellation.");
+      return;
+    }
+
     try {
-      await deleteOrder.mutateAsync({
-        orderId: order.id.toString(),
-        userId: user?.id,
-      });
-      toast.success("Order removed from history");
-      onDelete?.(order.id);
+      // Assuming we have an orderService method for this, or we just use supabase directly for now
+      const { supabase } = await import('@/lib/supabase/client');
+      const { error } = await supabase.from('orders').update({
+        cancellation_reason: reason,
+        cancellation_status: 'requested'
+      }).eq('id', order.id);
+
+      if (error) throw error;
+
+      toast.success("Cancellation request submitted successfully.");
+      // We should technically trigger a refetch here or update state
     } catch (error) {
-      console.error("Error deleting order:", error);
-      toast.error("Failed to remove order");
+      console.error("Error submitting cancellation request:", error);
+      toast.error("Failed to submit cancellation request");
     }
   };
 
@@ -67,7 +78,7 @@ export function OrderCard({ order, onDelete }: OrderCardProps) {
               className="font-serif text-[#2C1810] text-base tracking-wide truncate"
               style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
             >
-              #{order.id}
+              {order.display_id || `#${order.id}`}
             </p>
           </div>
         </div>
@@ -176,15 +187,24 @@ export function OrderCard({ order, onDelete }: OrderCardProps) {
                   </span>
                 </div>
 
-                {order.status !== "cancelled" && (
+                {order.status !== "cancelled" && order.status !== "delivered" && order.cancellation_status !== "requested" && order.cancellation_status !== "approved" && (
                   <button
-                    onClick={handleDeleteOrder}
-                    disabled={deleteOrder.isPending}
-                    className="flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 font-sans text-[9px] font-bold tracking-[0.15em] uppercase transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    onClick={handleCancelRequest}
+                    className="flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 font-sans text-[9px] font-bold tracking-[0.15em] uppercase transition-all cursor-pointer"
                   >
-                    <Trash2 className="w-3 h-3 stroke-[1.5]" />
-                    {deleteOrder.isPending ? "Removing..." : "Remove"}
+                    Request Cancellation
                   </button>
+                )}
+
+                {order.cancellation_status === "requested" && (
+                  <span className="font-sans text-[9px] font-bold tracking-[0.15em] uppercase text-orange-500">
+                    Cancellation Requested
+                  </span>
+                )}
+                {order.cancellation_status === "rejected" && (
+                  <span className="font-sans text-[9px] font-bold tracking-[0.15em] uppercase text-red-500">
+                    Cancellation Rejected
+                  </span>
                 )}
               </div>
             </div>
