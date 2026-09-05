@@ -153,6 +153,12 @@ export const adminProductService = {
    */
   async deleteProduct(productId: string): Promise<boolean> {
     try {
+      // Forcefully delete referencing rows to prevent foreign key constraint violations
+      await supabase.from("cart_items").delete().eq("product_id", productId);
+      await supabase.from("order_items").delete().eq("product_id", productId);
+      await supabase.from("reviews").delete().eq("product_id", productId);
+      await supabase.from("wishlist_items").delete().eq("product_id", productId);
+
       const { error } = await supabase
         .from("products")
         .delete()
