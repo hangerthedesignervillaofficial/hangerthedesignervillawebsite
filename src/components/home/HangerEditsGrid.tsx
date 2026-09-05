@@ -56,12 +56,12 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
           </motion.div>
         </div>
 
-        {/* Product grid — Ultra Premium Staggered Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center mt-12 lg:mt-24">
+        {/* Product grid — Ultra Premium Layout */}
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start mt-12 lg:mt-20">
           {/* Main Large Item (Left) */}
           {displayProducts[0] && (
             <motion.div
-              className="md:col-span-7 group relative z-20"
+              className="w-full lg:w-[55%] group relative z-20"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -69,36 +69,36 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
             >
               <Link
                 href={`/products/${displayProducts[0].product_id}`}
-                className="block relative aspect-[3/4] lg:aspect-[4/5] overflow-hidden bg-[#1a1a1a] shadow-2xl"
+                className="block relative aspect-[4/5] lg:aspect-[3/4] overflow-hidden bg-[#1a1a1a] shadow-2xl rounded-sm"
               >
                 {displayProducts[0].image && (
                   <Image
                     src={displayProducts[0].image}
                     alt={displayProducts[0].title}
                     fill
-                    className="object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110 filter brightness-[0.85] group-hover:brightness-100"
+                    className="object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 filter brightness-[0.9] group-hover:brightness-100"
                   />
                 )}
                 {/* Dark gradient bottom overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
                 
                 {/* Gold frame on hover */}
-                <div className="absolute inset-4 lg:inset-6 border border-[#D4AF37]/0 group-hover:border-[#D4AF37]/50 transition-all duration-700 pointer-events-none scale-95 group-hover:scale-100" />
+                <div className="absolute inset-4 lg:inset-5 border border-[#D4AF37]/0 group-hover:border-[#D4AF37]/50 transition-all duration-700 pointer-events-none scale-95 group-hover:scale-100" />
 
                 {/* Text at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
-                  <span className="font-sans text-[9px] font-bold tracking-[0.4em] text-[#D4AF37] uppercase mb-3">
+                <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col justify-end translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
+                  <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase mb-2">
                     Hero Piece
                   </span>
-                  <h3 className="text-white font-serif text-3xl lg:text-5xl tracking-wide mb-4 line-clamp-2 leading-[1.1] drop-shadow-md">
+                  <h3 className="text-white font-serif text-3xl lg:text-4xl tracking-wide mb-3 line-clamp-2 leading-[1.2] drop-shadow-md">
                     {displayProducts[0].title}
                   </h3>
-                  <div className="flex items-center gap-4 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
-                    <span className="font-sans text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase">
+                  <div className="flex items-center gap-4 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
+                    <span className="font-sans text-sm font-medium tracking-[0.1em] uppercase">
                       ₹{displayProducts[0].price.toLocaleString("en-IN")}
                     </span>
                     <span className="w-8 h-[1px] bg-[#D4AF37]" />
-                    <span className="font-sans text-[10px] tracking-[0.2em] uppercase flex items-center gap-2 text-white hover:text-[#D4AF37] transition-all duration-300">
+                    <span className="font-sans text-[11px] tracking-[0.1em] uppercase flex items-center gap-2 text-white hover:text-[#D4AF37] transition-all duration-300">
                       Explore <ArrowRight className="h-4 w-4" />
                     </span>
                   </div>
@@ -107,20 +107,20 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
             </motion.div>
           )}
 
-          {/* Right Column — Staggered Smaller Items */}
-          <div className="md:col-span-5 flex flex-col gap-10 lg:gap-16 relative z-10 md:-ml-12 lg:-ml-20 mt-10 md:mt-32">
+          {/* Right Column — Stacked Smaller Items */}
+          <div className="w-full lg:w-[45%] flex flex-col gap-10 lg:gap-14 relative z-10 lg:pt-10">
             {displayProducts.slice(1).map((product, idx) => (
               <motion.div
                 key={product.product_id}
-                className={`group flex ${idx === 1 ? "flex-row" : "flex-row-reverse md:flex-row"} items-center gap-6 md:gap-8 ${idx === 1 ? "md:ml-12 lg:ml-24" : ""}`}
-                initial={{ opacity: 0, x: 20 }}
+                className={`group flex items-center gap-5 md:gap-8 ${idx % 2 === 1 ? 'flex-row-reverse text-right lg:mr-10' : 'flex-row text-left lg:ml-10'}`}
+                initial={{ opacity: 0, x: idx % 2 === 1 ? -20 : 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: idx * 0.2, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Link
                   href={`/products/${product.product_id}`}
-                  className={`w-[55%] md:w-[60%] shrink-0 relative aspect-[3/4] overflow-hidden bg-[#1a1a1a] shadow-lg group-hover:shadow-xl transition-shadow duration-500`}
+                  className="w-[45%] md:w-[40%] shrink-0 relative aspect-[3/4] overflow-hidden bg-[#1a1a1a] shadow-lg rounded-sm"
                 >
                   {product.image && (
                     <Image
@@ -130,24 +130,24 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
                       className="object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                     />
                   )}
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+                  <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
                 </Link>
 
-                <div className={`flex-1 flex flex-col min-w-0 ${idx === 1 ? "text-left items-start" : "text-right items-end md:text-left md:items-start"}`}>
-                  <span className="text-[#D4AF37] text-[9px] font-sans font-bold tracking-[0.3em] uppercase mb-2">
+                <div className={`flex-1 flex flex-col min-w-0 ${idx % 2 === 1 ? 'items-end' : 'items-start'}`}>
+                  <span className="text-[#D4AF37] text-[10px] font-sans font-bold tracking-[0.2em] uppercase mb-2">
                     {idx === 0 ? "Trending" : idx === 1 ? "Signature" : "Classic"}
                   </span>
                   <Link href={`/products/${product.product_id}`}>
-                    <h3 className="font-serif text-lg lg:text-xl text-[#2C1810] tracking-wide mb-3 hover:text-[#D4AF37] transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-serif text-lg md:text-xl text-[#2C1810] tracking-wide mb-2 hover:text-[#D4AF37] transition-colors line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
                   </Link>
-                  <p className="font-sans text-[11px] font-semibold text-[#7A6B5D] tracking-[0.15em] mb-4">
+                  <p className="font-sans text-[12px] font-medium text-[#7A6B5D] tracking-[0.1em] mb-4">
                     ₹{product.price.toLocaleString("en-IN")}
                   </p>
                   <Link
                     href={`/products/${product.product_id}`}
-                    className="w-8 h-8 rounded-full border border-[#2C1810] flex items-center justify-center text-[#2C1810] group-hover:bg-[#2C1810] group-hover:text-[#D4AF37] transition-all duration-300"
+                    className="w-8 h-8 rounded-full border border-[#2C1810]/30 flex items-center justify-center text-[#2C1810] group-hover:border-[#2C1810] group-hover:bg-[#2C1810] group-hover:text-[#D4AF37] transition-all duration-300"
                   >
                     <ArrowRight className="h-3 w-3" />
                   </Link>
