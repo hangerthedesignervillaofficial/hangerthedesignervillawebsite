@@ -46,10 +46,9 @@ interface FormData {
   stock: string;
   sku: string;
   category_id: string;
-  tags: string[];
   is_bestseller: boolean;
   is_new_arrival: boolean;
-  sizes: string;
+  sizes: string[];
   display_tags: string[];
 }
 
@@ -70,10 +69,9 @@ export function ProductFormModal({
     stock: "",
     sku: "",
     category_id: "no-category",
-    tags: [],
     is_bestseller: false,
     is_new_arrival: false,
-    sizes: "",
+    sizes: [],
     display_tags: [],
   });
   const [loading, setLoading] = useState(false);
@@ -107,10 +105,9 @@ export function ProductFormModal({
         stock: product.stock?.toString() || "",
         sku: product.sku || "",
         category_id: product.category_id?.toString() || "no-category",
-        tags: product.tags || [],
         is_bestseller: product.is_bestseller || false,
         is_new_arrival: product.is_new_arrival || false,
-        sizes: (product.sizes || []).join(", "),
+        sizes: product.sizes || [],
         display_tags: product.display_tags || [],
       });
       setImagePreview(product.image || null);
@@ -126,11 +123,10 @@ export function ProductFormModal({
         stock: "",
         sku: "",
         category_id: "",
-        tags: [],
         display_tags: [],
         is_bestseller: false,
         is_new_arrival: false,
-        sizes: "",
+        sizes: [],
       });
       setImagePreview(null);
       setVideoPreview(null);
@@ -310,10 +306,6 @@ export function ProductFormModal({
 
     setLoading(true);
     try {
-      const sizesArray = formData.sizes
-        ? formData.sizes.split(",").map((s) => s.trim()).filter((s) => s !== "")
-        : [];
-
       const submitData: CreateProductData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
@@ -327,10 +319,9 @@ export function ProductFormModal({
           formData.category_id && formData.category_id !== "no-category"
             ? parseInt(formData.category_id)
             : undefined,
-        tags: formData.tags,
         is_bestseller: formData.is_bestseller,
         is_new_arrival: formData.is_new_arrival,
-        sizes: sizesArray,
+        sizes: formData.sizes,
         display_tags: formData.display_tags,
       };
       await onSubmit(submitData);
@@ -679,14 +670,27 @@ export function ProductFormModal({
 
           <div>
             <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
-              Sizes (Comma separated)
+              Available Sizes
             </Label>
-            <Input
-              value={formData.sizes}
-              onChange={(e) => handleInputChange("sizes", e.target.value)}
-              placeholder="e.g. XS, S, M, L, XL"
-              className="border-b border-t-0 border-l-0 border-r-0 rounded-none bg-transparent h-10 px-0 text-sm focus-visible:ring-0 focus:border-[#D4AF37] text-[#2C1810] placeholder:text-[#7A6B5D]/30 border-[#D4AF37]/25"
-            />
+            <div className="flex flex-wrap gap-4 mt-3">
+              {["Free Size", "XS", "S", "M", "L", "XL", "XXL", "36 (S)", "37 (M)", "38 (L)", "39 (XL)", "40 (XXL)"].map(size => (
+                <label key={size} className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.sizes.includes(size)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        handleInputChange("sizes", [...formData.sizes, size]);
+                      } else {
+                        handleInputChange("sizes", formData.sizes.filter(s => s !== size));
+                      }
+                    }}
+                    className="accent-[#D4AF37] w-4 h-4"
+                  />
+                  <span className="font-sans text-xs text-[#2C1810]">{size}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
 
