@@ -10,7 +10,6 @@ export const reviewService = {
         .from('reviews')
         .select('*, profile:profiles(*)')
         .eq('product_id', productId)
-        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (error) {
