@@ -28,6 +28,18 @@ import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Sidebar as ShadcnSidebar, SidebarContent } from "@/components/ui/sidebar";
+import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  Home,
+  Shirt,
+  Sparkles,
+  Star,
+  Footprints,
+  Gem,
+  ShoppingBag,
+  FolderHeart,
+};
 
 // Instagram Icon SVG
 function InstagramIcon({ className }: { className?: string }) {
@@ -102,6 +114,7 @@ export default function Sidebar() {
   const { isAdmin } = useAdmin();
   const pathname = usePathname();
   const { isMobile, toggleSidebar } = useSidebar();
+  const { navItems, loading } = useNavigationBuilder();
 
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -120,82 +133,6 @@ export default function Sidebar() {
   const handleClose = () => {
     if (isMobile) toggleSidebar();
   };
-
-  // Main navigation items from screenshot
-  const primaryNav = [
-    {
-      title: "HOME",
-      icon: Home,
-      href: "/",
-    },
-    {
-      title: "COLLECTIONS",
-      icon: FolderHeart,
-      href: "/products",
-      hasSub: true,
-      subItems: [
-        { title: "ALL PRODUCTS", href: "/products" },
-        { title: "NEW ARRIVALS", href: "/new-arrivals" },
-        { title: "BEST SELLERS", href: "/bestsellers" },
-      ],
-    },
-    {
-      title: "NEW ARRIVALS",
-      icon: Sparkles,
-      href: "/new-arrivals",
-    },
-    {
-      title: "BEST SELLERS",
-      icon: Star,
-      href: "/bestsellers",
-    },
-    {
-      title: "CLOTHING",
-      icon: Shirt,
-      href: "/clothing",
-      hasSub: true,
-      subItems: [
-        { title: "SAREES", href: "/clothing?sub=sarees" },
-        { title: "LEHENGAS", href: "/clothing?sub=lehengas" },
-        { title: "KURTAS & SUITS", href: "/clothing?sub=kurtas" },
-        { title: "CO-ORD SETS", href: "/clothing?sub=coords" },
-        { title: "DRESSES & GOWNS", href: "/clothing?sub=dresses" },
-      ],
-    },
-    {
-      title: "FOOTWEAR",
-      icon: Footprints,
-      href: "/footwear",
-      hasSub: true,
-      subItems: [
-        { title: "ETHNIC JUTTIS", href: "/footwear?sub=juttis" },
-        { title: "DESIGNER HEELS", href: "/footwear?sub=heels" },
-        { title: "LUXURY FLATS", href: "/footwear?sub=flats" },
-      ],
-    },
-    {
-      title: "JEWELLERY",
-      icon: Gem,
-      href: "/jewellery",
-      hasSub: true,
-      subItems: [
-        { title: "EARRINGS", href: "/jewellery?sub=earrings" },
-        { title: "NECKLACES", href: "/jewellery?sub=necklaces" },
-        { title: "BANGLES & BRACELETS", href: "/jewellery?sub=bangles" },
-      ],
-    },
-    {
-      title: "ACCESSORIES",
-      icon: ShoppingBag,
-      href: "/accessories",
-      hasSub: true,
-      subItems: [
-        { title: "HANDBAGS & CLUTCHES", href: "/accessories?sub=bags" },
-        { title: "DUPATTAS & SCARVES", href: "/accessories?sub=dupattas" },
-        { title: "BELTS & PINKS", href: "/accessories?sub=belts" },
-      ],
-    },
-  ];
 
   // Secondary items from screenshot
   const secondaryNav = [
@@ -324,10 +261,12 @@ export default function Sidebar() {
 
           {/* Primary Navigation List */}
           <nav className="flex flex-col gap-1 w-full">
-            {primaryNav.map((item) => {
+            {loading ? (
+              <div className="flex justify-center p-4"><div className="w-5 h-5 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div></div>
+            ) : navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
               const isExpanded = expandedItems[item.title];
-              const Icon = item.icon;
+              const Icon = ICON_MAP[item.icon] || FolderHeart;
 
               return (
                 <div key={item.title} className="flex flex-col w-full">

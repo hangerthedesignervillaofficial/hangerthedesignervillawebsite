@@ -20,74 +20,10 @@ import {
 import { useAdmin } from "@/hooks/useAdmin";
 import { LogOut, Package, Settings, MessageSquare } from "lucide-react";
 import { useNavigationMenu } from "@/hooks/useNavigationMenu";
+import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
 
 // ─── Static nav structure (mirrors Sidebar) ────────────────────────────
-const STATIC_NAV = [
-  {
-    key: "new-arrivals",
-    label: "New Arrivals",
-    href: "/new-arrivals",
-    description: "Discover the latest premium additions to our collection.",
-    subLinks: [],
-  },
-  {
-    key: "best-sellers",
-    label: "Best Sellers",
-    href: "/bestsellers",
-    description: "Our most loved and sought-after designer pieces.",
-    subLinks: [],
-  },
-  {
-    key: "clothing",
-    label: "Clothing",
-    href: "/products",
-    description: "Curated Indian fashion – sarees, lehengas, kurtas & more.",
-    subLinks: [
-      { label: "All Clothing", href: "/products" },
-      { label: "Sarees", href: "/clothing?sub=sarees" },
-      { label: "Lehengas", href: "/clothing?sub=lehengas" },
-      { label: "Kurtas & Suits", href: "/clothing?sub=kurtas" },
-      { label: "Co-ord Sets", href: "/clothing?sub=coords" },
-      { label: "Dresses & Gowns", href: "/clothing?sub=dresses" },
-    ],
-  },
-  {
-    key: "footwear",
-    label: "Footwear",
-    href: "/footwear",
-    description: "Step into luxury with handcrafted ethnic and designer footwear.",
-    subLinks: [
-      { label: "All Footwear", href: "/footwear" },
-      { label: "Ethnic Juttis", href: "/footwear?sub=juttis" },
-      { label: "Designer Heels", href: "/footwear?sub=heels" },
-      { label: "Luxury Flats", href: "/footwear?sub=flats" },
-    ],
-  },
-  {
-    key: "jewellery",
-    label: "Jewellery",
-    href: "/jewellery",
-    description: "Timeless jewellery to complete every look.",
-    subLinks: [
-      { label: "All Jewellery", href: "/jewellery" },
-      { label: "Earrings", href: "/jewellery?sub=earrings" },
-      { label: "Necklaces", href: "/jewellery?sub=necklaces" },
-      { label: "Bangles & Bracelets", href: "/jewellery?sub=bangles" },
-    ],
-  },
-  {
-    key: "accessories",
-    label: "Accessories",
-    href: "/accessories",
-    description: "The finishing touches that define your style.",
-    subLinks: [
-      { label: "All Accessories", href: "/accessories" },
-      { label: "Handbags & Clutches", href: "/accessories?sub=bags" },
-      { label: "Dupattas & Scarves", href: "/accessories?sub=dupattas" },
-      { label: "Belts & Pins", href: "/accessories?sub=belts" },
-    ],
-  },
-];
+// Replaced by useNavigationBuilder hook
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -111,6 +47,7 @@ export function Navbar() {
   const wishlistTriggerRef = useRef<HTMLButtonElement>(null);
 
   const { data: menuData = [] } = useNavigationMenu();
+  const { navItems, loading: navLoading } = useNavigationBuilder();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -168,13 +105,13 @@ export function Navbar() {
     }
     // Try match by category name
     const matched = menuData.find(
-      (m) => m.category.name.toLowerCase().replace(/\s+/g, "-") === key
+      (m) => m.category.name.toLowerCase().replace(/\s+/g, "-") === key || m.category.id.toString() === key
     );
     return matched?.products ?? [];
   };
 
-  const activeNavItem = STATIC_NAV.find((n) => n.key === activeMenu) ?? null;
-  const activeProducts = activeMenu ? getMenuProducts(activeMenu) : [];
+  const activeNavItem = navItems.find((n) => n.id === activeMenu) ?? null;
+  const activeProducts = activeMenu ? getMenuProducts(activeNavItem?.title.toLowerCase().replace(/\s+/g, "-") || "") : [];
 
   return (
     <>
@@ -196,13 +133,15 @@ export function Navbar() {
         >
           {/* Col 1 — Left nav links */}
           <nav className="flex items-center justify-start h-full overflow-hidden">
-            {STATIC_NAV.map((item) => {
-              const isActive = activeMenu === item.key;
+            {navLoading ? (
+               <div className="w-5 h-5 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin ml-4"></div>
+            ) : navItems.map((item) => {
+              const isActive = activeMenu === item.id;
               return (
                 <div
-                  key={item.key}
+                  key={item.id}
                   className="relative flex items-center h-full"
-                  onMouseEnter={() => openMenu(item.key)}
+                  onMouseEnter={() => openMenu(item.id)}
                   onMouseLeave={scheduleClose}
                 >
                   <Link
@@ -211,7 +150,7 @@ export function Navbar() {
                       isActive ? "text-[#D4AF37]" : "text-[#2C1810] hover:text-[#D4AF37]"
                     }`}
                   >
-                    {item.label}
+                    {item.title}
                     {/* Gold underline indicator */}
                     <span
                       className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#B89030] transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -525,7 +464,6 @@ export function Navbar() {
             <div className="flex gap-10">
               {/* ── Left Panel: Category info + sub-links ── */}
               <div className="w-[280px] shrink-0 flex flex-col gap-6">
-                {/* Category heading */}
                 <div className="border-b border-[#D4AF37]/15 pb-5">
                   <p className="font-sans text-[8px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase mb-2">
                     Browse
@@ -534,25 +472,22 @@ export function Navbar() {
                     className="font-serif text-3xl text-[#2C1810] leading-tight mb-2"
                     style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
                   >
-                    {activeNavItem.label}
+                    {activeNavItem.title}
                   </h2>
-                  <p className="font-sans text-[11px] text-[#7A6B5D] leading-relaxed">
-                    {activeNavItem.description}
-                  </p>
                 </div>
 
                 {/* Sub-links */}
-                {activeNavItem.subLinks.length > 0 && (
+                {activeNavItem.subItems && activeNavItem.subItems.length > 0 && (
                   <div className="flex flex-col gap-1">
-                    {activeNavItem.subLinks.map((sub) => (
+                    {activeNavItem.subItems.map((sub) => (
                       <Link
-                        key={sub.href}
+                        key={sub.id}
                         href={sub.href}
                         onClick={() => setActiveMenu(null)}
                         className="group/sub flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#F4E7DA] transition-all duration-200"
                       >
                         <span className="font-sans text-[11px] font-semibold tracking-[0.14em] text-[#2C1810] uppercase group-hover/sub:text-[#4A0E17] transition-colors">
-                          {sub.label}
+                          {sub.title}
                         </span>
                         <ChevronRight className="h-3.5 w-3.5 text-[#D4AF37] opacity-0 group-hover/sub:opacity-100 group-hover/sub:translate-x-0.5 transition-all duration-200" />
                       </Link>
@@ -566,7 +501,7 @@ export function Navbar() {
                   onClick={() => setActiveMenu(null)}
                   className="group/cta mt-auto inline-flex items-center gap-2 px-5 py-3 bg-[#2C1810] text-[#D4AF37] font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:bg-[#4A0E17] hover:gap-3 self-start"
                 >
-                  View All {activeNavItem.label}
+                  View All {activeNavItem.title}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/cta:translate-x-1" />
                 </Link>
               </div>
