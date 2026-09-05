@@ -16,13 +16,16 @@ import {
   Shield,
   RotateCcw,
   Check,
-  Bell
+  Bell,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { ReviewTab } from "./_components/review-tab";
 import { NotifyMeModal } from "@/components/NotifyMeModal";
 
 type ProductDetailsClientProps = {
   product: ProductType;
+  relatedProducts?: ProductType[];
 };
 
 const getCategoryName = (categoryId?: number) => {
@@ -42,6 +45,7 @@ const getCategoryName = (categoryId?: number) => {
 
 export default function ProductDetailsClient({
   product,
+  relatedProducts = [],
 }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -50,6 +54,7 @@ export default function ProductDetailsClient({
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>('details');
   const isFavorited = isInWishlist(product.product_id);
 
   // Get detailed specifications based on the product
@@ -299,35 +304,116 @@ export default function ProductDetailsClient({
 
             <div className="w-full h-[1px] bg-[#D4AF37]/15" />
 
-            {/* Editorial Description Hook */}
-            <div className="space-y-4">
-              <p className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed">
-                {product.description}
-              </p>
-              <p className="font-serif text-[13px] text-[#2C1810] leading-relaxed italic">
-                "Designed as a tribute to classic Indian artisanal crafts, this piece balances structural geometry with fluid softness. It speaks to the contemporary wearer who seeks statement elements rooted in native craft legacy."
-              </p>
-            </div>
+            {/* Accordion Sections */}
+            <div className="border-t border-[#D4AF37]/15">
+              {/* Description Accordion */}
+              <div className="border-b border-[#D4AF37]/15">
+                <button
+                  onClick={() => setOpenSection(openSection === 'details' ? null : 'details')}
+                  className="w-full flex items-center justify-between py-5 cursor-pointer group"
+                >
+                  <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#2C1810] uppercase group-hover:text-[#D4AF37] transition-colors">
+                    The Details
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-[#7A6B5D] transition-transform duration-300 ${openSection === 'details' ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {openSection === 'details' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-5 space-y-4">
+                        <p className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed">
+                          {product.description}
+                        </p>
+                        <p className="font-serif text-[13px] text-[#2C1810] leading-relaxed italic">
+                          "Designed as a tribute to classic Indian artisanal crafts, this piece balances structural geometry with fluid softness. It speaks to the contemporary wearer who seeks statement elements rooted in native craft legacy."
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-            {/* Specifications Grid */}
-            <div className="py-6 border-y border-[#D4AF37]/15">
-              <div className="grid grid-cols-2 gap-y-5 gap-x-4">
-                <div className="space-y-1">
-                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Fabrication</span>
-                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.fabric}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Technique</span>
-                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.technique}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Silhouette</span>
-                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.fit}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Occasion</span>
-                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.occasion}</span>
-                </div>
+              {/* Specifications Accordion */}
+              <div className="border-b border-[#D4AF37]/15">
+                <button
+                  onClick={() => setOpenSection(openSection === 'specs' ? null : 'specs')}
+                  className="w-full flex items-center justify-between py-5 cursor-pointer group"
+                >
+                  <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#2C1810] uppercase group-hover:text-[#D4AF37] transition-colors">
+                    Fabric & Fit
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-[#7A6B5D] transition-transform duration-300 ${openSection === 'specs' ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {openSection === 'specs' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-5 grid grid-cols-2 gap-y-5 gap-x-4">
+                        <div className="space-y-1">
+                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Fabrication</span>
+                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.fabric}</span>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Technique</span>
+                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.technique}</span>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Silhouette</span>
+                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.fit}</span>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Occasion</span>
+                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.occasion}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Shipping & Returns Accordion */}
+              <div className="border-b border-[#D4AF37]/15">
+                <button
+                  onClick={() => setOpenSection(openSection === 'shipping' ? null : 'shipping')}
+                  className="w-full flex items-center justify-between py-5 cursor-pointer group"
+                >
+                  <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#2C1810] uppercase group-hover:text-[#D4AF37] transition-colors">
+                    Shipping & Returns
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-[#7A6B5D] transition-transform duration-300 ${openSection === 'shipping' ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {openSection === 'shipping' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-5 space-y-4">
+                        <ul className="space-y-3 font-sans text-[12px] text-[#7A6B5D] leading-relaxed">
+                          <li className="flex gap-3">
+                            <Truck className="w-4 h-4 shrink-0 text-[#D4AF37]" />
+                            <span>Complimentary express shipping on all domestic orders over ₹999. Delivered within 3-5 business days.</span>
+                          </li>
+                          <li className="flex gap-3">
+                            <RotateCcw className="w-4 h-4 shrink-0 text-[#D4AF37]" />
+                            <span>30-day return window. Items must be unworn, unwashed, and have original tags attached.</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -467,42 +553,46 @@ export default function ProductDetailsClient({
           </motion.div>
         </div>
 
-            {/* Stacked Details & Reviews instead of tabs */}
-            <div className="mt-8 border-t border-[#D4AF37]/15 pt-8 space-y-12">
-              
-              {/* Care & Heritage Section */}
-              <div className="space-y-6">
-                <h3 className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#2C1810] uppercase">
-                  Heritage & Care
-                </h3>
-                <div className="space-y-4">
-                  <p className="font-sans text-[12px] text-[#7A6B5D] leading-relaxed">
-                    {specs.heritage} Our atelier supports slow-fashion practices and native weaving clusters to ensure long-term preservation of ancestral handwork and geometric embroidery styles.
-                  </p>
-                  <ul className="space-y-2 text-[12px] text-[#7A6B5D] font-sans">
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#D4AF37]">✦</span> <strong>Care Instructions:</strong> {specs.care}
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#D4AF37]">✦</span> <strong>Authenticity:</strong> 100% Handloom Certified
-                    </li>
-                    {product.sku && (
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#D4AF37]">✦</span> <strong>Product SKU:</strong> {product.sku}
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
+          {/* Reviews Section */}
+          <div className="mt-12 lg:mt-16 space-y-6 pt-8 max-w-4xl mx-auto">
+            <h3 className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#2C1810] uppercase text-center">
+              Customer Reviews
+            </h3>
+            <div className="w-10 h-[1px] bg-[#D4AF37] mx-auto mb-8" />
+            <ReviewTab product={product} />
+          </div>
 
-              {/* Reviews Section */}
-              <div className="space-y-6 border-t border-[#D4AF37]/15 pt-8">
-                <h3 className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#2C1810] uppercase">
-                  Customer Reviews
-                </h3>
-                <ReviewTab product={product} />
+          {/* YOU MAY ALSO LIKE Section */}
+          {relatedProducts.length > 0 && (
+            <div className="mt-20 lg:mt-32 pt-16 border-t border-[#D4AF37]/10">
+              <div className="text-center mb-10">
+                <h2 className="font-serif text-3xl md:text-4xl text-[#2C1810] tracking-wide mb-4">
+                  You May Also Like
+                </h2>
+                <div className="w-12 h-[1px] bg-[#D4AF37] mx-auto" />
+              </div>
+              
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {relatedProducts.map((relProduct) => (
+                  <Link key={relProduct.product_id} href={`/products/${relProduct.product_id}`} className="group block">
+                    <div className="relative aspect-[3/4] bg-[#f4f0ea] mb-4 overflow-hidden">
+                      <Image 
+                        src={relProduct.image || "/placeholder-product.jpg"} 
+                        alt={relProduct.title}
+                        fill
+                        className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                    <div className="text-center space-y-1">
+                      <h4 className="font-serif text-[13px] text-[#2C1810] line-clamp-1">{relProduct.title}</h4>
+                      <p className="font-sans text-[11px] tracking-wide text-[#7A6B5D]">₹{relProduct.price.toLocaleString("en-IN")}</p>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
+          )}
       </div>
 
       {/* Mobile Sticky Add to Bag Bar */}

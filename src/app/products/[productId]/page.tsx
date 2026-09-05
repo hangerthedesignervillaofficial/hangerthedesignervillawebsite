@@ -20,5 +20,13 @@ export default async function ProductDetailsPage({
     notFound();
   }
 
-  return <ProductDetailsClient product={product} />;
+  let relatedProducts: any[] = [];
+  if (product.category_id) {
+    const categoryProducts = await productServerService.getProductsByCategory(product.category_id);
+    relatedProducts = categoryProducts
+      .filter((p) => p.product_id !== product.product_id)
+      .slice(0, 4);
+  }
+
+  return <ProductDetailsClient product={product} relatedProducts={relatedProducts} />;
 }
