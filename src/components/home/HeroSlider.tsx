@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const defaultSlides = [
   {
@@ -112,9 +113,42 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
       )}
 
       {/* Content */}
-      <div className="absolute inset-0 container mx-auto px-5 md:px-12 flex flex-col justify-center items-start z-10 pointer-events-none">
-        <div className="max-w-xl mt-10 md:mt-6 w-full pointer-events-auto">
-          {/* Text and buttons have been removed by design choice to only show raw media */}
+      <div className="absolute inset-0 container mx-auto px-6 md:px-12 flex flex-col justify-end md:justify-center items-start z-10 pointer-events-none pb-24 md:pb-0">
+        <div className="max-w-2xl w-full pointer-events-auto">
+          {slide.showText !== false && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              key={`text-${currentIndex}`}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col items-start gap-4 md:gap-5"
+            >
+              {labelText && (
+                <span className="inline-block bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 md:px-4 md:py-1.5 font-sans text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase text-white shadow-sm">
+                  {labelText}
+                </span>
+              )}
+              {titleText && (
+                <h1 className="font-serif text-4xl md:text-6xl lg:text-[76px] leading-[1.05] tracking-wide text-white drop-shadow-xl" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                  {titleText}
+                </h1>
+              )}
+              {bodyText && (
+                <p className="font-sans text-sm md:text-base text-white/90 font-light max-w-lg leading-relaxed drop-shadow-md">
+                  {bodyText}
+                </p>
+              )}
+              {(titleText || labelText) && (
+                <Link
+                  href="/products"
+                  className="mt-2 md:mt-4 group inline-flex items-center gap-3 border border-white/50 text-white hover:bg-white hover:text-[#1A0A0E] px-8 py-3.5 md:px-10 md:py-4 font-sans text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 shadow-lg"
+                >
+                  Explore Now
+                  <ChevronRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
 

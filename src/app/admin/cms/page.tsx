@@ -29,7 +29,8 @@ export default function CMSPage() {
       type: 'image',
       mediaUrl: '',
       title: '',
-      subtitle: ''
+      subtitle: '',
+      showText: true
     }
   ]);
 
@@ -120,9 +121,8 @@ export default function CMSPage() {
   }
 
   const uploadMediaToSupabase = async (file: File): Promise<string | null> => {
-    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "video/mp4", "video/webm"];
-    if (!validTypes.includes(file.type)) {
-      toast.error("Please upload a valid image or video (JPG, PNG, WebP, MP4, WebM)");
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      toast.error("Please upload a valid image or video file.");
       return null;
     }
     if (file.size > 20 * 1024 * 1024) {
@@ -178,7 +178,8 @@ export default function CMSPage() {
       type: 'image',
       mediaUrl: '',
       title: '',
-      subtitle: ''
+      subtitle: '',
+      showText: true
     }]);
   };
 
@@ -292,7 +293,7 @@ export default function CMSPage() {
                             <input 
                               type="file" 
                               className="hidden" 
-                              accept="image/*,video/mp4,video/webm"
+                              accept="image/*,video/*"
                               onChange={(e) => {
                                 if (e.target.files?.[0]) {
                                   handleFileUpload(e.target.files[0], slide.id);
@@ -363,6 +364,19 @@ export default function CMSPage() {
                             placeholder="Short description shown below the title..."
                             className="w-full border border-[#D4AF37]/30 p-3 font-sans text-sm focus:outline-none focus:border-[#D4AF37] bg-white resize-none"
                           />
+                        </div>
+                        
+                        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[#D4AF37]/10">
+                          <input
+                            type="checkbox"
+                            id={`showText-${slide.id}`}
+                            checked={(slide as any).showText !== false}
+                            onChange={(e) => updateSlide(slide.id, 'showText', e.target.checked)}
+                            className="w-4 h-4 text-[#D4AF37] border-[#D4AF37]/30 focus:ring-[#D4AF37] rounded-sm cursor-pointer accent-[#D4AF37]"
+                          />
+                          <label htmlFor={`showText-${slide.id}`} className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#2C1810] font-bold cursor-pointer">
+                            Show text and button over this media
+                          </label>
                         </div>
                     </div>
                   </div>

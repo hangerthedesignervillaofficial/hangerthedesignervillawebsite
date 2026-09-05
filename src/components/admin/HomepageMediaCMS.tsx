@@ -155,7 +155,7 @@ export function HomepageMediaCMS() {
           {uploadingField === path ? 'Uploading...' : 'Upload Media'}
           <input 
             type="file" 
-            accept="image/*,video/mp4,video/webm" 
+            accept="image/*,video/*" 
             className="hidden" 
             onChange={(e) => handleFileUpload(e, path)}
             disabled={uploadingField === path}
