@@ -59,7 +59,7 @@ export default function AdminProductsPage() {
       fetchProducts();
     } catch (error) {
       console.error("Error creating product:", error);
-      toast.error("Failed to create product: " + ((error as any)?.message || (error as any)?.toString() || "Unknown error"));
+      toast.error("Failed to create product");
     }
   };
 

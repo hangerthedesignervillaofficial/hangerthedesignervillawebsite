@@ -18,7 +18,7 @@ import {
   Check,
   Bell,
   ChevronDown,
-
+  ChevronUp
 } from "lucide-react";
 import { ReviewTab } from "./_components/review-tab";
 import { NotifyMeModal } from "@/components/NotifyMeModal";
@@ -285,17 +285,6 @@ export default function ProductDetailsClient({
               >
                 {product.title}
               </h1>
-
-              {/* Display Tags */}
-              {product.display_tags && product.display_tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2 pb-1">
-                  {product.display_tags.map((tag) => (
-                    <span key={tag} className="px-2.5 py-1 bg-[#D4AF37]/10 text-[9px] font-sans font-bold tracking-[0.18em] text-[#2C1810] uppercase border border-[#D4AF37]/20">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
               
               <div className="flex items-center gap-4 pt-1">
                 <span className="font-serif text-xl md:text-2xl font-normal text-[#2C1810]" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>
@@ -337,9 +326,9 @@ export default function ProductDetailsClient({
                       className="overflow-hidden"
                     >
                       <div className="pb-5 space-y-4">
-                        <div className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed whitespace-pre-wrap">
+                        <p className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed">
                           {product.description}
-                        </div>
+                        </p>
                         <p className="font-serif text-[13px] text-[#2C1810] leading-relaxed italic">
                           "Designed as a tribute to classic Indian artisanal crafts, this piece balances structural geometry with fluid softness. It speaks to the contemporary wearer who seeks statement elements rooted in native craft legacy."
                         </p>

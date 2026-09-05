@@ -466,6 +466,15 @@
     scroll-behavior: smooth;
   }
 
+  /* Image Overflow Fix */
+  img, video {
+    max-width: 100% !important;
+    height: auto;
+  }
+  iframe, svg {
+    max-width: 100%;
+  }
+
   /* Luxury Gold Selection Highlight */
   ::selection {
     background-color: #D4AF3740;

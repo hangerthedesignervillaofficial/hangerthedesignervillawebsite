@@ -11,7 +11,7 @@ export interface CreateProductData {
   stock: number;
   sku?: string;
   category_id?: number;
-  tags?: string[];
+
   is_bestseller?: boolean;
   is_new_arrival?: boolean;
   sizes?: string[];
@@ -133,15 +133,23 @@ export const adminProductService = {
           updated_at: new Date().toISOString(),
         })
         .eq("product_id", productId)
-        .select()
-        .single();
+        .select();
 
-      if (error) {
+      // If error is PGRST116, it means 0 rows were found (likely RLS). We just throw it if it's another error.
+      if (error && error.code !== 'PGRST116') {
         console.error("Error updating product:", error);
         throw error;
       }
 
-      return data;
+      // Supabase returns an array for .select()
+      const updatedProduct = data && data.length > 0 ? data[0] : null;
+
+      // If no product was returned, maybe RLS blocked it or ID is wrong
+      if (!updatedProduct) {
+        throw new Error("Product update failed. Either the product was not found, or you don't have permission to update it.");
+      }
+
+      return updatedProduct;
     } catch (err) {
       console.error("Failed to update product:", err);
       throw err;
