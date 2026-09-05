@@ -134,7 +134,7 @@ export function MobileBottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[100] xl:hidden"
+      className="fixed bottom-0 left-0 right-0 z-[45] xl:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {/* Gold shimmer hairline */}

@@ -10,11 +10,8 @@ import Link from "next/link";
 import {
   ShoppingCart,
   Heart,
-  Share2,
   Minus,
   Plus,
-  ChevronLeft,
-  ChevronRight,
   Truck,
   Shield,
   RotateCcw,
@@ -48,25 +45,12 @@ export default function ProductDetailsClient({
 }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
   const isFavorited = isInWishlist(product.product_id);
-  const [activeTab, setActiveTab] = useState<"description" | "reviews">("description");
-
-  // Mouse position state for magnification zoom on hover
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setMousePos({ x, y });
-  };
 
   // Get detailed specifications based on the product
   const getProductSpecs = (id: string) => {
@@ -159,7 +143,7 @@ export default function ProductDetailsClient({
 
   // Generate multiple images from the single image (mock data for demo)
   const productImages = product.image
-    ? [product.image, product.image, product.image, product.image]
+    ? [product.image, ...(product.gallery || [])]
     : ["/placeholder-product.jpg"];
 
   const handleAddToCart = async () => {
@@ -194,16 +178,6 @@ export default function ProductDetailsClient({
     }
   };
 
-  const nextImage = () => {
-    setSelectedImageIndex((prev) => (prev + 1) % productImages.length);
-  };
-
-  const prevImage = () => {
-    setSelectedImageIndex(
-      (prev) => (prev - 1 + productImages.length) % productImages.length,
-    );
-  };
-
   return (
     <div className="bg-[#FDFBF7] min-h-screen pb-20 lg:pb-10">
       <div className="container mx-auto px-4 py-6 md:py-10">
@@ -228,73 +202,34 @@ export default function ProductDetailsClient({
           </span>
         </motion.nav>
 
-        <div className="mb-16 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
+        <div className="mb-16 flex flex-col lg:grid lg:grid-cols-12 gap-10 lg:gap-14">
 
-          {/* Left: Product Images (58% Grid span on Desktop for editorial focus) */}
+          {/* Left: Product Images (Editorial Stack on Desktop, Edge-to-Edge Carousel on Mobile) */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-7 space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7 w-full"
           >
-            <div 
-              className="relative aspect-[3/4] overflow-hidden bg-[#f4f0ea] border border-[#D4AF37]/10 group cursor-zoom-in"
-              onMouseMove={handleMouseMove}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedImageIndex}
-                  className="relative h-full w-full transition-transform duration-75 ease-out"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  style={{
-                    transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-                    transform: isHovering ? "scale(1.8)" : "scale(1)"
-                  }}
-                >
-                  {product.image ? (
+            {/* Mobile: Edge-to-edge Carousel */}
+            <div className="lg:hidden -mx-4 relative overflow-hidden">
+              <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+                {productImages.map((img, i) => (
+                  <div key={i} className="relative aspect-[3/4] w-full flex-none snap-center bg-[#f4f0ea]">
                     <Image
-                      src={productImages[selectedImageIndex]}
-                      alt={product.title}
+                      src={img}
+                      alt={`${product.title} - View ${i + 1}`}
                       fill
                       className="object-cover"
-                      loading="eager"
+                      priority={i === 0}
                     />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-[#f4f0ea]">
-                      <span className="text-[#7A6B5D] text-sm font-sans">
-                        No image available
-                      </span>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-
-              {productImages.length > 1 && (
-                <>
-                  <button
-                    className="absolute top-1/2 left-3 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-[#FDFBF7]/90 backdrop-blur-sm border border-[#D4AF37]/20 text-[#2C1810] hover:border-[#D4AF37] hover:text-[#4A0E17] transition-all cursor-pointer shadow-xs z-10"
-                    onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                  >
-                    <ChevronLeft className="h-4 w-4 stroke-[1.5]" />
-                  </button>
-                  <button
-                    className="absolute top-1/2 right-3 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-[#FDFBF7]/90 backdrop-blur-sm border border-[#D4AF37]/20 text-[#2C1810] hover:border-[#D4AF37] hover:text-[#4A0E17] transition-all cursor-pointer shadow-xs z-10"
-                    onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                  >
-                    <ChevronRight className="h-4 w-4 stroke-[1.5]" />
-                  </button>
-                </>
-              )}
-
-              {/* Floating action buttons */}
+                  </div>
+                ))}
+              </div>
+              {/* Floating action buttons on Mobile */}
               <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
                 <button
-                  className="w-9 h-9 flex items-center justify-center bg-[#FDFBF7]/90 backdrop-blur-sm border border-[#D4AF37]/20 text-[#2C1810] hover:border-[#4A0E17] hover:text-[#4A0E17] transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-white/80 backdrop-blur-md text-[#2C1810] shadow-sm active:scale-95 transition-transform"
                   onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
                 >
                   <Heart
@@ -303,50 +238,31 @@ export default function ProductDetailsClient({
                     }`}
                   />
                 </button>
-                <button
-                  className="w-9 h-9 flex items-center justify-center bg-[#FDFBF7]/90 backdrop-blur-sm border border-[#D4AF37]/20 text-[#2C1810] hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Share2 className="h-4 w-4 stroke-[1.5]" />
-                </button>
               </div>
             </div>
 
-            {/* Thumbnails */}
-            {productImages.length > 1 && (
-              <div className="flex justify-center gap-2.5 md:grid md:grid-cols-4 md:gap-3">
-                {productImages.map((image, index) => (
-                  <button
-                    key={index}
-                    className={`w-16 h-16 md:w-auto md:h-auto aspect-square md:aspect-[3/4] shrink-0 cursor-pointer overflow-hidden border transition-all duration-300 relative ${
-                      selectedImageIndex === index
-                        ? "border-[#D4AF37] shadow-[0_0_0_1px_#D4AF37]"
-                        : "border-[#D4AF37]/10 hover:border-[#D4AF37]/45"
-                    }`}
-                    onClick={() => setSelectedImageIndex(index)}
-                  >
-                    <Image
-                      src={image}
-                      alt={`${product.title} ${index + 1}`}
-                      width={120}
-                      height={160}
-                      className="h-full w-full object-cover"
-                    />
-                    {selectedImageIndex !== index && (
-                      <div className="absolute inset-0 bg-[#FFFDFC]/20 hover:bg-transparent transition-colors duration-300" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Desktop: Stacked Masonry/Grid */}
+            <div className="hidden lg:flex flex-col gap-4">
+              {productImages.map((img, i) => (
+                <div key={i} className="relative aspect-[3/4] w-full bg-[#f4f0ea] group overflow-hidden">
+                  <Image
+                    src={img}
+                    alt={`${product.title} - View ${i + 1}`}
+                    fill
+                    className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                    priority={i === 0}
+                  />
+                </div>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Right: Product Information (42% Grid span on Desktop) */}
+          {/* Right: Product Information (Sticky on Desktop) */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-5 space-y-6 lg:pt-2 flex flex-col justify-start"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-5 space-y-8 lg:pt-2 flex flex-col justify-start lg:sticky lg:top-24 self-start"
           >
             {/* Category tag */}
             <div className="flex items-center gap-3">
@@ -384,28 +300,33 @@ export default function ProductDetailsClient({
             <div className="w-full h-[1px] bg-[#D4AF37]/15" />
 
             {/* Editorial Description Hook */}
-            <p className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed">
-              {product.description}
-            </p>
+            <div className="space-y-4">
+              <p className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed">
+                {product.description}
+              </p>
+              <p className="font-serif text-[13px] text-[#2C1810] leading-relaxed italic">
+                "Designed as a tribute to classic Indian artisanal crafts, this piece balances structural geometry with fluid softness. It speaks to the contemporary wearer who seeks statement elements rooted in native craft legacy."
+              </p>
+            </div>
 
             {/* Specifications Grid */}
-            <div className="py-4 border-y border-[#D4AF37]/15">
-              <div className="grid grid-cols-2 gap-y-3.5 gap-x-4">
-                <div>
-                  <span className="block font-sans text-[8px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase">Fabrication</span>
-                  <span className="font-serif text-[12px] text-[#2C1810] italic">{specs.fabric}</span>
+            <div className="py-6 border-y border-[#D4AF37]/15">
+              <div className="grid grid-cols-2 gap-y-5 gap-x-4">
+                <div className="space-y-1">
+                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Fabrication</span>
+                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.fabric}</span>
                 </div>
-                <div>
-                  <span className="block font-sans text-[8px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase">Technique</span>
-                  <span className="font-serif text-[12px] text-[#2C1810] italic">{specs.technique}</span>
+                <div className="space-y-1">
+                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Technique</span>
+                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.technique}</span>
                 </div>
-                <div>
-                  <span className="block font-sans text-[8px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase">Silhouette</span>
-                  <span className="font-serif text-[12px] text-[#2C1810] italic">{specs.fit}</span>
+                <div className="space-y-1">
+                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Silhouette</span>
+                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.fit}</span>
                 </div>
-                <div>
-                  <span className="block font-sans text-[8px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase">Occasion</span>
-                  <span className="font-serif text-[12px] text-[#2C1810] italic">{specs.occasion}</span>
+                <div className="space-y-1">
+                  <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Occasion</span>
+                  <span className="font-serif text-[13px] text-[#2C1810]">{specs.occasion}</span>
                 </div>
               </div>
             </div>
@@ -546,121 +467,42 @@ export default function ProductDetailsClient({
           </motion.div>
         </div>
 
-        {/* Product Detail Tabs Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="mb-16"
-        >
-          {/* Tab Headers */}
-          <div className="flex border-b border-[#D4AF37]/15 mb-8">
-            <button
-              onClick={() => setActiveTab("description")}
-              className={`px-6 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-all cursor-pointer relative ${
-                activeTab === "description"
-                  ? "text-[#2C1810]"
-                  : "text-[#7A6B5D] hover:text-[#2C1810]"
-              }`}
-            >
-              Description & Details
-              {activeTab === "description" && (
-                <motion.div
-                  layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D4AF37]"
-                />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("reviews")}
-              className={`px-6 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-all cursor-pointer relative ${
-                activeTab === "reviews"
-                  ? "text-[#2C1810]"
-                  : "text-[#7A6B5D] hover:text-[#2C1810]"
-              }`}
-            >
-              Reviews
-              {activeTab === "reviews" && (
-                <motion.div
-                  layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D4AF37]"
-                />
-              )}
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <AnimatePresence mode="wait">
-            {activeTab === "description" ? (
-              <motion.div
-                key="description"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="border border-[#D4AF37]/25 bg-[#FFFCF7] p-8 md:p-10 relative overflow-hidden"
-              >
-                {/* Decorative inner gold outline */}
-                <div className="absolute inset-3 border border-[#D4AF37]/10 pointer-events-none" />
-                
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {/* Left Column: Story */}
-                  <div className="space-y-3">
-                    <h4 className="font-serif text-sm font-normal text-[#2C1810] uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-[#D4AF37] rotate-45" /> The Designer's Note
-                    </h4>
-                    <p className="font-serif text-[13px] text-[#7A6B5D] leading-relaxed italic">
-                      "Designed as a tribute to classic Indian artisanal crafts, this piece balances structural geometry with fluid softness. It speaks to the contemporary wearer who seeks statement elements rooted in native craft legacy."
-                    </p>
-                  </div>
-
-                  {/* Middle Column: Heritage */}
-                  <div className="space-y-3 border-t md:border-t-0 md:border-x border-[#D4AF37]/15 md:px-6">
-                    <h4 className="font-serif text-sm font-normal text-[#2C1810] uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-[#D4AF37] rotate-45" /> Heritage & Craft
-                    </h4>
-                    <p className="font-sans text-xs text-[#7A6B5D] leading-relaxed">
-                      {specs.heritage} Our atelier supports slow-fashion practices and native weaving clusters to ensure long-term preservation of ancestral handwork and geometric embroidery styles.
-                    </p>
-                  </div>
-
-                  {/* Right Column: Spec List */}
-                  <div className="space-y-3">
-                    <h4 className="font-serif text-sm font-normal text-[#2C1810] uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-[#D4AF37] rotate-45" /> Care & Details
-                    </h4>
-                    <ul className="space-y-2 text-xs text-[#7A6B5D] font-sans">
+            {/* Stacked Details & Reviews instead of tabs */}
+            <div className="mt-8 border-t border-[#D4AF37]/15 pt-8 space-y-12">
+              
+              {/* Care & Heritage Section */}
+              <div className="space-y-6">
+                <h3 className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#2C1810] uppercase">
+                  Heritage & Care
+                </h3>
+                <div className="space-y-4">
+                  <p className="font-sans text-[12px] text-[#7A6B5D] leading-relaxed">
+                    {specs.heritage} Our atelier supports slow-fashion practices and native weaving clusters to ensure long-term preservation of ancestral handwork and geometric embroidery styles.
+                  </p>
+                  <ul className="space-y-2 text-[12px] text-[#7A6B5D] font-sans">
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#D4AF37]">✦</span> <strong>Care Instructions:</strong> {specs.care}
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#D4AF37]">✦</span> <strong>Authenticity:</strong> 100% Handloom Certified
+                    </li>
+                    {product.sku && (
                       <li className="flex items-center gap-2">
-                        <span className="text-[#D4AF37]">✦</span> <strong>Composition:</strong> {specs.fabric}
+                        <span className="text-[#D4AF37]">✦</span> <strong>Product SKU:</strong> {product.sku}
                       </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#D4AF37]">✦</span> <strong>Care Instructions:</strong> {specs.care}
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#D4AF37]">✦</span> <strong>Authenticity:</strong> 100% Handloom Certified
-                      </li>
-                      {product.sku && (
-                        <li className="flex items-center gap-2 pt-1 border-t border-[#D4AF37]/10">
-                          <span className="text-[#D4AF37]">✦</span> <strong>Product SKU:</strong> {product.sku}
-                        </li>
-                      )}
-                    </ul>
-                  </div>
+                    )}
+                  </ul>
                 </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="reviews"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-              >
+              </div>
+
+              {/* Reviews Section */}
+              <div className="space-y-6 border-t border-[#D4AF37]/15 pt-8">
+                <h3 className="font-sans text-[10px] font-bold tracking-[0.25em] text-[#2C1810] uppercase">
+                  Customer Reviews
+                </h3>
                 <ReviewTab product={product} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+              </div>
+            </div>
       </div>
 
       {/* Mobile Sticky Add to Bag Bar */}

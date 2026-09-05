@@ -14,34 +14,34 @@ export function HomepageMediaCMS() {
 
   const defaultData = {
     category_grid: [
-      { id: 'cat1', title: 'CLOTHING', mediaUrl: '', type: 'image', link: '/clothing' },
-      { id: 'cat2', title: 'FOOTWEAR', mediaUrl: '', type: 'image', link: '/footwear' },
-      { id: 'cat3', title: 'JEWELLERY', mediaUrl: '', type: 'image', link: '/jewellery' },
-      { id: 'cat4', title: 'ACCESSORIES', mediaUrl: '', type: 'image', link: '/accessories' }
+      { id: 'cat1', title: 'CLOTHING', mediaUrl: '/images/clothing.jpg', type: 'image', link: '/clothing' },
+      { id: 'cat2', title: 'FOOTWEAR', mediaUrl: '/images/footwear.jpg', type: 'image', link: '/footwear' },
+      { id: 'cat3', title: 'JEWELLERY', mediaUrl: '/images/jewellery.jpg', type: 'image', link: '/jewellery' },
+      { id: 'cat4', title: 'ACCESSORIES', mediaUrl: '/images/accessories.jpg', type: 'image', link: '/accessories' }
     ],
     asymmetrical: [
-      { id: 'asym1', title: 'CLOTHING', subtitle: 'CONTEMPORARY INDIAN SILHOUETTES', mediaUrl: '', type: 'image', link: '/clothing' },
-      { id: 'asym2', title: 'JEWELLERY', subtitle: 'MAKE THE DETAIL COUNT', mediaUrl: '', type: 'image', link: '/jewellery' },
-      { id: 'asym3', title: 'FOOTWEAR', subtitle: 'STEP INTO SOMETHING EXTRAORDINARY', mediaUrl: '', type: 'image', link: '/footwear' }
+      { id: 'asym1', title: 'CLOTHING', subtitle: 'CONTEMPORARY INDIAN SILHOUETTES', mediaUrl: '/images/clothing.jpg', type: 'image', link: '/clothing' },
+      { id: 'asym2', title: 'JEWELLERY', subtitle: 'MAKE THE DETAIL COUNT', mediaUrl: '/images/jewellery.jpg', type: 'image', link: '/jewellery' },
+      { id: 'asym3', title: 'FOOTWEAR', subtitle: 'STEP INTO SOMETHING EXTRAORDINARY', mediaUrl: '/images/footwear.jpg', type: 'image', link: '/footwear' }
     ],
     moods: [
-      { id: 'mood1', title: 'EVERYDAY EDIT', mediaUrl: '', type: 'image', link: '/mood/everyday-edit' },
-      { id: 'mood2', title: 'FESTIVE EDIT', mediaUrl: '', type: 'image', link: '/mood/festive-edit' },
-      { id: 'mood3', title: 'OCCASION EDIT', mediaUrl: '', type: 'image', link: '/mood/occasion-edit' },
-      { id: 'mood4', title: 'STATEMENT EDIT', mediaUrl: '', type: 'image', link: '/mood/statement-edit' }
+      { id: 'mood1', title: 'EVERYDAY EDIT', mediaUrl: '/images/clothing.jpg', type: 'image', link: '/mood/everyday-edit' },
+      { id: 'mood2', title: 'FESTIVE EDIT', mediaUrl: '/images/moments-banner.jpg', type: 'image', link: '/mood/festive-edit' },
+      { id: 'mood3', title: 'OCCASION EDIT', mediaUrl: '/images/curated-couch.jpg', type: 'image', link: '/mood/occasion-edit' },
+      { id: 'mood4', title: 'STATEMENT EDIT', mediaUrl: '/images/hero-banner.jpg', type: 'image', link: '/mood/statement-edit' }
     ],
     instagram: [
-      { id: 'ig1', mediaUrl: '', type: 'image', link: 'https://instagram.com' },
-      { id: 'ig2', mediaUrl: '', type: 'image', link: 'https://instagram.com' },
-      { id: 'ig3', mediaUrl: '', type: 'image', link: 'https://instagram.com' },
-      { id: 'ig4', mediaUrl: '', type: 'image', link: 'https://instagram.com' },
-      { id: 'ig5', mediaUrl: '', type: 'image', link: 'https://instagram.com' },
-      { id: 'ig6', mediaUrl: '', type: 'image', link: 'https://instagram.com' }
+      { id: 'ig1', mediaUrl: '/images/instagram/instagram1.jpg', type: 'image', link: 'https://instagram.com' },
+      { id: 'ig2', mediaUrl: '/images/instagram/instagram2.jpg', type: 'image', link: 'https://instagram.com' },
+      { id: 'ig3', mediaUrl: '/images/instagram/instagram3.jpg', type: 'image', link: 'https://instagram.com' },
+      { id: 'ig4', mediaUrl: '/images/instagram/instagram4.jpg', type: 'image', link: 'https://instagram.com' },
+      { id: 'ig5', mediaUrl: '/images/instagram/instagram1.jpg', type: 'image', link: 'https://instagram.com' },
+      { id: 'ig6', mediaUrl: '/images/instagram/instagram2.jpg', type: 'image', link: 'https://instagram.com' }
     ],
-    moments: { mediaUrl: '', type: 'image' },
-    impression_portrait: { mediaUrl: '', type: 'image' },
-    impression_landscape: { mediaUrl: '', type: 'image' },
-    couch: { mediaUrl: '', type: 'image' }
+    moments: { mediaUrl: '/images/moments-banner.jpg', type: 'image' },
+    impression_portrait: { mediaUrl: '/images/clothing.jpg', type: 'image' },
+    impression_landscape: { mediaUrl: '/images/hero-banner.jpg', type: 'image' },
+    couch: { mediaUrl: '/images/curated-couch.jpg', type: 'image' }
   };
 
   useEffect(() => {

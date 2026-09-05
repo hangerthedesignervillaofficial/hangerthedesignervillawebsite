@@ -41,6 +41,7 @@ interface FormData {
   description: string;
   price: string;
   image: string;
+  gallery: string[];
   video_url: string;
   stock: string;
   sku: string;
@@ -64,6 +65,7 @@ export function ProductFormModal({
     description: "",
     price: "",
     image: "",
+    gallery: [],
     video_url: "",
     stock: "",
     sku: "",
@@ -78,11 +80,13 @@ export function ProductFormModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const {
     data: categories,
@@ -98,6 +102,7 @@ export function ProductFormModal({
         description: product.description || "",
         price: product.price?.toString() || "",
         image: product.image || "",
+        gallery: product.gallery || [],
         video_url: product.video_url || "",
         stock: product.stock?.toString() || "",
         sku: product.sku || "",
@@ -116,6 +121,7 @@ export function ProductFormModal({
         description: "",
         price: "",
         image: "",
+        gallery: [],
         video_url: "",
         stock: "",
         sku: "",
@@ -249,6 +255,36 @@ export function ProductFormModal({
     e.target.value = "";
   };
 
+  const handleGalleryFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setGalleryUploading(true);
+    try {
+      const uploadPromises = files.map(file => uploadImageToSupabase(file));
+      const urls = await Promise.all(uploadPromises);
+      const validUrls = urls.filter((url): url is string => url !== null);
+      
+      if (validUrls.length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          gallery: [...prev.gallery, ...validUrls]
+        }));
+        toast.success(`${validUrls.length} image(s) added to gallery`);
+      }
+    } finally {
+      setGalleryUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const removeGalleryImage = (indexToRemove: number) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: prev.gallery.filter((_, index) => index !== indexToRemove)
+    }));
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -283,6 +319,7 @@ export function ProductFormModal({
         description: formData.description.trim(),
         price: parseFloat(formData.price),
         image: formData.image.trim() || undefined,
+        gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
         video_url: formData.video_url?.trim() || undefined,
         stock: parseInt(formData.stock),
         sku: formData.sku.trim() || undefined,
@@ -429,6 +466,63 @@ export function ProductFormModal({
                 className="border-b border-[#D4AF37]/20 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent h-8 px-0 text-[11px] focus-visible:ring-0 focus:border-[#D4AF37] text-[#2C1810] placeholder:text-[#7A6B5D]/30"
               />
             </div>
+          </div>
+          {/* Gallery Upload Zone */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase">
+                Product Gallery
+              </Label>
+              <button
+                type="button"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={galleryUploading}
+                className="text-[9px] font-sans font-bold text-[#D4AF37] uppercase tracking-widest hover:text-[#4A0E17] transition-colors"
+              >
+                {galleryUploading ? "Uploading..." : "+ Add Images"}
+              </button>
+            </div>
+            
+            {formData.gallery.length > 0 ? (
+              <div className="grid grid-cols-4 gap-2">
+                {formData.gallery.map((url, index) => (
+                  <div key={index} className="relative group aspect-square bg-[#f4f0ea]">
+                    <img src={url} alt={`Gallery ${index}`} className="w-full h-full object-cover border border-[#D4AF37]/20" />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryImage(index)}
+                      className="absolute top-1 right-1 w-5 h-5 bg-[#2C1810]/80 hover:bg-[#4A0E17] text-white flex items-center justify-center transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                    >
+                      <X className="w-3 h-3 stroke-[2]" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                onClick={() => galleryInputRef.current?.click()}
+                className="w-full h-24 border-2 border-dashed border-[#D4AF37]/25 hover:border-[#D4AF37]/60 hover:bg-[#D4AF37]/3 bg-[#FFFDFC] flex flex-col items-center justify-center cursor-pointer transition-all duration-200"
+              >
+                <div className="flex flex-col items-center gap-2 text-center">
+                  {galleryUploading ? (
+                    <Loader2 className="w-4 h-4 text-[#D4AF37] animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4 text-[#D4AF37] stroke-[1.5]" />
+                  )}
+                  <p className="font-sans text-[9px] font-semibold text-[#7A6B5D] uppercase tracking-wider">
+                    Add Multiple Photos
+                  </p>
+                </div>
+              </div>
+            )}
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleGalleryFileInputChange}
+            />
           </div>
           
           
