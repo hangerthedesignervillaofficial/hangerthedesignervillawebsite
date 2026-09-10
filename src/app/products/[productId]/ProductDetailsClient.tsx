@@ -271,7 +271,7 @@ export default function ProductDetailsClient({
                           const el = document.getElementById(`mob-img-${i}`);
                           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                         }}
-                        className={`flex-shrink-0 w-[72px] h-[90px] border overflow-hidden transition-all duration-300 ${
+                        className={`relative flex-shrink-0 w-[72px] h-[90px] border overflow-hidden transition-all duration-300 ${
                           selectedImageIndex === i
                             ? 'border-[#D4AF37] shadow-sm opacity-100 scale-105'
                             : 'border-[#D4AF37]/20 opacity-60 hover:opacity-100'
