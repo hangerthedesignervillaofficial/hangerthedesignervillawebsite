@@ -177,12 +177,12 @@ export default function AdminProductsPage() {
                       In Stock
                     </div>
                   )}
-                  {product.tags?.includes('bestseller') && (
+                  {product.display_tags?.includes('bestseller') && (
                     <div className="bg-[#D4AF37] text-white px-2 py-1 text-center text-[8px] font-sans tracking-[0.1em] uppercase shadow-sm">
                       Bestseller
                     </div>
                   )}
-                  {product.tags?.includes('new_arrival') && (
+                  {product.display_tags?.includes('new_arrival') && (
                     <div className="bg-white border border-[#D4AF37]/50 text-[#D4AF37] px-2 py-1 text-center text-[8px] font-sans tracking-[0.1em] uppercase shadow-sm">
                       New Arrival
                     </div>
