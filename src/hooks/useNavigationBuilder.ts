@@ -23,87 +23,27 @@ export function useNavigationBuilder() {
   useEffect(() => {
     async function fetchNav() {
       try {
-        const { data } = await supabase
-          .from("site_settings")
-          .select("value")
-          .eq("key", "navigation_menu")
-          .single();
+        const { data, error } = await supabase
+          .from("categories")
+          .select("id, name")
+          .order('name');
         
-        if (data && data.value && data.value.length > 0) {
-          setNavItems(data.value);
+        if (data && data.length > 0) {
+          const items: NavItem[] = data.map((cat: any) => ({
+            id: cat.id.toString(),
+            title: cat.name,
+            href: `/products?category=${cat.id}`,
+            icon: 'FolderHeart', // Default elegant icon since categories table lacks icons
+            hasSub: true, // Always true to enable product dropdowns
+            subItems: []
+          }));
+          setNavItems(items);
         } else {
-          // Fallback Default Navigation Structure if CMS is empty
-          setNavItems([
-            {
-              id: 'clothing',
-              title: 'Clothing',
-              href: '/clothing',
-              icon: 'shirt',
-              hasSub: true,
-              subItems: [
-                { id: 'c1', title: 'Dresses', href: '/clothing?category=dresses' },
-                { id: 'c2', title: 'Tops', href: '/clothing?category=tops' },
-                { id: 'c3', title: 'Bottoms', href: '/clothing?category=bottoms' },
-                { id: 'c4', title: 'Outerwear', href: '/clothing?category=outerwear' }
-              ]
-            },
-            {
-              id: 'jewellery',
-              title: 'Jewellery',
-              href: '/jewellery',
-              icon: 'gem',
-              hasSub: true,
-              subItems: [
-                { id: 'j1', title: 'Necklaces', href: '/jewellery?category=necklaces' },
-                { id: 'j2', title: 'Earrings', href: '/jewellery?category=earrings' },
-                { id: 'j3', title: 'Rings', href: '/jewellery?category=rings' },
-                { id: 'j4', title: 'Bracelets', href: '/jewellery?category=bracelets' }
-              ]
-            },
-            {
-              id: 'accessories',
-              title: 'Accessories',
-              href: '/accessories',
-              icon: 'bag',
-              hasSub: true,
-              subItems: [
-                { id: 'a1', title: 'Handbags', href: '/accessories?category=handbags' },
-                { id: 'a2', title: 'Belts', href: '/accessories?category=belts' },
-                { id: 'a3', title: 'Scarves', href: '/accessories?category=scarves' },
-                { id: 'a4', title: 'Sunglasses', href: '/accessories?category=sunglasses' }
-              ]
-            },
-            {
-              id: 'footwear',
-              title: 'Footwear',
-              href: '/footwear',
-              icon: 'shoe',
-              hasSub: true,
-              subItems: [
-                { id: 'f1', title: 'Heels', href: '/footwear?category=heels' },
-                { id: 'f2', title: 'Flats', href: '/footwear?category=flats' },
-                { id: 'f3', title: 'Boots', href: '/footwear?category=boots' },
-                { id: 'f4', title: 'Sneakers', href: '/footwear?category=sneakers' }
-              ]
-            }
-          ]);
+          setNavItems([]);
         }
       } catch (err) {
-        console.error("Failed to load navigation menu", err);
-        // Ensure fallback even on error
-        setNavItems([
-            {
-              id: 'clothing',
-              title: 'Clothing',
-              href: '/clothing',
-              icon: 'shirt',
-              hasSub: true,
-              subItems: [
-                { id: 'c1', title: 'Dresses', href: '/clothing?category=dresses' },
-                { id: 'c2', title: 'Tops', href: '/clothing?category=tops' }
-              ]
-            }
-        ]);
+        console.error("Failed to load categories for navigation", err);
+        setNavItems([]);
       } finally {
         setLoading(false);
       }

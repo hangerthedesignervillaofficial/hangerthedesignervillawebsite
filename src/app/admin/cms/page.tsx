@@ -7,13 +7,12 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { toast } from "sonner";
 import { CategoriesCMS } from "@/components/admin/CategoriesCMS";
 import { HomepageMediaCMS } from "@/components/admin/HomepageMediaCMS";
-import { NavigationCMS } from "@/components/admin/NavigationCMS";
 
 export default function CMSPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'hero' | 'general' | 'categories' | 'navigation' | 'media'>('navigation');
+  const [activeTab, setActiveTab] = useState<'hero' | 'general' | 'categories' | 'media'>('categories');
   const [generalSettings, setGeneralSettings] = useState({
     dressed_subtitle: "THE HANGER SPIRIT",
     dressed_title: "DRESSED TO MAKE AN IMPRESSION.",
@@ -240,12 +239,6 @@ export default function CMSPage() {
               className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase ${activeTab === 'categories' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
             >
               Category Table
-            </button>
-            <button 
-              onClick={() => setActiveTab('navigation')}
-              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase ${activeTab === 'navigation' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
-            >
-              Navigation Builder
             </button>
             <button 
               onClick={() => setActiveTab('media')}
@@ -486,10 +479,6 @@ export default function CMSPage() {
           ) : activeTab === 'categories' ? (
             <div className="bg-white p-6 md:p-10 shadow-[0_4px_20px_rgba(212,175,55,0.05)]">
               <CategoriesCMS />
-            </div>
-          ) : activeTab === 'navigation' ? (
-            <div className="bg-white p-6 md:p-10 shadow-[0_4px_20px_rgba(212,175,55,0.05)]">
-              <NavigationCMS />
             </div>
           ) : activeTab === 'media' ? (
             <div className="bg-white p-6 md:p-10 shadow-[0_4px_20px_rgba(212,175,55,0.05)]">
