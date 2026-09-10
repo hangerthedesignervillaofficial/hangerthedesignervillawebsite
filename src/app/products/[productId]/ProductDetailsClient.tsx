@@ -48,7 +48,6 @@ export default function ProductDetailsClient({
   // Fake review generation based on product ID (deterministic)
   const seed = product.product_id ? product.product_id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
   const avgRating = parseFloat((3.8 + (seed % 12) / 10).toFixed(1));
-  const totalReviews = 8 + (seed % 47);
 
   const reviewNames = ['Priya S.', 'Neha Kapoor', 'Anjali M.', 'Riya Sharma', 'Meera D.', 'Kavya R.', 'Sanya T.', 'Pooja B.'];
   const reviewComments = [
@@ -65,6 +64,8 @@ export default function ProductDetailsClient({
     date: new Date(Date.now() - (1000 * 60 * 60 * 24 * (7 + (seed + i * 13) % 60))).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
     verified: true,
   }));
+  // totalReviews matches what is actually displayed
+  const totalReviews = fakeReviews.length;
 
   const productImages = product.image
     ? [product.image, ...(product.gallery || [])]
@@ -135,44 +136,51 @@ export default function ProductDetailsClient({
             transition={{ duration: 0.6 }}
             className="lg:col-span-7 w-full"
           >
-            {/* ── MOBILE: Natural-height image + thumbnail dots ── */}
-            <div className="lg:hidden -mx-4 relative">
+            {/* ── MOBILE: Square image + thumbnail strip below ── */}
+            <div className="lg:hidden -mx-4">
 
-              {/* Main image — auto height, no blank space */}
-              <div className="relative w-full bg-[#f4f0ea] overflow-hidden">
+              {/* 1:1 Square Main Image */}
+              <div className="relative w-full aspect-square bg-[#f4f0ea] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={productImages[selectedImageIndex]}
                   alt={product.title}
-                  className="w-full h-auto block"
-                  style={{ maxHeight: '85vw', objectFit: 'contain', background: '#f4f0ea' }}
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
-                {/* Wishlist floating button */}
+                {/* Wishlist button */}
                 <button
-                  className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center bg-white/85 backdrop-blur-md text-[#2C1810] shadow-sm active:scale-95 transition-transform z-10"
+                  className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 backdrop-blur-md text-[#2C1810] shadow-md active:scale-95 transition-transform z-10"
                   onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
                 >
                   <Heart className={`h-4 w-4 stroke-[1.5] transition-all duration-300 ${ isFavorited ? 'fill-[#4A0E17] text-[#4A0E17]' : '' }`} />
                 </button>
+                {/* Slide counter badge */}
+                {productImages.length > 1 && (
+                  <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {selectedImageIndex + 1}/{productImages.length}
+                  </div>
+                )}
               </div>
 
-              {/* Mobile Thumbnail Strip — visible above sticky bar */}
+              {/* Thumbnail Strip — always visible, scrolls with page */}
               {productImages.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto px-4 pt-3 pb-2 hide-scrollbar">
-                  {productImages.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setSelectedImageIndex(i)}
-                      className={`flex-shrink-0 w-16 h-16 border-2 overflow-hidden rounded-sm transition-all duration-200 ${
-                        selectedImageIndex === i
-                          ? 'border-[#D4AF37] opacity-100'
-                          : 'border-transparent opacity-50 hover:opacity-80'
-                      }`}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img} alt={`view ${i+1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
+                <div className="bg-[#f4f0ea] border-t border-[#D4AF37]/10">
+                  <div className="flex gap-2 overflow-x-auto px-3 py-3 hide-scrollbar">
+                    {productImages.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedImageIndex(i)}
+                        className={`flex-shrink-0 w-[68px] h-[68px] border-2 overflow-hidden transition-all duration-200 ${
+                          selectedImageIndex === i
+                            ? 'border-[#D4AF37] shadow-sm opacity-100'
+                            : 'border-[#D4AF37]/20 opacity-55 hover:opacity-90'
+                        }`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={img} alt={`view ${i+1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
