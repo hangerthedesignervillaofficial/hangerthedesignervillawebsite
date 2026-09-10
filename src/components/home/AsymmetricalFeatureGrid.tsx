@@ -85,23 +85,23 @@ export function AsymmetricalFeatureGrid({ initialData }: { initialData?: any[] }
           ))}
         </div>
 
-        {/* Mobile Layout: Stacked Category Banners with Image Backgrounds */}
-        <div className="flex md:hidden flex-col gap-4">
+        {/* Mobile Layout: Stacked Tall Cards */}
+        <div className="flex md:hidden flex-col gap-6">
           {categories.map((cat, index) => (
             <motion.div
               key={cat.title}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative overflow-hidden h-[140px] shadow-sm border border-[#D4AF37]/15"
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="group relative overflow-hidden aspect-[4/5] shadow-md border border-[#D4AF37]/15"
             >
               {/* Background Media */}
               {cat.type === 'video' ? (
-                <video src={cat.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                <video src={cat.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105" />
               ) : (
                 <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                   style={{ backgroundImage: `url(${cat.mediaUrl})` }}
                 />
               )}
@@ -109,21 +109,24 @@ export function AsymmetricalFeatureGrid({ initialData }: { initialData?: any[] }
               <div className="absolute inset-0 bg-black/45" />
               
               {/* Inner thin gold border */}
-              <div className="absolute inset-2.5 border border-[#D4AF37]/20 pointer-events-none" />
+              <div className="absolute inset-4 border border-[#D4AF37]/20 pointer-events-none" />
 
-              {/* Text Left-Aligned */}
-              <div className="absolute inset-0 flex flex-col justify-center items-start px-8 py-4">
-                <span className="font-sans text-[8px] font-bold tracking-[0.2em] text-[#D4AF37] mb-1.5 uppercase">
+              {/* Text Center-Aligned for Luxury Feel */}
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8">
+                <span className="font-sans text-[9px] font-bold tracking-[0.3em] text-[#D4AF37] mb-3 uppercase">
                   {cat.title === "CLOTHING" ? "DESIGNER WEAR" : cat.title === "JEWELLERY" ? "ROYAL ORNAMENTS" : "LUXURY FOOTWEAR"}
                 </span>
-                <h3 className="font-serif text-lg font-normal tracking-[0.15em] text-white uppercase mb-2" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+                <h3 className="font-serif text-3xl font-normal tracking-[0.2em] text-white uppercase mb-3 leading-tight" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                   {cat.title}
                 </h3>
+                <p className="font-sans text-[10px] text-gray-300 tracking-[0.15em] font-light max-w-[200px] mb-8 leading-relaxed uppercase">
+                  {cat.subtitle}
+                </p>
                 <Link 
                   href={cat.link}
-                  className="font-sans text-[8.5px] font-bold tracking-[0.18em] text-[#D4AF37] uppercase flex items-center gap-1.5 border-b border-[#D4AF37]/40 pb-0.5 cursor-pointer"
+                  className="font-sans text-[9px] font-bold tracking-[0.2em] border border-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#1A0A0E] text-white px-6 py-3 transition-all duration-300 uppercase cursor-pointer"
                 >
-                  SHOP NOW →
+                  SHOP NOW
                 </Link>
               </div>
             </motion.div>
