@@ -147,10 +147,10 @@ export default function Sidebar() {
                 <div key={item.id} className="flex flex-col">
                   <div
                     className={cn(
-                      "flex items-center justify-between py-3 cursor-pointer transition-all duration-200 group",
+                      "flex items-center justify-between py-3 border-b border-[#2C1810]/5 cursor-pointer transition-all duration-200 group",
                       isActive
                         ? "text-[#D4AF37]"
-                        : "text-[#2C1810] hover:text-[#D4AF37]"
+                        : "text-[#2C1810]/70 hover:text-[#2C1810]"
                     )}
                     onClick={() => setExpandedItem(isExpanded ? null : item.id)}
                   >
@@ -160,8 +160,7 @@ export default function Sidebar() {
                          if (item.hasSub) { e.preventDefault(); setExpandedItem(isExpanded ? null : item.id); }
                          else handleClose();
                       }}
-                      className="font-serif text-[18px] tracking-widest uppercase leading-none flex-1 font-light"
-                      style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
+                      className="font-sans text-[13px] font-medium tracking-[0.12em] uppercase flex-1"
                     >
                       {item.title}
                     </Link>

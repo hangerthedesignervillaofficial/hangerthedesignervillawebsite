@@ -59,12 +59,12 @@ export default function RootLayout({
           theme="light"
           toastOptions={{
             unstyled: false,
-            className: "font-sans border border-[#D4AF37]/30 bg-[#FDFBF7] text-[#2C1810] shadow-[0_8px_30px_rgba(212,175,55,0.08)] rounded-none tracking-[0.05em] text-[11px] uppercase font-bold",
+            className: "font-sans border border-[#D4AF37]/40 bg-[#1A1A1A] text-[#F9F6F1] shadow-2xl rounded-sm tracking-[0.15em] text-[10px] uppercase font-bold px-5 py-4",
             classNames: {
-              error: "border-[#4A0E17]/30 bg-[#FDFBF7] text-[#4A0E17]",
-              success: "border-[#D4AF37]/50 bg-[#FDFBF7] text-[#2C1810]",
-              warning: "border-[#B89030]/40 bg-[#FDFBF7] text-[#2C1810]",
-              info: "border-[#D4AF37]/30 bg-[#FDFBF7] text-[#7A6B5D]",
+              error: "border-[#4A0E17]/60 bg-[#1A1A1A] text-[#F9F6F1]",
+              success: "border-[#D4AF37]/60 bg-[#1A1A1A] text-[#D4AF37]",
+              warning: "border-[#B89030]/60 bg-[#1A1A1A] text-[#F9F6F1]",
+              info: "border-[#D4AF37]/40 bg-[#1A1A1A] text-[#C9A962]",
             },
           }}
         />

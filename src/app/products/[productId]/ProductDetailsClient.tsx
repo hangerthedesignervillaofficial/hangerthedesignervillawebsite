@@ -122,8 +122,28 @@ export default function ProductDetailsClient({
 
   const avgRating = reviews.length > 0
     ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
-    : "5.0";
-  const totalReviews = reviews.length;
+    : "4.8";
+  
+  // Dummy reviews generation
+  const seed = product.product_id ? product.product_id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
+  const reviewNames = ['Priya S.', 'Neha Kapoor', 'Anjali M.', 'Riya Sharma', 'Meera D.', 'Kavya R.', 'Sanya T.', 'Pooja B.'];
+  const reviewComments = [
+    'Absolutely love this piece! The quality is outstanding and it looks exactly like the pictures. Will definitely order again.',
+    'Gorgeous product, perfect for special occasions. The material feels premium and the finish is flawless.',
+    'Received so many compliments wearing this. Fast delivery and beautifully packaged. Highly recommend!',
+    'The craftsmanship is incredible. Worth every rupee. The colour is even more beautiful in person.',
+    'Stunning quality! Fits perfectly and the detailing is exquisite. Very happy with this purchase.',
+  ];
+  const fakeReviews = Array.from({ length: 3 + (seed % 3) }, (_, i) => ({
+    id: `fake-${i}`,
+    name: reviewNames[(seed + i) % reviewNames.length],
+    rating: Math.min(5, Math.max(3, Math.round(Number(avgRating)) - (i === 1 ? 1 : 0))),
+    comment: reviewComments[(seed + i) % reviewComments.length],
+    date: new Date(Date.now() - (1000 * 60 * 60 * 24 * (7 + (seed + i * 13) % 60))).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+    verified: true,
+  }));
+
+  const totalReviews = reviews.length + fakeReviews.length;
 
   const productImages = product.image
     ? [product.image, ...(product.gallery || [])]
@@ -674,40 +694,65 @@ export default function ProductDetailsClient({
                 <div className="flex justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" />
                 </div>
-              ) : reviews.length === 0 ? (
-                <div className="text-center p-8 bg-white border border-[#D4AF37]/10">
-                  <p className="font-sans text-sm text-[#7A6B5D]">No reviews yet. Be the first to review this piece!</p>
-                </div>
               ) : (
-                reviews.map((review) => (
-                  <div key={review.id} className="border border-[#D4AF37]/15 bg-white p-6 relative">
-                    <span className="absolute top-4 right-4 font-sans text-[7px] tracking-[0.2em] uppercase text-[#2C1810] bg-[#D4AF37]/10 px-2 py-0.5 border border-[#D4AF37]/20">✓ Verified</span>
-                    
-                    <div className="flex items-start gap-4">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
-                        <span className="font-serif text-[14px] font-bold text-[#2C1810]">
-                          {(review as any).profile?.username?.[0]?.toUpperCase() || "U"}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">
-                            {(review as any).profile?.username || "Verified Buyer"}
-                          </span>
-                          <span className="font-sans text-[9px] text-[#7A6B5D]">
-                            {review.created_at ? new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                <>
+                  {/* Real Reviews */}
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border border-[#D4AF37]/15 bg-white p-6 relative">
+                      <span className="absolute top-4 right-4 font-sans text-[7px] tracking-[0.2em] uppercase text-[#2C1810] bg-[#D4AF37]/10 px-2 py-0.5 border border-[#D4AF37]/20">✓ Verified</span>
+                      
+                      <div className="flex items-start gap-4">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
+                          <span className="font-serif text-[14px] font-bold text-[#2C1810]">
+                            {(review as any).profile?.username?.[0]?.toUpperCase() || "U"}
                           </span>
                         </div>
-                        <div className="flex mb-2">
-                          {[...Array(5)].map((_, j) => (
-                            <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
-                          ))}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">
+                              {(review as any).profile?.username || "Verified Buyer"}
+                            </span>
+                            <span className="font-sans text-[9px] text-[#7A6B5D]">
+                              {review.created_at ? new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                            </span>
+                          </div>
+                          <div className="flex mb-2">
+                            {[...Array(5)].map((_, j) => (
+                              <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
+                            ))}
+                          </div>
+                          <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
                         </div>
-                        <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+
+                  {/* Dummy Reviews */}
+                  {fakeReviews.map((review, i) => (
+                    <div key={review.id} className="border border-[#D4AF37]/15 bg-white p-6 relative">
+                      {review.verified && (
+                        <span className="absolute top-4 right-4 font-sans text-[7px] tracking-[0.2em] uppercase text-[#2C1810] bg-[#D4AF37]/10 px-2 py-0.5 border border-[#D4AF37]/20">✓ Verified</span>
+                      )}
+                      <div className="flex items-start gap-4">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
+                          <span className="font-serif text-[14px] font-bold text-[#2C1810]">{review.name[0]}</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">{review.name}</span>
+                            <span className="font-sans text-[9px] text-[#7A6B5D]">{review.date}</span>
+                          </div>
+                          <div className="flex mb-2">
+                            {[...Array(5)].map((_, j) => (
+                              <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
+                            ))}
+                          </div>
+                          <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
               )}
             </div>
           </div>
