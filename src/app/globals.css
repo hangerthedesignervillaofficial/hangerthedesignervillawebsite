@@ -10,57 +10,57 @@
   --radius: 0.625rem;
 
   /* Warm Cream Backgrounds */
-  --background: #FDFBF7;
-  --foreground: #2C1810;
+  --background: #F9F6F1;
+  --foreground: #222222;
 
-  /* Cards — slightly warmer than background */
-  --card: #FFFCF7;
-  --card-foreground: #2C1810;
+  /* Cards */
+  --card: #FFFFFF;
+  --card-foreground: #222222;
 
   /* Popovers */
-  --popover: #FFFCF7;
-  --popover-foreground: #2C1810;
+  --popover: #FFFFFF;
+  --popover-foreground: #222222;
 
-  /* Deep Luxury Maroon — Primary */
-  --primary: #4A0E17;
-  --primary-foreground: #FFF8F0;
+  /* Primary */
+  --primary: #C9A962;
+  --primary-foreground: #FFFFFF;
 
   /* Warm Beige — Secondary */
   --secondary: #F0E6D8;
-  --secondary-foreground: #4A0E17;
+  --secondary-foreground: #222222;
 
   /* Muted Warm */
   --muted: #F0E6D8;
-  --muted-foreground: #7A6B5D;
+  --muted-foreground: #7A7A7A;
 
-  /* Muted Gold — Accent */
-  --accent: #D4AF37;
-  --accent-foreground: #2C1810;
+  /* Muted Champagne Gold — Accent */
+  --accent: #C9A962;
+  --accent-foreground: #FFFFFF;
 
   /* Destructive */
   --destructive: #B91C1C;
 
   /* Gold-tinted Borders */
-  --border: #D4AF3733;
-  --input: #D4AF3740;
-  --ring: #D4AF37;
+  --border: #C9A96240;
+  --input: #C9A96240;
+  --ring: #C9A962;
 
-  /* Charts — boutique palette */
-  --chart-1: #4A0E17;
-  --chart-2: #D4AF37;
+  /* Charts */
+  --chart-1: #222222;
+  --chart-2: #C9A962;
   --chart-3: #8B5E3C;
   --chart-4: #6B1A24;
   --chart-5: #C9A96E;
 
-  /* Sidebar (Always Dark for Premium Contrast) */
+  /* Sidebar */
   --sidebar: #1A0A0EE6;
-  --sidebar-foreground: #FDFBF7;
-  --sidebar-primary: #D4AF37;
+  --sidebar-foreground: #F9F6F1;
+  --sidebar-primary: #C9A962;
   --sidebar-primary-foreground: #1A0A0E;
   --sidebar-accent: #2E1519;
-  --sidebar-accent-foreground: #D4AF37;
-  --sidebar-border: #D4AF3720;
-  --sidebar-ring: #D4AF37;
+  --sidebar-accent-foreground: #C9A962;
+  --sidebar-border: #C9A96240;
+  --sidebar-ring: #C9A962;
 }
 
 .dark {
@@ -443,10 +443,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-heading: var(--font-heading);
   --font-sans: var(--font-sans);
-  --color-gold: #D4AF37;
-  --color-maroon: #4A0E17;
-  --color-cream: #F9F5F0;
-  --color-warm-white: #FFFCF7;
+  --color-gold: #C9A962;
+  --color-maroon: #222222;
+  --color-cream: #F9F6F1;
+  --color-warm-white: #FFFFFF;
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
@@ -532,4 +532,30 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+/* ── Utility: hide scrollbar (keep scroll functionality) ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Utility: scale-107 for category hover ── */
+.group:hover .group-hover\:scale-107 {
+  transform: scale(1.07);
+}
+
+/* ── Fix: images and videos inside absolute containers ── */
+.absolute img,
+.absolute video {
+  height: 100%;
+}
+
+/* ── Luxury selection ── */
+::selection {
+  background-color: #C9A96230;
+  color: #1A1A1A;
 }
