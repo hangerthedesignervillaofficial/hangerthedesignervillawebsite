@@ -73,7 +73,7 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
     <section
       aria-label="Hero carousel"
       className="relative w-full overflow-hidden bg-[#1A1310]
-        h-[75svh] min-h-[75svh] max-h-[75svh]
+        h-[65svh] min-h-[65svh] max-h-[65svh]
         md:h-[80vh] md:min-h-0 md:max-h-[900px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -175,25 +175,7 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
         </div>
       )}
 
-      {/* ── SLIDE INDICATORS (only if >1 slides) ── */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-7 md:bottom-9 left-0 right-0 z-30 flex justify-center">
-          <div className="flex items-center gap-2.5">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                aria-label={`Go to slide ${i + 1}`}
-                className={`rounded-full transition-all duration-500 ${
-                  i === currentIndex
-                    ? "w-7 h-1.5 bg-[#C9A962]"
-                    : "w-1.5 h-1.5 bg-white/35 hover:bg-white/60"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* ── SLIDE INDICATORS REMOVED ── */}
 
       {/* ── PROGRESS BAR (bottom edge) ── */}
       {slides.length > 1 && (
