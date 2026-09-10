@@ -36,7 +36,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
       whileTap={{ scale: 0.98 }}
     >
       {/* Image / Video Container */}
-      <div className={`relative aspect-[3/4] w-full overflow-hidden bg-[#f4f0ea] ${product.stock <= 0 ? "opacity-70 grayscale-[20%]" : ""}`}>
+      <div className={`relative aspect-square w-full overflow-hidden bg-[#f4f0ea] ${product.stock <= 0 ? "opacity-70 grayscale-[20%]" : ""}`}>
         <Link href={`/products/${product.product_id}`} className="block h-full w-full pointer-events-auto">
           {product.video_url ? (
             <video
@@ -59,7 +59,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
                 alt={product.title}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className={`object-contain object-center transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 ${
+                className={`object-cover object-center transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
                 style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease' }}
