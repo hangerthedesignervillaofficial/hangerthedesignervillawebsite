@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase/client";
 
 export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
@@ -12,6 +12,8 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
     { title: "OCCASION EDIT", mediaUrl: "/images/curated-couch.jpg", link: "/mood/occasion-edit", type: "image" },
     { title: "STATEMENT EDIT", mediaUrl: "/images/hero-banner.jpg", link: "/mood/statement-edit", type: "image" },
   ]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (initialMoods) return;
@@ -33,8 +35,16 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
     fetchSettings();
   }, []);
 
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, clientWidth } = scrollContainerRef.current;
+      const newIndex = Math.round(scrollLeft / (clientWidth * 0.4)); // Approximation based on item width + gap
+      setActiveIndex(Math.min(newIndex, moods.length - 1));
+    }
+  };
+
   return (
-    <section className="pt-8 pb-4 md:pt-14 md:pb-6 bg-[#FDFBF7]">
+    <section className="pt-6 pb-2 md:pt-12 md:pb-6 bg-[#FDFBF7]">
       <div className="container mx-auto px-4 lg:px-8">
 
         {/* ── Desktop Layout ────────────────────────────────────────── */}
@@ -120,9 +130,10 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
 
           {/* Horizontal snap-scroll container */}
           <div
-            className="flex overflow-x-auto gap-4 pb-5 pt-1 -mx-4 px-4 scroll-smooth"
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto gap-4 pb-3 pt-1 px-5 scroll-smooth snap-x snap-mandatory hide-scrollbar"
             style={{
-              scrollSnapType: "x mandatory",
               WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -198,12 +209,12 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
           </div>
 
           {/* Scroll hint dots */}
-          <div className="flex items-center justify-center gap-1.5 mt-3">
+          <div className="flex items-center justify-center gap-2 mt-2">
             {moods.map((_, i) => (
               <div
                 key={i}
-                className={`rounded-full transition-all duration-300 ${
-                  i === 0 ? "w-4 h-1 bg-[#D4AF37]" : "w-1 h-1 bg-[#D4AF37]/30"
+                className={`rounded-full transition-all duration-300 ease-out ${
+                  i === activeIndex ? "w-5 h-1 bg-[#D4AF37]" : "w-1.5 h-1.5 bg-[#D4AF37]/20"
                 }`}
               />
             ))}

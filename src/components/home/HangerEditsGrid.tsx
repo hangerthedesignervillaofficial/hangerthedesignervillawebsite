@@ -43,7 +43,7 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
               Curated Selection
             </span>
             <h2
-              className="text-[36px] sm:text-5xl md:text-6xl lg:text-[80px] font-serif text-[#2C1810] tracking-wide leading-[1.0] mb-5"
+              className="text-[28px] sm:text-4xl md:text-5xl lg:text-[60px] font-serif text-[#2C1810] tracking-[0.1em] leading-tight mb-5"
               style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
             >
               THE HANGER EDIT
@@ -86,21 +86,22 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
                 <div className="absolute inset-4 lg:inset-5 border border-[#D4AF37]/0 group-hover:border-[#D4AF37]/50 transition-all duration-700 pointer-events-none scale-95 group-hover:scale-100" />
 
                 {/* Text at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col justify-end translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
-                  <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase mb-2">
-                    Hero Piece
-                  </span>
-                  <h3 className="text-white font-serif text-3xl lg:text-4xl tracking-wide mb-3 line-clamp-2 leading-[1.2] drop-shadow-md">
-                    {displayProducts[0].title}
-                  </h3>
-                  <div className="flex items-center gap-4 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
-                    <span className="font-sans text-sm font-medium tracking-[0.1em] uppercase">
-                      ₹{displayProducts[0].price.toLocaleString("en-IN")}
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 flex flex-col justify-end translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
+                  <div className="bg-[#FDFBF7]/90 backdrop-blur-md p-5 border border-[#D4AF37]/20 shadow-lg">
+                    <span className="font-sans text-[9px] font-bold tracking-[0.25em] text-[#7A6B5D] uppercase mb-1 block">
+                      Hero Piece
                     </span>
-                    <span className="w-8 h-[1px] bg-[#D4AF37]" />
-                    <span className="font-sans text-[11px] tracking-[0.1em] uppercase flex items-center gap-2 text-white hover:text-[#D4AF37] transition-all duration-300">
-                      Explore <ArrowRight className="h-4 w-4" />
-                    </span>
+                    <h3 className="text-[#2C1810] font-serif text-2xl lg:text-3xl tracking-wide mb-3 line-clamp-2 leading-[1.2] pb-2 border-b border-[#D4AF37]/15">
+                      {displayProducts[0].title}
+                    </h3>
+                    <div className="flex items-center justify-between text-[#2C1810] opacity-90 group-hover:opacity-100 transition-opacity duration-700">
+                      <span className="font-sans text-sm font-semibold tracking-[0.05em] uppercase">
+                        ₹{displayProducts[0].price.toLocaleString("en-IN")}
+                      </span>
+                      <span className="font-sans text-[9px] tracking-[0.15em] uppercase flex items-center gap-1.5 text-[#7A6B5D] hover:text-[#D4AF37] transition-all duration-300">
+                        Explore <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -108,15 +109,15 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
           )}
 
           {/* Right Column — Stacked Smaller Items */}
-          <div className="w-full lg:w-[45%] flex flex-col gap-10 lg:gap-14 relative z-10 lg:pt-10">
+          <div className="w-full lg:w-[45%] flex flex-col gap-8 md:gap-10 lg:gap-14 relative z-10 lg:pt-10">
             {displayProducts.slice(1).map((product, idx) => (
               <motion.div
                 key={product.product_id}
-                className={`group flex items-center gap-5 md:gap-8 ${idx % 2 === 1 ? 'flex-row-reverse text-right lg:mr-10' : 'flex-row text-left lg:ml-10'}`}
-                initial={{ opacity: 0, x: idx % 2 === 1 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                className={`group flex items-center gap-5 md:gap-8 flex-row text-left lg:${idx % 2 === 1 ? 'ml-10' : 'mr-10'}`}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
               >
                 <Link
                   href={`/products/${product.product_id}`}
@@ -133,12 +134,12 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
                   <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
                 </Link>
 
-                <div className={`flex-1 flex flex-col min-w-0 ${idx % 2 === 1 ? 'items-end' : 'items-start'}`}>
-                  <span className="text-[#D4AF37] text-[10px] font-sans font-bold tracking-[0.2em] uppercase mb-2">
+                <div className={`flex-1 flex flex-col min-w-0 items-start`}>
+                  <span className="text-[#D4AF37] text-[9px] font-sans font-bold tracking-[0.2em] uppercase mb-1.5">
                     {idx === 0 ? "Trending" : idx === 1 ? "Signature" : "Classic"}
                   </span>
                   <Link href={`/products/${product.product_id}`}>
-                    <h3 className="font-serif text-lg md:text-xl text-[#2C1810] tracking-wide mb-2 hover:text-[#D4AF37] transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-serif text-base md:text-lg text-[#2C1810] tracking-wide mb-1.5 hover:text-[#D4AF37] transition-colors line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
                   </Link>
