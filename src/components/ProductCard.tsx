@@ -25,13 +25,10 @@ export function ProductCard({ product, badge }: ProductCardProps) {
     ["#FDFBF7", "#7A6B5D", "#4A0E17"]
   ][(product.product_id ? product.product_id.charCodeAt(product.product_id.length - 1) : 0) % 3];
 
-  // Mock ratings to replicate the Hanger Edit bestsellers ratings in mockup
-  const ratingData = {
-    prod_5: { rating: 3.5, reviews: 10 },
-    prod_6: { rating: 4.0, reviews: 30 },
-    prod_7: { rating: 4.5, reviews: 20 },
-    prod_8: { rating: 4.8, reviews: 15 }
-  }[product.product_id] || null;
+  // Deterministic ratings from product ID so every product shows stars
+  const seed = product.product_id ? product.product_id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
+  const rating = 3.8 + (seed % 12) / 10; // 3.8 to 4.9
+  const reviewCount = 8 + (seed % 47); // 8 to 54
 
   return (
     <motion.div
@@ -62,7 +59,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
                 alt={product.title}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className={`object-cover object-center transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-108 ${
+                className={`object-contain object-center transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
                 style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease' }}
@@ -130,30 +127,28 @@ export function ProductCard({ product, badge }: ProductCardProps) {
           </p>
         </Link>
         
-        {/* Bestseller Ratings Row */}
-        {ratingData && (
-          <div className="flex items-center gap-1 mb-1.5 md:mb-2">
-            <div className="flex text-[#D4AF37]">
-              {[...Array(5)].map((_, i) => {
-                const isFilled = i < Math.floor(ratingData.rating);
-                return (
-                  <svg
-                    key={i}
-                    className={`h-2.5 w-2.5 md:h-3 md:w-3 transition-transform duration-200 ${isFilled ? "fill-[#D4AF37]" : "text-gray-300 fill-gray-200"}`}
-                    style={{ transitionDelay: `${i * 50}ms` }}
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                );
-              })}
-            </div>
-            <span className="text-[9px] md:text-[10px] font-sans text-[#7A6B5D] font-medium">
-              {ratingData.rating} ({ratingData.reviews}+)
-            </span>
+        {/* Ratings Row — shown for all products */}
+        <div className="flex items-center gap-1 mb-1.5 md:mb-2">
+          <div className="flex text-[#D4AF37]">
+            {[...Array(5)].map((_, i) => {
+              const filled = i < Math.floor(rating);
+              const half = !filled && i < rating;
+              return (
+                <svg
+                  key={i}
+                  className={`h-2.5 w-2.5 md:h-3 md:w-3 ${ filled ? 'fill-[#D4AF37]' : half ? 'fill-[#D4AF37]/50' : 'fill-gray-200'}`}
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              );
+            })}
           </div>
-        )}
+          <span className="text-[9px] md:text-[10px] font-sans text-[#7A6B5D] font-medium">
+            {rating.toFixed(1)} ({reviewCount})
+          </span>
+        </div>
         
         <p className="font-serif text-[14px] md:text-[15px] tracking-wide text-[#2C1810] font-medium mb-3 md:mb-4">
           ₹{product.price.toLocaleString("en-IN")}
