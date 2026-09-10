@@ -5,7 +5,6 @@ import { HorizontalProductCarousel } from "@/components/home/HorizontalProductCa
 import { HangerEditsGrid } from "@/components/home/HangerEditsGrid";
 import { ShopByMood } from "@/components/home/ShopByMood";
 import { BrandStory } from "@/components/home/BrandStory";
-import { MomentsBanner } from "@/components/home/MomentsBanner";
 import { AsymmetricalFeatureGrid } from "@/components/home/AsymmetricalFeatureGrid";
 import { Testimonials } from "@/components/home/Testimonials";
 import { InstagramGrid } from "@/components/home/InstagramGrid";
@@ -64,8 +63,6 @@ export default async function Home() {
               products={newArrivals} 
             />
           )}
-          
-          <MomentsBanner initialData={homepageMedia.moments_banner} />
           
           <ShopByMood initialMoods={homepageMedia.shop_by_mood} />
           
