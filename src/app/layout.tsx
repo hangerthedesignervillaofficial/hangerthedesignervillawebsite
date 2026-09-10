@@ -58,8 +58,8 @@ export default function RootLayout({
           visibleToasts={1}
           theme="light"
           toastOptions={{
-            unstyled: false,
-            className: "font-sans border border-[#D4AF37]/40 bg-[#1A1A1A] text-[#F9F6F1] shadow-2xl rounded-sm tracking-[0.15em] text-[10px] uppercase font-bold px-5 py-4",
+            unstyled: true,
+            className: "flex items-center gap-3 font-sans border border-[#D4AF37]/40 bg-[#1A1A1A] text-[#F9F6F1] shadow-2xl rounded-sm tracking-[0.15em] text-[10px] uppercase font-bold px-6 py-4 w-full max-w-sm mx-auto my-2",
             classNames: {
               error: "border-[#4A0E17]/60 bg-[#1A1A1A] text-[#F9F6F1]",
               success: "border-[#D4AF37]/60 bg-[#1A1A1A] text-[#D4AF37]",

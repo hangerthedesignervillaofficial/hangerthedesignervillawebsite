@@ -214,28 +214,47 @@ export default function ProductDetailsClient({
             transition={{ duration: 0.6 }}
             className="lg:col-span-7 w-full"
           >
-            {/* ── MOBILE: Square image + thumbnail strip below ── */}
+            {/* ── MOBILE: Swipeable image slider + thumbnail strip below ── */}
             <div className="lg:hidden -mx-4">
+              {/* Swipeable Main Images */}
+              <div className="relative w-full aspect-[4/5] bg-[#f4f0ea]">
+                <div 
+                  id="mobile-image-slider"
+                  className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar"
+                  onScroll={(e) => {
+                    const scrollLeft = (e.target as HTMLElement).scrollLeft;
+                    const width = (e.target as HTMLElement).clientWidth;
+                    const index = Math.round(scrollLeft / width);
+                    if (index !== selectedImageIndex && index >= 0 && index < productImages.length) {
+                      setSelectedImageIndex(index);
+                    }
+                  }}
+                >
+                  {productImages.map((img, i) => (
+                    <div key={i} id={`mob-img-${i}`} className="flex-shrink-0 w-full h-full snap-center relative">
+                      <Image 
+                        src={img} 
+                        alt={`${product.title} view ${i + 1}`} 
+                        fill 
+                        className="object-cover" 
+                        priority={i === 0}
+                      />
+                    </div>
+                  ))}
+                </div>
 
-              {/* 1:1 Square Main Image */}
-              <div className="relative w-full aspect-square bg-[#f4f0ea] overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={productImages[selectedImageIndex]}
-                  alt={product.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
                 {/* Wishlist button */}
                 <button
-                  className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 backdrop-blur-md text-[#2C1810] shadow-md active:scale-95 transition-transform z-10"
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center bg-white/90 backdrop-blur-md text-[#2C1810] shadow-md active:scale-95 transition-transform z-10"
                   onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
                 >
-                  <Heart className={`h-4 w-4 stroke-[1.5] transition-all duration-300 ${ isFavorited ? 'fill-[#4A0E17] text-[#4A0E17]' : '' }`} />
+                  <Heart className={`h-[18px] w-[18px] stroke-[1.5] transition-all duration-300 ${ isFavorited ? 'fill-[#4A0E17] text-[#4A0E17]' : '' }`} />
                 </button>
+                
                 {/* Slide counter badge */}
                 {productImages.length > 1 && (
-                  <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {selectedImageIndex + 1}/{productImages.length}
+                  <div className="absolute bottom-4 right-4 bg-[#1A1A1A]/70 backdrop-blur-md text-[#F9F6F1] font-sans tracking-widest text-[9px] px-3 py-1.5 rounded-full border border-white/10">
+                    {selectedImageIndex + 1} / {productImages.length}
                   </div>
                 )}
               </div>
@@ -243,19 +262,22 @@ export default function ProductDetailsClient({
               {/* Thumbnail Strip — always visible, scrolls with page */}
               {productImages.length > 1 && (
                 <div className="bg-[#f4f0ea] border-t border-[#D4AF37]/10">
-                  <div className="flex gap-2 overflow-x-auto px-3 py-3 hide-scrollbar">
+                  <div className="flex gap-2.5 overflow-x-auto px-4 py-3.5 hide-scrollbar">
                     {productImages.map((img, i) => (
                       <button
                         key={i}
-                        onClick={() => setSelectedImageIndex(i)}
-                        className={`flex-shrink-0 w-[68px] h-[68px] border-2 overflow-hidden transition-all duration-200 ${
+                        onClick={() => {
+                          setSelectedImageIndex(i);
+                          const el = document.getElementById(`mob-img-${i}`);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        }}
+                        className={`flex-shrink-0 w-[72px] h-[90px] border overflow-hidden transition-all duration-300 ${
                           selectedImageIndex === i
-                            ? 'border-[#D4AF37] shadow-sm opacity-100'
-                            : 'border-[#D4AF37]/20 opacity-55 hover:opacity-90'
+                            ? 'border-[#D4AF37] shadow-sm opacity-100 scale-105'
+                            : 'border-[#D4AF37]/20 opacity-60 hover:opacity-100'
                         }`}
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img} alt={`view ${i+1}`} className="w-full h-full object-cover" />
+                        <Image src={img} alt={`Thumbnail ${i+1}`} fill className="object-cover" />
                       </button>
                     ))}
                   </div>
