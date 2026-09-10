@@ -24,6 +24,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Sidebar as ShadcnSidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
+import { SidebarCategoryProducts } from "./SidebarCategoryProducts";
 
 // Instagram Icon
 function InstagramIcon({ className }: { className?: string }) {
@@ -179,27 +180,7 @@ export default function Sidebar() {
                         transition={{ duration: 0.25 }}
                         className="overflow-hidden"
                       >
-                        <div className="pt-2 pb-4 pl-4 flex flex-col gap-3 relative before:absolute before:left-1.5 before:top-2 before:bottom-4 before:w-[1px] before:bg-[#2C1810]/10">
-                          {item.subItems?.slice(0, 5).map((sub) => (
-                            <Link
-                              key={sub.title}
-                              href={sub.href}
-                              onClick={handleClose}
-                              className="flex items-center gap-3 group py-1"
-                            >
-                              <span className="font-sans text-[11px] tracking-[0.15em] text-[#2C1810]/60 group-hover:text-[#D4AF37] uppercase transition-colors duration-200">
-                                {sub.title}
-                              </span>
-                            </Link>
-                          ))}
-                          <Link
-                            href={item.href}
-                            onClick={handleClose}
-                            className="mt-2 font-sans text-[9px] tracking-[0.25em] text-[#D4AF37] font-semibold uppercase flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200"
-                          >
-                            View All <ArrowRight className="w-3 h-3" />
-                          </Link>
-                        </div>
+                        <SidebarCategoryProducts href={item.href} handleClose={handleClose} />
                       </motion.div>
                     )}
                   </AnimatePresence>

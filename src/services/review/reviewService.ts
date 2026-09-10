@@ -10,6 +10,7 @@ export const reviewService = {
         .from('reviews')
         .select('*, profile:profiles(*)')
         .eq('product_id', productId)
+        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -73,6 +74,7 @@ export const reviewService = {
           user_id: user.id,
           rating,
           comment,
+          status: 'pending'
         })
         .select('*')
         .single();

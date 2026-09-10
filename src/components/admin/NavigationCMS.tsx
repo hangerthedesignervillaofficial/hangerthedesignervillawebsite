@@ -190,13 +190,17 @@ export function NavigationCMS() {
               </div>
               <div>
                 <label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-1">Link (URL)</label>
-                <input
-                  list="category-links"
+                <select
                   value={item.href}
                   onChange={(e) => updateMainItem(item.id, 'href', e.target.value)}
                   className="w-full border-b border-[#D4AF37]/25 border-t-0 border-l-0 border-r-0 bg-transparent h-8 px-0 text-sm focus:ring-0 focus:border-[#D4AF37] text-[#2C1810]"
-                  placeholder="/products"
-                />
+                >
+                  <option value="/">Home Page</option>
+                  <option value="/products">All Products</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={`/products?category=${cat.id}`}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-1">Icon</label>
@@ -237,13 +241,17 @@ export function NavigationCMS() {
                         placeholder="Subcategory Name"
                         className="flex-1 bg-transparent border-b border-[#D4AF37]/25 text-xs focus:outline-none focus:border-[#D4AF37] px-1 py-1 text-[#2C1810]"
                       />
-                      <input
-                        list="category-links"
+                      <select
                         value={sub.href}
                         onChange={(e) => updateSubItem(item.id, sub.id, 'href', e.target.value)}
-                        placeholder="Link (e.g. /products?category=1)"
                         className="flex-1 bg-transparent border-b border-[#D4AF37]/25 text-xs focus:outline-none focus:border-[#D4AF37] px-1 py-1 text-[#2C1810]"
-                      />
+                      >
+                        <option value="/">Home Page</option>
+                        <option value="/products">All Products</option>
+                        {categories.map(cat => (
+                          <option key={cat.id} value={`/products?category=${cat.id}`}>{cat.name}</option>
+                        ))}
+                      </select>
                       <button onClick={() => removeSubItem(item.id, sub.id)} className="text-red-400 hover:text-red-600 p-1">
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -263,13 +271,6 @@ export function NavigationCMS() {
           <Plus className="w-4 h-4" /> Add Main Category
         </button>
 
-        <datalist id="category-links">
-          <option value="/" label="Home Page" />
-          <option value="/products" label="All Products" />
-          {categories.map(cat => (
-            <option key={cat.id} value={`/products?category=${cat.id}`} label={cat.name} />
-          ))}
-        </datalist>
       </div>
     </div>
   );
