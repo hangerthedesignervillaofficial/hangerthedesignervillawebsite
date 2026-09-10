@@ -12,9 +12,10 @@ interface HorizontalProductCarouselProps {
   title: string;
   subtitle?: string;
   products: ProductType[];
+  viewAllLink?: string;
 }
 
-export function HorizontalProductCarousel({ title, subtitle, products }: HorizontalProductCarouselProps) {
+export function HorizontalProductCarousel({ title, subtitle, products, viewAllLink = "/products" }: HorizontalProductCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     align: "start",
     loop: false,
@@ -62,7 +63,7 @@ export function HorizontalProductCarousel({ title, subtitle, products }: Horizon
             )}
           </div>
           
-          <Link href="/products" className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#D4AF37] uppercase hover:text-[#4A0E17] transition-colors hover-gold-underline-center pb-1 self-start md:self-auto">
+          <Link href={viewAllLink} className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#D4AF37] uppercase hover:text-[#4A0E17] transition-colors hover-gold-underline-center pb-1 self-start md:self-auto">
             VIEW ALL
           </Link>
         </motion.div>

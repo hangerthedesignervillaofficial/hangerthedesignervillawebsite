@@ -61,6 +61,7 @@ export default async function Home() {
               title="NEW ARRIVALS" 
               subtitle="Fresh silhouettes. New statements."
               products={newArrivals} 
+              viewAllLink="/new-arrivals"
             />
           )}
           
@@ -76,6 +77,7 @@ export default async function Home() {
               title="BEST SELLERS" 
               subtitle="Our most coveted pieces."
               products={bestsellers} 
+              viewAllLink="/bestsellers"
             />
           )}
 

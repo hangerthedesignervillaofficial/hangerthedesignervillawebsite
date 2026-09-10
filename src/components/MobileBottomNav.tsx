@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WishlistDrawer } from "@/components/WishlistDrawer";
-import { motion, AnimatePresence } from "motion/react";
+// Removed motion/react to improve mobile performance
 
 const navItems = [
   { name: "HOME",     icon: Home,        href: "/" },
@@ -48,42 +48,20 @@ export function MobileBottomNav() {
     return (
       <div className="flex flex-col items-center justify-center gap-[4px] w-full py-2 relative group select-none">
         {/* Active pill indicator at top */}
-        <AnimatePresence>
-          {active && (
-            <motion.div
-              layoutId="bottomNavPill"
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 1, scaleX: 1 }}
-              exit={{ opacity: 0, scaleX: 0 }}
-              transition={{ type: "spring", stiffness: 500, damping: 35 }}
-              className="absolute -top-0 left-1/2 -translate-x-1/2 h-[2.5px] w-8 rounded-full"
-              style={{
-                background: "linear-gradient(90deg, #B89030, #D4AF37, #B89030)",
-              }}
-            />
-          )}
-        </AnimatePresence>
+        <div
+          className={`absolute -top-0 left-1/2 -translate-x-1/2 h-[2.5px] w-8 rounded-full transition-all duration-300 ease-out ${active ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}
+          style={{ background: "linear-gradient(90deg, #B89030, #D4AF37, #B89030)" }}
+        />
 
         {/* Icon container */}
         <div className="relative flex items-center justify-center w-10 h-10">
           {/* Glow background for active */}
-          <AnimatePresence>
-            {active && (
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="absolute inset-0 rounded-full"
-                style={{ background: "radial-gradient(circle, rgba(212,175,55,0.14) 0%, transparent 70%)" }}
-              />
-            )}
-          </AnimatePresence>
+          <div
+            className={`absolute inset-0 rounded-full transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+            style={{ background: "radial-gradient(circle, rgba(212,175,55,0.14) 0%, transparent 70%)" }}
+          />
 
-          <motion.div
-            animate={active ? { scale: 1.12 } : { scale: 1 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
+          <div className={`transition-transform duration-300 ease-out ${active ? 'scale-[1.12]' : 'scale-100'}`}>
             <Icon
               className={`transition-all duration-300 group-active:scale-90 ${
                 active
@@ -92,28 +70,21 @@ export function MobileBottomNav() {
               }`}
               style={{ width: 22, height: 22 }}
             />
-          </motion.div>
+          </div>
 
           {/* Badge */}
-          <AnimatePresence>
-            {badge !== null && (
-              <motion.span
-                key="badge"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                className="absolute -top-0.5 -right-0.5 flex h-[15px] w-[15px] items-center justify-center rounded-full text-[7.5px] font-bold leading-none"
-                style={{
-                  background: "#4A0E17",
-                  color: "#D4AF37",
-                  boxShadow: "0 0 0 1.5px #FFFCF7",
-                }}
-              >
-                {badge > 9 ? "9+" : badge}
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {badge !== null && (
+            <span
+              className="absolute -top-0.5 -right-0.5 flex h-[15px] w-[15px] items-center justify-center rounded-full text-[7.5px] font-bold leading-none animate-in zoom-in duration-300"
+              style={{
+                background: "#4A0E17",
+                color: "#D4AF37",
+                boxShadow: "0 0 0 1.5px #FFFCF7",
+              }}
+            >
+              {badge > 9 ? "9+" : badge}
+            </span>
+          )}
         </div>
 
         {/* Label */}
@@ -186,6 +157,7 @@ export function MobileBottomNav() {
               <Link
                 key={item.name}
                 href={accountHref}
+                prefetch={true}
                 className="flex flex-1 items-center justify-center transition-colors duration-150 active:bg-[#D4AF37]/8"
               >
                 {renderContent(item, isAccountActive)}
@@ -198,6 +170,7 @@ export function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
               className="flex flex-1 items-center justify-center transition-colors duration-150 active:bg-[#D4AF37]/8"
             >
               {renderContent(item)}
