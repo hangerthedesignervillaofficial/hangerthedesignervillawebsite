@@ -3,9 +3,10 @@ import { OrderItemType, OrderType } from "@/types";
 import Image from "next/image";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
-import { ChevronDown, Package, Clock } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { submitOrderCancellation } from "@/app/actions/orderActions";
+import { ChevronDown, Package, Clock, X } from "lucide-react";
 
 interface OrderCardProps {
   order: OrderType;
@@ -24,33 +25,36 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string 
 
 export function OrderCard({ order }: OrderCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
 
   const statusCfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
 
-  const handleCancelRequest = async () => {
-    const reason = window.prompt("Please provide a reason for cancellation:");
-    if (reason === null) return; // user cancelled prompt
-    
-    if (reason.trim() === "") {
+  const submitCancelRequest = async () => {
+    if (cancelReason.trim() === "") {
       toast.error("Reason is required to request cancellation.");
       return;
     }
 
+    setIsSubmittingCancel(true);
     try {
-      // Assuming we have an orderService method for this, or we just use supabase directly for now
-      const { supabase } = await import('@/lib/supabase/client');
-      const { error } = await supabase.from('orders').update({
-        cancellation_reason: reason,
-        cancellation_status: 'requested'
-      }).eq('id', order.id);
+      const result = await submitOrderCancellation(order.id, cancelReason);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       toast.success("Cancellation request submitted successfully.");
-      // We should technically trigger a refetch here or update state
+      setShowCancelModal(false);
+      // We should ideally update the local state to show 'Cancellation Requested' instantly
+      // For now, it might require a reload unless we mutate the order prop (which is a bad practice)
+      // We'll trust the parent component's realtime subscription to update it.
     } catch (error) {
       console.error("Error submitting cancellation request:", error);
       toast.error("Failed to submit cancellation request");
+    } finally {
+      setIsSubmittingCancel(false);
     }
   };
 
@@ -189,26 +193,81 @@ export function OrderCard({ order }: OrderCardProps) {
 
                 {order.status !== "cancelled" && order.status !== "delivered" && order.cancellation_status !== "requested" && order.cancellation_status !== "approved" && (
                   <button
-                    onClick={handleCancelRequest}
-                    className="flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 font-sans text-[9px] font-bold tracking-[0.15em] uppercase transition-all cursor-pointer"
+                    onClick={() => setShowCancelModal(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 border border-[#4A0E17]/20 text-[#4A0E17] hover:bg-[#4A0E17] hover:text-white font-sans text-[9px] font-bold tracking-[0.15em] uppercase transition-all cursor-pointer"
                   >
                     Request Cancellation
                   </button>
                 )}
 
                 {order.cancellation_status === "requested" && (
-                  <span className="font-sans text-[9px] font-bold tracking-[0.15em] uppercase text-orange-500">
+                  <span className="font-sans text-[9px] font-bold tracking-[0.15em] uppercase text-[#B89030]">
                     Cancellation Requested
                   </span>
                 )}
                 {order.cancellation_status === "rejected" && (
-                  <span className="font-sans text-[9px] font-bold tracking-[0.15em] uppercase text-red-500">
+                  <span className="font-sans text-[9px] font-bold tracking-[0.15em] uppercase text-[#4A0E17]">
                     Cancellation Rejected
                   </span>
                 )}
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cancellation Modal */}
+      <AnimatePresence>
+        {showCancelModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              onClick={() => setShowCancelModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#1A1A1A] p-8 shadow-2xl z-50 border border-[#D4AF37]/30 flex flex-col"
+            >
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="absolute top-4 right-4 text-[#F9F6F1]/50 hover:text-[#D4AF37] transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <h3 className="font-serif text-2xl text-[#F9F6F1] mb-2" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>Cancel Order</h3>
+              <p className="font-sans text-xs text-[#F9F6F1]/70 mb-6 uppercase tracking-widest">Order {order.display_id || `#${order.id}`}</p>
+              
+              <label className="font-sans text-[10px] font-bold tracking-widest uppercase text-[#D4AF37] mb-2">Reason for Cancellation</label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Please tell us why you are cancelling..."
+                className="w-full bg-[#2C1810]/40 border border-[#D4AF37]/30 text-[#F9F6F1] p-4 text-sm font-sans focus:outline-none focus:border-[#D4AF37] resize-none h-32 mb-6"
+              />
+              
+              <div className="flex justify-end gap-4 mt-auto">
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className="px-6 py-3 font-sans text-[10px] font-bold tracking-widest uppercase text-[#F9F6F1]/70 hover:text-[#F9F6F1] transition-colors"
+                >
+                  Keep Order
+                </button>
+                <button
+                  onClick={submitCancelRequest}
+                  disabled={isSubmittingCancel}
+                  className="px-6 py-3 bg-[#D4AF37] text-[#1A1A1A] font-sans text-[10px] font-bold tracking-widest uppercase hover:bg-[#B89030] transition-colors disabled:opacity-50"
+                >
+                  {isSubmittingCancel ? "Submitting..." : "Confirm Cancellation"}
+                </button>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.div>

@@ -20,7 +20,7 @@ import {
   unsubscribeFromUserProfile,
   type ProfileSubscriptionCallbacks,
 } from "@/services/profile/profileSubscriptionService";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 
 interface ProfileClientPageProps {
@@ -44,6 +44,7 @@ export default function ProfileClientPage({
   const [phone, setPhone] = useState(initialProfile?.phone || "");
   const [orders, setOrders] = useState<OrderType[]>(initialOrders);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<"profile" | "orders">("profile");
 
   // Handle saving profile data
   const handleSaveProfile = async (
@@ -199,53 +200,103 @@ export default function ProfileClientPage({
       </div>
 
       <div className="container mx-auto px-4 py-6 md:py-10">
-        <ProfileCard
-          user={user}
-          username={username}
-          setUsername={setUsername}
-          avatarUrl={avatarUrl}
-          setAvatarUrl={setAvatarUrl}
-          email={email}
-          setEmail={setEmail}
-          phone={phone}
-          setPhone={setPhone}
-          createdAt={initialProfile?.created_at || null}
-          isSaving={isSaving}
-          onSaveProfile={handleSaveProfile}
-          onSignOut={handleSignOut}
-          onUpdateEmail={handleUpdateEmail}
-        />
-
-        {/* Orders Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-10"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-6 h-[1px] bg-[#D4AF37]" />
-            <h2
-              className="font-serif text-xl text-[#2C1810] tracking-wide"
-              style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
-            >
-              My Orders
-            </h2>
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+          
+          {/* Sidebar Tabs */}
+          <div className="w-full lg:w-64 flex-shrink-0">
+            <div className="flex lg:flex-col gap-2 overflow-x-auto pb-4 lg:pb-0 hide-scrollbar border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20 pr-4">
+              <button
+                onClick={() => setActiveTab("profile")}
+                className={`flex items-center gap-3 px-4 py-3 text-left transition-all whitespace-nowrap ${
+                  activeTab === "profile" 
+                    ? "bg-[#D4AF37]/10 border-l-2 border-[#D4AF37] text-[#2C1810]" 
+                    : "text-[#7A6B5D] hover:bg-white hover:text-[#2C1810]"
+                }`}
+              >
+                <span className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase">Profile Details</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("orders")}
+                className={`flex items-center gap-3 px-4 py-3 text-left transition-all whitespace-nowrap ${
+                  activeTab === "orders" 
+                    ? "bg-[#D4AF37]/10 border-l-2 border-[#D4AF37] text-[#2C1810]" 
+                    : "text-[#7A6B5D] hover:bg-white hover:text-[#2C1810]"
+                }`}
+              >
+                <span className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase">Order History</span>
+                {orders.length > 0 && (
+                  <span className="ml-auto bg-[#2C1810] text-[#D4AF37] text-[8px] font-bold px-2 py-0.5 rounded-full">{orders.length}</span>
+                )}
+              </button>
+            </div>
           </div>
 
-          {orders.length === 0 ? (
-            <EmptyOrdersState onBrowseProducts={() => router.push("/")} />
-          ) : (
-            <div className="space-y-4">
-              {orders.map((order) => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                />
-              ))}
-            </div>
-          )}
-        </motion.div>
+          {/* Main Content Area */}
+          <div className="flex-1 w-full">
+            <AnimatePresence mode="wait">
+              {activeTab === "profile" && (
+                <motion.div
+                  key="profile"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProfileCard
+                    user={user}
+                    username={username}
+                    setUsername={setUsername}
+                    avatarUrl={avatarUrl}
+                    setAvatarUrl={setAvatarUrl}
+                    email={email}
+                    setEmail={setEmail}
+                    phone={phone}
+                    setPhone={setPhone}
+                    createdAt={initialProfile?.created_at || null}
+                    isSaving={isSaving}
+                    onSaveProfile={handleSaveProfile}
+                    onSignOut={handleSignOut}
+                    onUpdateEmail={handleUpdateEmail}
+                  />
+                </motion.div>
+              )}
+
+              {activeTab === "orders" && (
+                <motion.div
+                  key="orders"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-6 h-[1px] bg-[#D4AF37]" />
+                    <h2
+                      className="font-serif text-xl text-[#2C1810] tracking-wide"
+                      style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
+                    >
+                      Recent Orders
+                    </h2>
+                  </div>
+
+                  {orders.length === 0 ? (
+                    <EmptyOrdersState onBrowseProducts={() => router.push("/")} />
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.map((order) => (
+                        <OrderCard
+                          key={order.id}
+                          order={order}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </div>
   );

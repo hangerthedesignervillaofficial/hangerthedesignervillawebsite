@@ -76,19 +76,15 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         {/* Inner gold frame overlay on hover */}
         <div className="absolute inset-3 border border-[#D4AF37]/35 scale-[0.96] opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none z-10" />
         
-        {/* Top Left Badge */}
-        {(badge || product.stock <= 0) && (
+        {/* Top Left Badge (Only for Out of Stock) */}
+        {product.stock <= 0 && (
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.3 }}
-            className={`absolute top-3 left-3 px-2.5 py-1 text-[8px] font-sans font-bold tracking-[0.15em] uppercase shadow-sm z-10 border ${
-              product.stock <= 0 
-                ? "bg-[#2C1810] text-white border-[#2C1810]" 
-                : "bg-[#FDFBF7] text-[#2C1810] border-[#D4AF37]/10"
-            }`}
+            className="absolute top-3 left-3 px-2.5 py-1 text-[8px] font-sans font-bold tracking-[0.15em] uppercase shadow-sm z-10 border bg-[#2C1810] text-white border-[#2C1810]"
           >
-            {product.stock <= 0 ? "OUT OF STOCK" : badge}
+            OUT OF STOCK
           </motion.div>
         )}
 
