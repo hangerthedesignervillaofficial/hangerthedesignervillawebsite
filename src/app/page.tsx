@@ -2,12 +2,17 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { HorizontalProductCarousel } from "@/components/home/HorizontalProductCarousel";
+import { HangerEditsGrid } from "@/components/home/HangerEditsGrid";
+import { ShopByMood } from "@/components/home/ShopByMood";
 import { BrandStory } from "@/components/home/BrandStory";
+import { MomentsBanner } from "@/components/home/MomentsBanner";
+import { AsymmetricalFeatureGrid } from "@/components/home/AsymmetricalFeatureGrid";
 import { Testimonials } from "@/components/home/Testimonials";
 import { InstagramGrid } from "@/components/home/InstagramGrid";
 import { productServerService } from "@/services/product/productServerService";
 import { createServerSupabase } from "@/lib/supabase/server";
 
+// Revalidate every 30 seconds so admin changes (product flags, CMS) reflect on live site quickly
 export const revalidate = 30;
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +21,17 @@ export default async function Home() {
 
   const newArrivals = products.filter(p => p.is_new_arrival).slice(0, 8);
   const bestsellers = products.filter(p => p.is_bestseller).slice(0, 8);
+
+  // "The Hanger Edit" section — products tagged via admin display_tags
+  // Falls back to bestsellers if no tagged products exist
+  const hangerEditTagged = products.filter(
+    p => p.display_tags?.includes('The Hanger Edit')
+  ).slice(0, 4);
+  const theHangerEdit = hangerEditTagged.length >= 2 
+    ? hangerEditTagged 
+    : bestsellers.length >= 4 
+      ? bestsellers.slice(0, 4) 
+      : products.slice(0, 4);
 
   const supabase = await createServerSupabase();
   const { data: siteSettings } = await supabase.from('site_settings').select('*');
@@ -36,36 +52,41 @@ export default async function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-col min-h-screen bg-[#F9F6F1]">
+      <div className="flex flex-col min-h-screen bg-[#FDFBF7]">
         <main className="flex-1 w-full max-w-[100vw] overflow-x-hidden">
-          {/* Section 1: Hero */}
           <HeroSlider initialSlides={initialHeroSlides} />
-          
-          {/* Section 2: Categories */}
           <CategoryGrid initialCategories={homepageMedia.category_grid} />
           
-          {/* Section 3: New Arrivals / Best Sellers */}
-          {newArrivals.length > 0 ? (
+          {newArrivals.length > 0 && (
             <HorizontalProductCarousel 
               title="NEW ARRIVALS" 
-              subtitle="FRESH SILHOUETTES. NEW STATEMENTS."
+              subtitle="Fresh silhouettes. New statements."
               products={newArrivals} 
             />
-          ) : bestsellers.length > 0 ? (
+          )}
+          
+          <MomentsBanner initialData={homepageMedia.moments_banner} />
+          
+          <ShopByMood initialMoods={homepageMedia.shop_by_mood} />
+          
+          {/* Hanger Edits: always shown — tagged products first, bestsellers as fallback */}
+          {theHangerEdit.length > 0 && (
+            <HangerEditsGrid products={theHangerEdit} />
+          )}
+
+          {bestsellers.length > 0 && (
             <HorizontalProductCarousel 
               title="BEST SELLERS" 
-              subtitle="OUR MOST COVETED PIECES."
+              subtitle="Our most coveted pieces."
               products={bestsellers} 
             />
-          ) : null}
-          
-          {/* Section 4: Brand Story */}
-          <BrandStory />
+          )}
 
-          {/* Section 5: Clientele Testimonials */}
+          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical_grid} />
+          
+          <BrandStory />
           <Testimonials />
           
-          {/* Section 6: Social */}
           <InstagramGrid initialData={homepageMedia.instagram_grid} />
         </main>
       </div>
