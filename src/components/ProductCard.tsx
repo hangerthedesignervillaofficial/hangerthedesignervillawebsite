@@ -18,13 +18,6 @@ export function ProductCard({ product, badge }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const isWishlisted = isInWishlist(product.product_id);
 
-  // Simulate 3 color dots for the UI based on product ID
-  const colors = [
-    ["#E3DAC9", "#4A0E17", "#1A0A0E"],
-    ["#D4AF37", "#2C1810", "#8B5E3C"],
-    ["#FDFBF7", "#7A6B5D", "#4A0E17"]
-  ][(product.product_id ? product.product_id.charCodeAt(product.product_id.length - 1) : 0) % 3];
-
   // Deterministic ratings from product ID so every product shows stars
   const seed = product.product_id ? product.product_id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
   const rating = 3.8 + (seed % 12) / 10; // 3.8 to 4.9
@@ -149,16 +142,6 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         <p className="font-serif text-[14px] md:text-[15px] tracking-wide text-[#2C1810] font-medium mb-3 md:mb-4">
           ₹{product.price.toLocaleString("en-IN")}
         </p>
-        
-        <div className="mt-auto flex items-center gap-1.5">
-          {colors.map((color, i) => (
-            <div 
-              key={i} 
-              className="w-2.5 h-2.5 rounded-full border border-[#D4AF37]/20 transition-transform duration-200 hover:scale-125 cursor-pointer"
-              style={{ backgroundColor: color }}
-            />
-          ))}
-        </div>
       </div>
     </motion.div>
   );

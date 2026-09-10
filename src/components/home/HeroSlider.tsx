@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase/client";
 import Link from "next/link";
+import Image from "next/image";
 
 /* ─────────────────────────────────────────────
    DEFAULT SLIDES — used when CMS has no data
@@ -72,7 +73,7 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
     <section
       aria-label="Hero carousel"
       className="relative w-full overflow-hidden bg-[#1A1310]
-        h-[90vh]
+        h-[75vh]
         md:h-[80vh] md:max-h-[900px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -94,9 +95,13 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
               className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
             />
           ) : (
-            <div
-              className="absolute inset-0 w-full h-full bg-cover bg-top md:bg-[center_20%]"
-              style={{ backgroundImage: `url(${slide.mediaUrl ?? (slide as any).image})` }}
+            <Image
+              src={slide.mediaUrl ?? (slide as any).image}
+              alt={slide.title || "Hero banner"}
+              fill
+              priority
+              className="object-cover object-top md:object-[center_20%]"
+              sizes="100vw"
             />
           )}
         </motion.div>
