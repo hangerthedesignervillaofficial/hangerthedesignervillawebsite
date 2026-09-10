@@ -55,98 +55,10 @@ export default function ProductDetailsClient({
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>('details');
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const isFavorited = isInWishlist(product.product_id);
 
-  // Get detailed specifications based on the product
-  const getProductSpecs = (id: string) => {
-    switch (id) {
-      case "prod_1":
-        return {
-          fabric: "Premium Italian-Irish Linen",
-          technique: "Hand-embellished Floral Art",
-          fit: "Relaxed Tailored Silhouette",
-          occasion: "Resort & Luxury Daywear",
-          care: "Dry Clean Only",
-          heritage: "Hand-finished by master tailors in our Delhi atelier, featuring intricate micro-bead embroidery."
-        };
-      case "prod_2":
-        return {
-          fabric: "100% Pure Mulberry Silk Organza",
-          technique: "Hand-woven Lucknowi Chikankari",
-          fit: "Classic Fluid Drape (5.5m)",
-          occasion: "Heritage Festivities & Weddings",
-          care: "Gentle Hand Wash / Dry Clean",
-          heritage: "Each thread is shadow-stitched by hand over a span of 3 months by women artisans in Lucknow."
-        };
-      case "prod_3":
-        return {
-          fabric: "Mercerized Chanderi Silk-Cotton",
-          technique: "Artisanal Gold Gota Patti Work",
-          fit: "Flared A-Line Silhouette",
-          occasion: "Mehendi & Festive Soirées",
-          care: "Dry Clean Only",
-          heritage: "Features gold-plated ribbon wire work layered onto handloom Chanderi fabric."
-        };
-      case "prod_4":
-        return {
-          fabric: "Pure Flowing Georgette",
-          technique: "Micro-pleating & Scalloped Borders",
-          fit: "Dramatic 24-Kali Flared Anarkali",
-          occasion: "Evening Galas & Festivities",
-          care: "Dry Clean Recommended",
-          heritage: "A heavy flare silhouette featuring gold Zardozi embroidery with delicate hand-cut borders."
-        };
-      case "prod_5":
-        return {
-          fabric: "Handloom Tussar Silk",
-          technique: "Traditional Punjabi Phulkari",
-          fit: "Classic Straight-Cut Kurta",
-          occasion: "Celebrations & Roka Ceremonies",
-          care: "Dry Clean Only",
-          heritage: "Adorned with geometric patola darning stitches using colorful untwisted silk floss."
-        };
-      case "prod_6":
-        return {
-          fabric: "22kt Gold-Plated Recycled Silver",
-          technique: "Jadau Kundan & Basra Pearls",
-          fit: "Chandelier Statement Earring (Pair)",
-          occasion: "Trousseau & Royal Festivities",
-          care: "Store in airtight pouch, avoid moisture",
-          heritage: "Uncut stones are embedded into hand-refined silver foil, finished with real saltwater pearl drops."
-        };
-      case "prod_7":
-        return {
-          fabric: "100% Genuine Tuscan Leather",
-          technique: "Hand-embellished Dabka Wirework",
-          fit: "Ergonomic Cushioned Flat Sole",
-          occasion: "Festive Walks & Day Celebrations",
-          care: "Wipe clean, avoid water exposure",
-          heritage: "Crafted in Punjab with hand-cushioned double leather soles and gold Dabka wire accents."
-        };
-      case "prod_8":
-        return {
-          fabric: "Premium sheer Organza Silk",
-          technique: "Hand-painted Pastel Botanical Art",
-          fit: "Ethereal Flowy Saree",
-          occasion: "Hi-Tea & Summer Weddings",
-          care: "Dry Clean Only",
-          heritage: "Hand-painted individual flower motifs highlighted with delicate seed pearls and sequins."
-        };
-      default:
-        return {
-          fabric: "Handcrafted Premium Fabric",
-          technique: "Artisan Embroidery Detailing",
-          fit: "Custom Tailored Fit",
-          occasion: "Luxury Occasions",
-          care: "Dry Clean Recommended",
-          heritage: "Designed and produced in limited runs under Hanger's luxury slow-fashion guidelines."
-        };
-    }
-  };
-
-  const specs = getProductSpecs(product.product_id);
-
-  // Generate multiple images from the single image (mock data for demo)
+  // Hardcoded specs removed as we now use dynamic rich text from the database
   const productImages = product.image
     ? [product.image, ...(product.gallery || [])]
     : ["/placeholder-product.jpg"];
@@ -207,7 +119,7 @@ export default function ProductDetailsClient({
           </span>
         </motion.nav>
 
-        <div className="mb-16 flex flex-col lg:grid lg:grid-cols-12 gap-10 lg:gap-14">
+        <div className="mb-16 flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-10">
 
           {/* Left: Product Images (Editorial Stack on Desktop, Edge-to-Edge Carousel on Mobile) */}
           <motion.div
@@ -225,7 +137,7 @@ export default function ProductDetailsClient({
                       src={img}
                       alt={`${product.title} - View ${i + 1}`}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                       priority={i === 0}
                     />
                   </div>
@@ -246,19 +158,42 @@ export default function ProductDetailsClient({
               </div>
             </div>
 
-            {/* Desktop: Stacked Masonry/Grid */}
+            {/* Desktop & Tablet: Main Viewer + Thumbnail Gallery */}
             <div className="hidden lg:flex flex-col gap-4">
-              {productImages.map((img, i) => (
-                <div key={i} className="relative aspect-[3/4] w-full bg-[#f4f0ea] group overflow-hidden">
-                  <Image
-                    src={img}
-                    alt={`${product.title} - View ${i + 1}`}
-                    fill
-                    className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-                    priority={i === 0}
-                  />
+              {/* Main Large Image */}
+              <div className="relative aspect-[3/4] w-full bg-[#f4f0ea] overflow-hidden rounded-sm border border-[#D4AF37]/10">
+                <Image
+                  src={productImages[selectedImageIndex]}
+                  alt={`${product.title} - Main View`}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+
+              {/* Thumbnails Strip */}
+              {productImages.length > 1 && (
+                <div className="grid grid-cols-4 gap-3">
+                  {productImages.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImageIndex(i)}
+                      className={`relative aspect-square w-full bg-[#f4f0ea] border transition-all duration-300 ${
+                        selectedImageIndex === i 
+                          ? "border-[#D4AF37] ring-1 ring-[#D4AF37] opacity-100" 
+                          : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <Image
+                        src={img}
+                        alt={`${product.title} - Thumbnail ${i + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </motion.div>
 
@@ -267,7 +202,7 @@ export default function ProductDetailsClient({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-5 space-y-8 lg:pt-2 flex flex-col justify-start lg:sticky lg:top-24 self-start"
+            className="lg:col-span-5 space-y-6 lg:pt-0 flex flex-col justify-start lg:sticky lg:top-24 self-start"
           >
             {/* Category tag */}
             <div className="flex items-center gap-3">
@@ -337,12 +272,10 @@ export default function ProductDetailsClient({
                       className="overflow-hidden"
                     >
                       <div className="pb-5 space-y-4">
-                        <div className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed whitespace-pre-wrap">
-                          {product.description}
-                        </div>
-                        <p className="font-serif text-[13px] text-[#2C1810] leading-relaxed italic">
-                          "Designed as a tribute to classic Indian artisanal crafts, this piece balances structural geometry with fluid softness. It speaks to the contemporary wearer who seeks statement elements rooted in native craft legacy."
-                        </p>
+                        <div 
+                          className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed whitespace-pre-wrap prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: product.description || '' }}
+                        />
                       </div>
                     </motion.div>
                   )}
@@ -368,23 +301,11 @@ export default function ProductDetailsClient({
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="pb-5 grid grid-cols-2 gap-y-5 gap-x-4">
-                        <div className="space-y-1">
-                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Fabrication</span>
-                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.fabric}</span>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Technique</span>
-                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.technique}</span>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Silhouette</span>
-                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.fit}</span>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="block font-sans text-[9px] font-bold tracking-[0.2em] text-[#7A6B5D] uppercase">Occasion</span>
-                          <span className="font-serif text-[13px] text-[#2C1810]">{specs.occasion}</span>
-                        </div>
+                      <div className="pb-5 space-y-4">
+                        <div 
+                          className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed whitespace-pre-wrap prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: product.fabric_fit || '' }}
+                        />
                       </div>
                     </motion.div>
                   )}
@@ -411,16 +332,10 @@ export default function ProductDetailsClient({
                       className="overflow-hidden"
                     >
                       <div className="pb-5 space-y-4">
-                        <ul className="space-y-3 font-sans text-[12px] text-[#7A6B5D] leading-relaxed">
-                          <li className="flex gap-3">
-                            <Truck className="w-4 h-4 shrink-0 text-[#D4AF37]" />
-                            <span>Complimentary express shipping on all domestic orders over ₹999. Delivered within 3-5 business days.</span>
-                          </li>
-                          <li className="flex gap-3">
-                            <RotateCcw className="w-4 h-4 shrink-0 text-[#D4AF37]" />
-                            <span>30-day return window. Items must be unworn, unwashed, and have original tags attached.</span>
-                          </li>
-                        </ul>
+                        <div 
+                          className="font-sans text-[13px] text-[#7A6B5D] leading-relaxed whitespace-pre-wrap prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: product.shipping_returns || '' }}
+                        />
                       </div>
                     </motion.div>
                   )}

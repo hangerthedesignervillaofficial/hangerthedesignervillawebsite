@@ -4,13 +4,41 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { uploadMediaToSupabase } from "@/utils/uploadMedia";
-import { Loader2, Image as ImageIcon, Video, Save } from "lucide-react";
+import { Loader2, Image as ImageIcon, Video, Save, Plus, Trash2 } from "lucide-react";
 
 export function HomepageMediaCMS() {
   const [mediaData, setMediaData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+
+  const updateCategoryGridItem = (i: number, field: string, value: string) => {
+    setMediaData((prev: any) => {
+      const newGrid = [...prev.category_grid];
+      newGrid[i] = { ...newGrid[i], [field]: value };
+      return { ...prev, category_grid: newGrid };
+    });
+  };
+
+  const removeCategoryGridItem = (i: number) => {
+    setMediaData((prev: any) => {
+      const newGrid = prev.category_grid.filter((_: any, index: number) => index !== i);
+      return { ...prev, category_grid: newGrid };
+    });
+  };
+
+  const addCategoryGridItem = () => {
+    setMediaData((prev: any) => {
+      const newGrid = [...prev.category_grid, { 
+        id: crypto.randomUUID(), 
+        title: 'NEW CATEGORY', 
+        mediaUrl: '', 
+        type: 'image', 
+        link: '/' 
+      }];
+      return { ...prev, category_grid: newGrid };
+    });
+  };
 
   const defaultData = {
     category_grid: [
@@ -212,11 +240,42 @@ export function HomepageMediaCMS() {
       </section>
 
       <section>
-        <h3 className="text-sm font-bold tracking-widest uppercase text-[#2C1810] mb-4 border-l-2 border-[#D4AF37] pl-3">Category Grid (4 items)</h3>
+        <div className="flex justify-between items-center mb-4 border-l-2 border-[#D4AF37] pl-3">
+          <h3 className="text-sm font-bold tracking-widest uppercase text-[#2C1810]">Category Grid ({mediaData.category_grid.length} items)</h3>
+          <button 
+            onClick={addCategoryGridItem}
+            className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest text-[#2C1810] hover:text-[#D4AF37] transition-colors"
+          >
+            <Plus size={14} /> Add Category
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {mediaData.category_grid.map((item: any, i: number) => (
-            <div key={item.id}>
-              {renderUploadField(item.title, `category_grid.${i}`, item)}
+            <div key={item.id} className="relative group">
+              <button
+                onClick={() => removeCategoryGridItem(i)}
+                className="absolute -top-2 -right-2 z-10 bg-white border border-[#4A0E17]/20 text-[#4A0E17] hover:bg-[#4A0E17] hover:text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                title="Remove Category"
+              >
+                <Trash2 size={12} />
+              </button>
+              {renderUploadField("Image", `category_grid.${i}`, item)}
+              <div className="mt-2 space-y-2">
+                <input 
+                  type="text" 
+                  value={item.title}
+                  onChange={(e) => updateCategoryGridItem(i, 'title', e.target.value)}
+                  placeholder="Category Name"
+                  className="w-full text-[11px] font-bold tracking-widest uppercase border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#2C1810]"
+                />
+                <input 
+                  type="text" 
+                  value={item.link}
+                  onChange={(e) => updateCategoryGridItem(i, 'link', e.target.value)}
+                  placeholder="/category-link"
+                  className="w-full text-[10px] font-sans border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#7A6B5D]"
+                />
+              </div>
             </div>
           ))}
         </div>

@@ -27,20 +27,27 @@ const AVAILABLE_ICONS = [
 
 export function NavigationCMS() {
   const [navItems, setNavItems] = useState<NavItem[]>([]);
+  const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchNavigation();
+    fetchNavigationAndCategories();
   }, []);
 
-  async function fetchNavigation() {
+  async function fetchNavigationAndCategories() {
     try {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
         .eq("key", "navigation_menu")
         .single();
+        
+      const { data: catData } = await supabase
+        .from("categories")
+        .select("id, name");
+        
+      if (catData) setCategories(catData);
         
       if (data && data.value) {
         setNavItems(data.value);
@@ -81,7 +88,7 @@ export function NavigationCMS() {
   const addMainItem = () => {
     setNavItems([
       ...navItems,
-      { id: Date.now().toString(), title: "NEW CATEGORY", href: "/category", icon: "FolderHeart", hasSub: false, subItems: [] }
+      { id: crypto.randomUUID(), title: "NEW CATEGORY", href: "/products", icon: "FolderHeart", hasSub: false, subItems: [] }
     ]);
   };
 
@@ -109,7 +116,7 @@ export function NavigationCMS() {
         return {
           ...item,
           hasSub: true,
-          subItems: [...item.subItems, { id: Date.now().toString(), title: "New Subcategory", href: "/category?sub=new" }]
+          subItems: [...item.subItems, { id: crypto.randomUUID(), title: "New Subcategory", href: "/products" }]
         };
       }
       return item;
@@ -184,10 +191,11 @@ export function NavigationCMS() {
               <div>
                 <label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-1">Link (URL)</label>
                 <input
+                  list="category-links"
                   value={item.href}
                   onChange={(e) => updateMainItem(item.id, 'href', e.target.value)}
                   className="w-full border-b border-[#D4AF37]/25 border-t-0 border-l-0 border-r-0 bg-transparent h-8 px-0 text-sm focus:ring-0 focus:border-[#D4AF37] text-[#2C1810]"
-                  placeholder="/clothing"
+                  placeholder="/products"
                 />
               </div>
               <div>
@@ -230,9 +238,10 @@ export function NavigationCMS() {
                         className="flex-1 bg-transparent border-b border-[#D4AF37]/25 text-xs focus:outline-none focus:border-[#D4AF37] px-1 py-1 text-[#2C1810]"
                       />
                       <input
+                        list="category-links"
                         value={sub.href}
                         onChange={(e) => updateSubItem(item.id, sub.id, 'href', e.target.value)}
-                        placeholder="Link (e.g. /clothing?sub=sarees)"
+                        placeholder="Link (e.g. /products?category=1)"
                         className="flex-1 bg-transparent border-b border-[#D4AF37]/25 text-xs focus:outline-none focus:border-[#D4AF37] px-1 py-1 text-[#2C1810]"
                       />
                       <button onClick={() => removeSubItem(item.id, sub.id)} className="text-red-400 hover:text-red-600 p-1">
@@ -254,6 +263,13 @@ export function NavigationCMS() {
           <Plus className="w-4 h-4" /> Add Main Category
         </button>
 
+        <datalist id="category-links">
+          <option value="/" label="Home Page" />
+          <option value="/products" label="All Products" />
+          {categories.map(cat => (
+            <option key={cat.id} value={`/products?category=${cat.id}`} label={cat.name} />
+          ))}
+        </datalist>
       </div>
     </div>
   );

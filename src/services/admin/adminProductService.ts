@@ -16,6 +16,8 @@ export interface CreateProductData {
   is_new_arrival?: boolean;
   sizes?: string[];
   display_tags?: string[];
+  fabric_fit?: string;
+  shipping_returns?: string;
 }
 
 export interface UpdateProductData extends Partial<CreateProductData> {

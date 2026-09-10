@@ -35,9 +35,9 @@ export function CategoryGrid({ initialCategories }: { initialCategories?: any[] 
   }, []);
 
   return (
-    <section className="pt-10 pb-6 md:pt-14 md:pb-8 bg-[#FDFBF7]">
-      <div className="container mx-auto px-0 md:px-4 lg:px-8">
-        <div className="grid grid-cols-2 gap-[4px] sm:gap-2 md:gap-6">
+    <section className="pt-8 pb-4 md:pt-14 md:pb-8 bg-[#FDFBF7]">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
           {categories.map((category, index) => (
             <motion.div
               key={category.title}
@@ -49,35 +49,20 @@ export function CategoryGrid({ initialCategories }: { initialCategories?: any[] 
             >
               <Link
                 href={category.link}
-                className="group relative block w-full aspect-square md:aspect-[3/2] overflow-hidden bg-gray-100"
+                className="group relative block w-full aspect-[4/5] sm:aspect-[3/4] overflow-hidden bg-[#f4f0ea]"
               >
                 {/* Background Media */}
                 {category.type === 'video' ? (
-                  <video src={category.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <video src={category.mediaUrl} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" />
                 ) : (
                   <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-[1.5s] group-hover:scale-110"
                     style={{ backgroundImage: `url(${category.mediaUrl})` }}
                   />
                 )}
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                
                 {/* Inner gold frame overlay on hover */}
-                <div className="absolute inset-4 border border-[#D4AF37]/30 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 pointer-events-none" />
-
-                {/* Text Overlay - Centered */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-4">
-                  <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal tracking-[0.25em] text-white uppercase mb-2 md:mb-3" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                    {category.title}
-                  </h3>
-                  <div className="overflow-hidden">
-                    <span className="block font-sans text-[9px] sm:text-[10px] md:text-[11px] font-bold tracking-[0.25em] text-white/90 uppercase border-b border-white/40 pb-1 group-hover:text-[#D4AF37] group-hover:border-[#D4AF37]/60 transition-colors duration-500 transform translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100">
-                      DISCOVER NOW
-                    </span>
-                  </div>
-                </div>
+                <div className="absolute inset-3 sm:inset-4 border border-[#D4AF37]/0 group-hover:border-[#D4AF37]/40 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 pointer-events-none" />
               </Link>
             </motion.div>
           ))}

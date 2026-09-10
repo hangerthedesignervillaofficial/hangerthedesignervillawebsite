@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -50,6 +54,8 @@ interface FormData {
   is_new_arrival: boolean;
   sizes: string[];
   display_tags: string[];
+  fabric_fit: string;
+  shipping_returns: string;
 }
 
 export function ProductFormModal({
@@ -73,6 +79,8 @@ export function ProductFormModal({
     is_new_arrival: false,
     sizes: [],
     display_tags: [],
+    fabric_fit: "",
+    shipping_returns: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -109,6 +117,8 @@ export function ProductFormModal({
         is_new_arrival: product.is_new_arrival || false,
         sizes: product.sizes || [],
         display_tags: product.display_tags || [],
+        fabric_fit: product.fabric_fit || "",
+        shipping_returns: product.shipping_returns || "",
       });
       setImagePreview(product.image || null);
       setVideoPreview(product.video_url || null);
@@ -127,6 +137,8 @@ export function ProductFormModal({
         is_bestseller: false,
         is_new_arrival: false,
         sizes: [],
+        fabric_fit: "",
+        shipping_returns: "",
       });
       setImagePreview(null);
       setVideoPreview(null);
@@ -323,6 +335,8 @@ export function ProductFormModal({
         is_new_arrival: formData.is_new_arrival,
         sizes: formData.sizes,
         display_tags: formData.display_tags,
+        fabric_fit: formData.fabric_fit,
+        shipping_returns: formData.shipping_returns,
       };
       await onSubmit(submitData);
     } catch (error) {
@@ -596,19 +610,46 @@ export function ProductFormModal({
             {errors.title && <p className="mt-1 text-[10px] text-red-500">{errors.title}</p>}
           </div>
 
-          <div>
-            <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
-              Description <span className="text-[#D4AF37]">•</span>
-            </Label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Describe the product..."
-              rows={3}
-              className={`w-full bg-transparent border-b border-t-0 border-l-0 border-r-0 px-0 py-2 font-sans text-sm text-[#2C1810] placeholder:text-[#7A6B5D]/30 focus:outline-none resize-none focus:border-[#D4AF37] transition-colors ${
-                errors.description ? "border-red-400" : "border-[#D4AF37]/25"
-              }`}
-            />
+          <div className="space-y-6">
+            <div>
+              <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
+                Description <span className="text-[#D4AF37]">•</span>
+              </Label>
+              <div className="bg-white">
+                <ReactQuill
+                  theme="snow"
+                  value={formData.description}
+                  onChange={(val) => handleInputChange("description", val)}
+                  className={`${errors.description ? "border border-red-400" : ""}`}
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
+                Fabric & Fit
+              </Label>
+              <div className="bg-white">
+                <ReactQuill
+                  theme="snow"
+                  value={formData.fabric_fit}
+                  onChange={(val) => handleInputChange("fabric_fit", val)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="font-sans text-[9px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
+                Shipping & Returns
+              </Label>
+              <div className="bg-white">
+                <ReactQuill
+                  theme="snow"
+                  value={formData.shipping_returns}
+                  onChange={(val) => handleInputChange("shipping_returns", val)}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

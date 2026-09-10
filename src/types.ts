@@ -9,11 +9,12 @@ export interface ProductType {
   stock: number;
   sku?: string;
   category_id?: number;
-  tags?: string[];
   is_bestseller?: boolean;
   is_new_arrival?: boolean;
   sizes?: string[];
   display_tags?: string[];
+  fabric_fit?: string;
+  shipping_returns?: string;
   created_at?: string;
   updated_at?: string;
 }

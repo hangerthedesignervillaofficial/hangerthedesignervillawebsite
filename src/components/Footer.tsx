@@ -87,25 +87,25 @@ export function Footer() {
         <div className="hidden md:block h-[1px] w-full bg-gray-200 mb-12" />
 
         {/* Links Section */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-4 mb-12 border-t border-[#D4AF37]/10 pt-10">
+        <div className="flex flex-col md:flex-row gap-12 md:gap-8 mb-10 border-t border-[#D4AF37]/10 pt-12 md:pt-16">
           {/* Brand Column */}
-          <div className="col-span-12 md:col-span-3 flex flex-col items-start text-left">
-            <Link href="/" className="flex items-center gap-4 mb-8 md:mb-6 group">
+          <div className="w-full md:w-1/4 flex flex-col items-center md:items-start text-center md:text-left">
+            <Link href="/" className="flex flex-col items-center md:items-start gap-4 mb-6 group">
               <img 
                 src="/images/logo-icon.png" 
                 alt="HANGER" 
-                className="h-12 md:h-11 w-auto object-contain dark:invert group-active:scale-95 transition-transform duration-350"
+                className="h-16 md:h-12 w-auto object-contain dark:invert group-active:scale-95 transition-transform duration-350"
               />
-              <div className="flex flex-col items-start text-left">
-                <h1 className="font-serif text-[20px] md:text-lg font-bold tracking-[0.25em] text-[#2C1810] dark:text-[#FFF8F0] uppercase leading-none" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+              <div className="flex flex-col items-center md:items-start">
+                <h1 className="font-serif text-[24px] md:text-lg font-bold tracking-[0.25em] text-[#2C1810] dark:text-[#FFF8F0] uppercase leading-none" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                   HANGER
                 </h1>
-                <span className="font-sans text-[7px] md:text-[6px] uppercase tracking-[0.35em] text-[#D4AF37] font-bold mt-1 md:mt-[3px]">
+                <span className="font-sans text-[8px] md:text-[6px] uppercase tracking-[0.35em] text-[#D4AF37] font-bold mt-2 md:mt-[3px]">
                   THE DESIGNER VILLA
                 </span>
               </div>
             </Link>
-            <div className="flex gap-4 md:gap-3.5 justify-start w-full">
+            <div className="flex gap-4 md:gap-3.5 justify-center md:justify-start w-full">
               <button
                 aria-label="Facebook"
                 className="w-8 h-8 rounded-full border border-[#D4AF37]/25 flex items-center justify-center text-[#2C1810] hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all duration-300 hover:scale-110 cursor-pointer bg-transparent"
@@ -148,7 +148,8 @@ export function Footer() {
           </div>
 
           {/* Link Columns */}
-          <div className="col-span-12 md:col-span-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6 text-left border-t border-[#D4AF37]/10 md:border-0 pt-10 md:pt-0 mt-2 md:mt-0">
+          <div className="w-full md:w-3/4 flex flex-col gap-10 border-t border-[#D4AF37]/10 md:border-0 pt-10 md:pt-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-4 text-left">
             <div>
               <h4 className="font-sans text-[11px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-5 md:mb-4 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-4 after:h-px after:bg-[#D4AF37]/50">Shop</h4>
               <ul className="space-y-3 md:space-y-2">
@@ -218,16 +219,17 @@ export function Footer() {
                 ))}
               </ul>
             </div>
-          </div>
+            </div>
 
-          {/* Payment Methods */}
-          <div className="col-span-12 md:col-span-3 text-left md:text-right flex flex-col items-start md:items-end gap-3 mt-8 md:mt-0 pt-8 md:pt-0 border-t border-[#D4AF37]/10 md:border-0">
-            <h4 className="font-sans text-[10px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-1 md:mb-2">We Accept</h4>
-            <div className="flex items-center justify-start md:justify-end gap-2 text-[6px] md:text-[6px] font-sans font-bold tracking-wider text-gray-400">
-              <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#1A1F71]">VISA</div>
-              <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#EB001B]">MC</div>
-              <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#0070CD]">AMEX</div>
-              <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#003087]">PAYPAL</div>
+            {/* Payment Methods */}
+            <div className="text-center md:text-right flex flex-col items-center md:items-end gap-3 mt-4 md:mt-0 pt-6 md:pt-0 border-t border-[#D4AF37]/10 md:border-0">
+              <h4 className="font-sans text-[10px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-1 md:mb-2">We Accept</h4>
+              <div className="flex items-center justify-center md:justify-end gap-2 text-[6px] md:text-[6px] font-sans font-bold tracking-wider text-gray-400">
+                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#1A1F71]">VISA</div>
+                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#EB001B]">MC</div>
+                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#0070CD]">AMEX</div>
+                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#003087]">PAYPAL</div>
+              </div>
             </div>
           </div>
         </div>
