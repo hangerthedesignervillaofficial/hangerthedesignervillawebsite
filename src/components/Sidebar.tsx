@@ -68,17 +68,17 @@ export default function Sidebar() {
   return (
     <ShadcnSidebar
       collapsible="offcanvas"
-      className="z-[80] border-r-0 font-sans"
-      style={{ "--sidebar-background": "#0F0A06", "--sidebar-border": "transparent" } as React.CSSProperties}
+      className="z-[80] border-r-0 font-sans shadow-[4px_0_24px_rgba(0,0,0,0.02)]"
+      style={{ "--sidebar-background": "#FDFBF7", "--sidebar-border": "transparent" } as React.CSSProperties}
     >
-      <SidebarContent className="relative bg-[#0F0A06] text-white flex flex-col h-[100dvh] overflow-y-auto scrollbar-none select-none">
+      <SidebarContent className="relative bg-[#FDFBF7] text-[#2C1810] flex flex-col h-[100dvh] overflow-y-auto scrollbar-none select-none">
 
         {/* ── TOP BAR ─────────────────────────────────── */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/5">
+        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-[#2C1810]/5">
           <Link href="/" onClick={handleClose} className="flex items-center gap-3 group">
-            <img src="/images/logo-icon.png" alt="HANGER" className="h-9 w-auto object-contain brightness-0 invert" />
+            <img src="/images/logo-icon.png" alt="HANGER" className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
             <div>
-              <div className="font-serif text-[18px] font-bold tracking-[0.25em] text-white uppercase leading-none" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>
+              <div className="font-serif text-[18px] font-bold tracking-[0.25em] text-[#2C1810] uppercase leading-none" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>
                 HANGER
               </div>
               <div className="text-[7px] font-bold tracking-[0.35em] text-[#D4AF37] uppercase mt-[3px]">
@@ -88,10 +88,10 @@ export default function Sidebar() {
           </Link>
           <button
             onClick={handleClose}
-            className="w-9 h-9 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200 cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center text-[#2C1810]/40 hover:text-[#2C1810] hover:bg-[#2C1810]/5 rounded-full transition-all duration-200 cursor-pointer"
             aria-label="Close"
           >
-            <X className="w-5 h-5 stroke-[1.5]" />
+            <X className="w-5 h-5 stroke-[1.2]" />
           </button>
         </div>
 
@@ -99,10 +99,10 @@ export default function Sidebar() {
         <div className="px-6 pt-5 pb-2">
           <button
             onClick={() => setShowSearch(s => !s)}
-            className="flex items-center gap-2.5 w-full text-white/50 hover:text-white transition-colors cursor-pointer group"
+            className="flex items-center gap-2.5 w-full text-[#2C1810]/50 hover:text-[#2C1810] transition-colors cursor-pointer group"
           >
-            <Search className="w-4 h-4 flex-shrink-0" />
-            <span className="font-sans text-[11px] tracking-[0.2em] uppercase">Search</span>
+            <Search className="w-4 h-4 flex-shrink-0 stroke-[1.5]" />
+            <span className="font-sans text-[11px] tracking-[0.2em] uppercase font-medium">Search</span>
           </button>
           <AnimatePresence>
             {showSearch && (
@@ -120,7 +120,7 @@ export default function Sidebar() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     autoFocus
-                    className="w-full bg-white/10 border border-white/15 rounded-none px-4 py-3 text-[12px] text-white placeholder-white/30 focus:outline-none focus:border-[#D4AF37]/50 transition-all"
+                    className="w-full bg-transparent border-b border-[#2C1810]/20 rounded-none px-2 py-3 text-[12px] text-[#2C1810] placeholder-[#2C1810]/30 focus:outline-none focus:border-[#D4AF37] transition-all"
                   />
                 </form>
               </motion.div>
@@ -128,7 +128,7 @@ export default function Sidebar() {
           </AnimatePresence>
         </div>
 
-        <div className="h-[1px] bg-white/5 mx-6 my-4" />
+        <div className="h-[1px] bg-[#2C1810]/5 mx-6 my-4" />
 
         {/* ── SHOP BY CATEGORY ─────────────────────────── */}
         <div className="px-6">
@@ -146,26 +146,26 @@ export default function Sidebar() {
                 <div key={item.id} className="flex flex-col">
                   <div
                     className={cn(
-                      "flex items-center justify-between py-3 cursor-pointer border-b transition-all duration-200",
+                      "flex items-center justify-between py-3 cursor-pointer transition-all duration-200 group",
                       isActive
-                        ? "border-[#D4AF37]/30 text-[#D4AF37]"
-                        : "border-white/5 text-white hover:text-[#D4AF37]"
+                        ? "text-[#D4AF37]"
+                        : "text-[#2C1810] hover:text-[#D4AF37]"
                     )}
                     onClick={() => setExpandedItem(isExpanded ? null : item.id)}
                   >
                     <Link
                       href={item.href}
                       onClick={(e) => {
-                        if (item.hasSub) { e.preventDefault(); setExpandedItem(isExpanded ? null : item.id); }
-                        else handleClose();
+                         if (item.hasSub) { e.preventDefault(); setExpandedItem(isExpanded ? null : item.id); }
+                         else handleClose();
                       }}
-                      className="font-serif text-[20px] tracking-wide uppercase leading-none flex-1"
+                      className="font-serif text-[18px] tracking-widest uppercase leading-none flex-1 font-light"
                       style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
                     >
                       {item.title}
                     </Link>
                     {item.hasSub && (
-                      <ChevronDown className={cn("w-4 h-4 text-[#D4AF37] transition-transform duration-300 flex-shrink-0", isExpanded && "rotate-180")} />
+                      <ChevronDown className={cn("w-3.5 h-3.5 text-[#2C1810]/40 group-hover:text-[#D4AF37] transition-all duration-300 flex-shrink-0", isExpanded && "rotate-180 text-[#D4AF37]")} />
                     )}
                   </div>
 
@@ -179,16 +179,15 @@ export default function Sidebar() {
                         transition={{ duration: 0.25 }}
                         className="overflow-hidden"
                       >
-                        <div className="py-3 pl-2 flex flex-col gap-2 border-b border-white/5">
+                        <div className="pt-2 pb-4 pl-4 flex flex-col gap-3 relative before:absolute before:left-1.5 before:top-2 before:bottom-4 before:w-[1px] before:bg-[#2C1810]/10">
                           {item.subItems?.slice(0, 5).map((sub) => (
                             <Link
                               key={sub.title}
                               href={sub.href}
                               onClick={handleClose}
-                              className="flex items-center gap-3 group py-1.5"
+                              className="flex items-center gap-3 group py-1"
                             >
-                              <div className="w-1 h-1 bg-[#D4AF37] rounded-full flex-shrink-0" />
-                              <span className="font-sans text-[11px] tracking-[0.1em] text-white/60 group-hover:text-[#D4AF37] uppercase transition-colors duration-200">
+                              <span className="font-sans text-[11px] tracking-[0.15em] text-[#2C1810]/60 group-hover:text-[#D4AF37] uppercase transition-colors duration-200">
                                 {sub.title}
                               </span>
                             </Link>
@@ -196,7 +195,7 @@ export default function Sidebar() {
                           <Link
                             href={item.href}
                             onClick={handleClose}
-                            className="mt-1 font-sans text-[9px] tracking-[0.25em] text-[#D4AF37] uppercase flex items-center gap-1.5 hover:gap-3 transition-all duration-200"
+                            className="mt-2 font-sans text-[9px] tracking-[0.25em] text-[#D4AF37] font-semibold uppercase flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200"
                           >
                             View All <ArrowRight className="w-3 h-3" />
                           </Link>
@@ -210,7 +209,7 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <div className="h-[1px] bg-white/5 mx-6 my-5" />
+        <div className="h-[1px] bg-[#2C1810]/5 mx-6 my-5" />
 
         {/* ── DISCOVER ────────────────────────────────── */}
         <div className="px-6">
@@ -224,19 +223,19 @@ export default function Sidebar() {
                   href={item.href}
                   onClick={handleClose}
                   className={cn(
-                    "flex items-center justify-between py-3 border-b border-white/5 group transition-colors duration-200",
-                    pathname === item.href ? "text-[#D4AF37]" : "text-white/70 hover:text-white"
+                    "flex items-center justify-between py-3 border-b border-[#2C1810]/5 group transition-colors duration-200",
+                    pathname === item.href ? "text-[#D4AF37]" : "text-[#2C1810]/70 hover:text-[#2C1810]"
                   )}
                 >
-                  <span className="font-sans text-[13px] tracking-[0.12em] uppercase">{item.label}</span>
-                  <Icon className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100 transition-opacity" />
+                  <span className="font-sans text-[13px] font-medium tracking-[0.12em] uppercase">{item.label}</span>
+                  <Icon className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100 stroke-[1.5] transition-opacity" />
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        <div className="h-[1px] bg-white/5 mx-6 my-5" />
+        <div className="h-[1px] bg-[#2C1810]/5 mx-6 my-5" />
 
         {/* ── ACCOUNT ─────────────────────────────────── */}
         <div className="px-6">
@@ -249,10 +248,10 @@ export default function Sidebar() {
                   key={item.href}
                   href={item.href}
                   onClick={handleClose}
-                  className="flex items-center gap-3.5 py-2.5 text-white/60 hover:text-white transition-colors duration-200 group"
+                  className="flex items-center gap-3.5 py-2.5 text-[#2C1810]/60 hover:text-[#2C1810] transition-colors duration-200 group"
                 >
                   <Icon className="w-4 h-4 stroke-[1.5] flex-shrink-0" />
-                  <span className="font-sans text-[11px] tracking-[0.15em] uppercase">{item.label}</span>
+                  <span className="font-sans text-[11px] font-medium tracking-[0.15em] uppercase">{item.label}</span>
                 </Link>
               );
             })}
@@ -271,30 +270,30 @@ export default function Sidebar() {
             {user && (
               <button
                 onClick={() => { signOut(); handleClose(); }}
-                className="flex items-center gap-3.5 py-2.5 text-red-400/70 hover:text-red-400 transition-colors duration-200 mt-1 cursor-pointer w-full text-left"
+                className="flex items-center gap-3.5 py-2.5 text-red-700/70 hover:text-red-700 transition-colors duration-200 mt-1 cursor-pointer w-full text-left"
               >
                 <LogOut className="w-4 h-4 stroke-[1.5]" />
-                <span className="font-sans text-[11px] tracking-[0.15em] uppercase">Sign Out</span>
+                <span className="font-sans text-[11px] tracking-[0.15em] uppercase font-medium">Sign Out</span>
               </button>
             )}
           </nav>
         </div>
 
         {/* ── FOOTER ──────────────────────────────────── */}
-        <div className="mt-auto px-6 py-8 border-t border-white/5">
-          <p className="font-serif italic text-[15px] text-[#D4AF37]/70 mb-4 text-center" style={{ fontFamily: "Georgia, serif" }}>
+        <div className="mt-auto px-6 py-8 border-t border-[#2C1810]/5 bg-[#f4f0ea]/50">
+          <p className="font-serif italic text-[14px] text-[#2C1810]/60 mb-4 text-center" style={{ fontFamily: "Georgia, serif" }}>
             Let&apos;s stay connected ♡
           </p>
           <div className="flex justify-center gap-4 mb-6">
             <a href="https://www.instagram.com/hanger_thedesignervilla" target="_blank" rel="noreferrer"
-              className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-[#D4AF37] hover:border-[#D4AF37]/40 transition-all duration-300"
+              className="w-9 h-9 rounded-full border border-[#2C1810]/15 flex items-center justify-center text-[#2C1810]/50 hover:text-[#D4AF37] hover:border-[#D4AF37]/40 transition-all duration-300"
             >
               <InstagramIcon className="w-4 h-4" />
             </a>
           </div>
           <div className="flex items-center justify-center gap-2">
             <span className="text-[#D4AF37] text-[8px]">◆</span>
-            <p className="font-sans text-[7px] font-bold tracking-[0.3em] text-white/30 uppercase">HANGER – THE DESIGNER VILLA</p>
+            <p className="font-sans text-[7px] font-bold tracking-[0.3em] text-[#2C1810]/40 uppercase">HANGER – THE DESIGNER VILLA</p>
             <span className="text-[#D4AF37] text-[8px]">◆</span>
           </div>
         </div>

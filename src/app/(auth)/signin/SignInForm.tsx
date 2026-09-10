@@ -32,8 +32,8 @@ export function SignInForm({ message, initialError }: { message: string | null; 
           </div>
         )}
         
-        <div className="space-y-4 pt-4">
-          <div className="relative">
+        <div className="space-y-6 pt-4">
+          <div className="relative group">
             <Input
               id="email"
               name="email"
@@ -42,17 +42,17 @@ export function SignInForm({ message, initialError }: { message: string | null; 
               value={formData.email}
               onChange={handleChange}
               required
-              className="peer w-full bg-transparent border-b border-[#D4AF37]/30 border-t-0 border-l-0 border-r-0 rounded-none h-11 px-0 focus-visible:ring-0 focus:border-[#D4AF37] focus:bg-transparent font-sans text-sm text-[#2C1810] transition-colors"
+              className="peer w-full bg-transparent border-b border-[#2C1810]/20 border-t-0 border-l-0 border-r-0 rounded-none h-12 px-0 focus-visible:ring-0 focus:border-[#D4AF37] focus:bg-transparent font-sans text-[13px] text-[#2C1810] transition-colors"
             />
             <label 
               htmlFor="email"
-              className="absolute left-0 top-0 text-[10px] md:text-xs text-[#7A6B5D] font-sans uppercase tracking-[0.15em] transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-placeholder-shown:text-[#7A6B5D]/60 peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#D4AF37] pointer-events-none"
+              className="absolute left-0 top-0 text-[10px] md:text-xs text-[#2C1810]/50 font-sans uppercase tracking-[0.15em] transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-[#2C1810]/40 peer-focus:-top-3.5 peer-focus:text-[9px] peer-focus:text-[#D4AF37] pointer-events-none"
             >
               Email Address
             </label>
           </div>
  
-          <div className="relative pt-6">
+          <div className="relative pt-2 group">
             <Input
               id="password"
               name="password"
@@ -61,11 +61,11 @@ export function SignInForm({ message, initialError }: { message: string | null; 
               value={formData.password}
               onChange={handleChange}
               required
-              className="peer w-full bg-transparent border-b border-[#D4AF37]/30 border-t-0 border-l-0 border-r-0 rounded-none h-11 px-0 pr-8 focus-visible:ring-0 focus:border-[#D4AF37] focus:bg-transparent font-sans text-sm text-[#2C1810] transition-colors"
+              className="peer w-full bg-transparent border-b border-[#2C1810]/20 border-t-0 border-l-0 border-r-0 rounded-none h-12 px-0 pr-8 focus-visible:ring-0 focus:border-[#D4AF37] focus:bg-transparent font-sans text-[13px] text-[#2C1810] transition-colors"
             />
             <label 
               htmlFor="password"
-              className="absolute left-0 top-6 text-[10px] md:text-xs text-[#7A6B5D] font-sans uppercase tracking-[0.15em] transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-9 peer-placeholder-shown:text-[#7A6B5D]/60 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-[#D4AF37] pointer-events-none"
+              className="absolute left-0 top-6 text-[10px] md:text-xs text-[#2C1810]/50 font-sans uppercase tracking-[0.15em] transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-6 peer-placeholder-shown:text-[#2C1810]/40 peer-focus:top-[-2px] peer-focus:text-[9px] peer-focus:text-[#D4AF37] pointer-events-none"
             >
               Password
             </label>
@@ -95,10 +95,10 @@ export function SignInForm({ message, initialError }: { message: string | null; 
           </div>
         </div>
  
-        <div className="flex flex-col pt-2">
+        <div className="flex flex-col pt-4">
           <Button
             type="submit"
-            className="rounded-none bg-[#2C1810] hover:bg-[#4A0E17] text-[#D4AF37] hover:text-white h-11 px-8 font-sans text-[10px] font-bold tracking-[0.2em] uppercase w-full transition-colors duration-300 border border-[#D4AF37]/35 cursor-pointer shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+            className="rounded-none bg-[#2C1810] hover:bg-[#1A0E09] text-white h-[50px] px-8 font-sans text-[11px] font-bold tracking-[0.2em] uppercase w-full transition-all duration-300 shadow-xl shadow-[#2C1810]/10 hover:shadow-[#2C1810]/20 hover:-translate-y-[1px]"
             disabled={loading}
           >
             {loading ? "Signing In..." : "Sign In"}
@@ -107,12 +107,12 @@ export function SignInForm({ message, initialError }: { message: string | null; 
       </form>
 
       {/* Divider */}
-      <div className="relative my-2">
+      <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-[#D4AF37]/15" />
+          <span className="w-full border-t border-[#2C1810]/10" />
         </div>
-        <div className="relative flex justify-center text-[8.5px] uppercase tracking-[0.15em] font-bold">
-          <span className="bg-[#FFFDFC] px-3 text-[#7A6B5D]">Or continue with</span>
+        <div className="relative flex justify-center text-[9px] uppercase tracking-[0.15em] font-medium">
+          <span className="bg-[#FDFBF7] px-4 text-[#2C1810]/40">Or continue with</span>
         </div>
       </div>
 
@@ -120,7 +120,7 @@ export function SignInForm({ message, initialError }: { message: string | null; 
       <Button
         type="button"
         variant="outline"
-        className="w-full rounded-none border border-[#D4AF37]/25 hover:bg-[#FDFBF7] hover:border-[#D4AF37]/50 bg-white font-sans text-[9px] font-bold tracking-[0.18em] uppercase transition-all duration-300 h-11 text-[#2C1810] cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+        className="w-full rounded-none border border-[#2C1810]/15 hover:bg-[#2C1810]/5 bg-transparent font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-all duration-300 h-[50px] text-[#2C1810] cursor-pointer hover:-translate-y-[1px]"
         onClick={handleGoogleSignIn}
         disabled={loading}
       >
