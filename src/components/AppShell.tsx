@@ -27,8 +27,8 @@ export function AppShell({ children }: AppShellProps) {
     const handleScroll = () => {
       toast.dismiss();
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
+    return () => window.removeEventListener("scroll", handleScroll, { capture: true });
   }, []);
 
   if (isAdmin) {

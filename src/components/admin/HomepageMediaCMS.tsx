@@ -5,9 +5,11 @@ import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { uploadMediaToSupabase } from "@/utils/uploadMedia";
 import { Loader2, Image as ImageIcon, Video, Save, Plus, Trash2 } from "lucide-react";
+import { CategoryType } from "@/types";
 
 export function HomepageMediaCMS() {
   const [mediaData, setMediaData] = useState<any>(null);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
@@ -81,22 +83,25 @@ export function HomepageMediaCMS() {
   };
 
   useEffect(() => {
-    fetchMediaData();
+    fetchMediaDataAndCategories();
   }, []);
 
-  async function fetchMediaData() {
+  async function fetchMediaDataAndCategories() {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('*')
-        .eq('key', 'homepage_media')
-        .single();
       
-      if (error && error.code !== 'PGRST116') throw error;
+      const [mediaRes, catRes] = await Promise.all([
+        supabase.from('site_settings').select('*').eq('key', 'homepage_media').single(),
+        supabase.from('categories').select('*').order('id')
+      ]);
       
-      if (data && data.value) {
-        setMediaData({ ...defaultData, ...data.value });
+      if (mediaRes.error && mediaRes.error.code !== 'PGRST116') throw mediaRes.error;
+      if (catRes.error) throw catRes.error;
+      
+      setCategories(catRes.data || []);
+      
+      if (mediaRes.data && mediaRes.data.value) {
+        setMediaData({ ...defaultData, ...mediaRes.data.value });
       } else {
         setMediaData(defaultData);
       }
@@ -107,6 +112,36 @@ export function HomepageMediaCMS() {
       setLoading(false);
     }
   }
+
+  // Build options array for dropdowns
+  const linkOptions = [
+    { label: "Home", value: "/" },
+    { label: "Shop All", value: "/products" },
+    { label: "New Arrivals", value: "/new-arrivals" },
+    { label: "Best Sellers", value: "/bestsellers" },
+    { label: "-- Categories --", value: "", disabled: true },
+    ...categories.map(cat => ({ label: cat.name.toUpperCase(), value: `/${cat.slug}` })),
+    { label: "-- Moods --", value: "", disabled: true },
+    { label: "Everyday Edit", value: "/mood/everyday-edit" },
+    { label: "Festive Edit", value: "/mood/festive-edit" },
+    { label: "Occasion Edit", value: "/mood/occasion-edit" },
+    { label: "Statement Edit", value: "/mood/statement-edit" },
+  ];
+
+  const renderLinkDropdown = (value: string, onChange: (val: string) => void) => (
+    <select
+      value={value || ''}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full text-[10px] uppercase font-bold tracking-widest border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#2C1810] cursor-pointer"
+    >
+      <option value="">Select Link Destination...</option>
+      {linkOptions.map((opt, idx) => (
+        <option key={idx} value={opt.value} disabled={opt.disabled}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  );
 
   async function handleSave() {
     setSaving(true);
@@ -243,13 +278,7 @@ export function HomepageMediaCMS() {
             <div key={item.id} className="relative">
               {renderUploadField(item.title, `asymmetrical.${i}`, item)}
               <div className="mt-2 space-y-2">
-                <input 
-                  type="text" 
-                  value={item.link || ''}
-                  onChange={(e) => updateAsymmetricalGridItem(i, 'link', e.target.value)}
-                  placeholder="/category-link"
-                  className="w-full text-[10px] font-sans border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#7A6B5D]"
-                />
+                {renderLinkDropdown(item.link, (val) => updateAsymmetricalGridItem(i, 'link', val))}
               </div>
             </div>
           ))}
@@ -285,13 +314,7 @@ export function HomepageMediaCMS() {
                   placeholder="Category Name"
                   className="w-full text-[11px] font-bold tracking-widest uppercase border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#2C1810]"
                 />
-                <input 
-                  type="text" 
-                  value={item.link}
-                  onChange={(e) => updateCategoryGridItem(i, 'link', e.target.value)}
-                  placeholder="/category-link"
-                  className="w-full text-[10px] font-sans border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#7A6B5D]"
-                />
+                {renderLinkDropdown(item.link, (val) => updateCategoryGridItem(i, 'link', val))}
               </div>
             </div>
           ))}

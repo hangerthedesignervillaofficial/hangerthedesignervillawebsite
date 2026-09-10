@@ -533,3 +533,27 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+/* Force sonner toasts to be luxury dark */
+[data-sonner-toast] {
+  background-color: #1A1A1A !important;
+  color: #F9F6F1 !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  border-radius: 2px !important;
+  font-family: var(--font-sans) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  padding: 16px 24px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-color: rgba(212, 175, 55, 0.6) !important;
+  color: #D4AF37 !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-color: rgba(74, 14, 23, 0.6) !important;
+  background-color: #1A1A1A !important;
+}
