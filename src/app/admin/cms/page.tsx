@@ -183,12 +183,35 @@ export default function CMSPage() {
     }]);
   };
 
-  const removeSlide = (id: string) => {
+  const removeSlide = async (id: string) => {
     if (heroSlides.length <= 1) {
       toast.error("You must have at least one slide.");
       return;
     }
-    setHeroSlides(heroSlides.filter(s => s.id !== id));
+    const newSlides = heroSlides.filter(s => s.id !== id);
+    setHeroSlides(newSlides);
+    
+    // Save to DB immediately as requested
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({ 
+          key: 'hero_banner', 
+          value: newSlides,
+          updated_at: new Date().toISOString()
+        });
+      
+      if (error) throw error;
+      toast.success("Slide removed successfully and live on site.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete slide.");
+      // Rollback on failure
+      setHeroSlides(heroSlides);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateSlide = (id: string, field: string, value: any) => {

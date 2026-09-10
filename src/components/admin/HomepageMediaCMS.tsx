@@ -12,6 +12,14 @@ export function HomepageMediaCMS() {
   const [saving, setSaving] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
+  const updateAsymmetricalGridItem = (i: number, field: string, value: string) => {
+    setMediaData((prev: any) => {
+      const newGrid = [...prev.asymmetrical];
+      newGrid[i] = { ...newGrid[i], [field]: value };
+      return { ...prev, asymmetrical: newGrid };
+    });
+  };
+
   const updateCategoryGridItem = (i: number, field: string, value: string) => {
     setMediaData((prev: any) => {
       const newGrid = [...prev.category_grid];
@@ -232,8 +240,17 @@ export function HomepageMediaCMS() {
         <h3 className="text-sm font-bold tracking-widest uppercase text-[#2C1810] mb-4 border-l-2 border-[#D4AF37] pl-3">Asymmetrical Feature Grid</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {mediaData.asymmetrical.map((item: any, i: number) => (
-            <div key={item.id}>
+            <div key={item.id} className="relative">
               {renderUploadField(item.title, `asymmetrical.${i}`, item)}
+              <div className="mt-2 space-y-2">
+                <input 
+                  type="text" 
+                  value={item.link || ''}
+                  onChange={(e) => updateAsymmetricalGridItem(i, 'link', e.target.value)}
+                  placeholder="/category-link"
+                  className="w-full text-[10px] font-sans border border-[#D4AF37]/30 p-2 focus:outline-none focus:border-[#D4AF37] bg-white text-[#7A6B5D]"
+                />
+              </div>
             </div>
           ))}
         </div>

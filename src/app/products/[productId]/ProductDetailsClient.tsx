@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { ProductType } from "@/types";
+import { ProductType, ReviewType } from "@/types";
 import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Heart, Minus, Plus, Truck, Shield, RotateCcw, Check, Bell, ChevronDown, Star } from "lucide-react";
 import { NotifyMeModal } from "@/components/NotifyMeModal";
+import { reviewService } from "@/services/review/reviewService";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -44,28 +48,82 @@ export default function ProductDetailsClient({
   const [openSection, setOpenSection] = useState<string | null>('details');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const isFavorited = isInWishlist(product.product_id);
+  
+  // Intersection Observer for Desktop Scroll Spy
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Fake review generation based on product ID (deterministic)
-  const seed = product.product_id ? product.product_id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
-  const avgRating = parseFloat((3.8 + (seed % 12) / 10).toFixed(1));
+  useEffect(() => {
+    // Only run on desktop layout where we have the stacked images
+    if (window.innerWidth < 1024) return;
+    
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.getAttribute("data-index"));
+            if (!isNaN(index)) {
+              setSelectedImageIndex(index);
+            }
+          }
+        });
+      },
+      { root: null, rootMargin: "-40% 0px -40% 0px", threshold: 0.1 }
+    );
 
-  const reviewNames = ['Priya S.', 'Neha Kapoor', 'Anjali M.', 'Riya Sharma', 'Meera D.', 'Kavya R.', 'Sanya T.', 'Pooja B.'];
-  const reviewComments = [
-    'Absolutely love this piece! The quality is outstanding and it looks exactly like the pictures. Will definitely order again.',
-    'Gorgeous product, perfect for special occasions. The material feels premium and the finish is flawless.',
-    'Received so many compliments wearing this. Fast delivery and beautifully packaged. Highly recommend!',
-    'The craftsmanship is incredible. Worth every rupee. The colour is even more beautiful in person.',
-    'Stunning quality! Fits perfectly and the detailing is exquisite. Very happy with this purchase.',
-  ];
-  const fakeReviews = Array.from({ length: 3 + (seed % 3) }, (_, i) => ({
-    name: reviewNames[(seed + i) % reviewNames.length],
-    rating: Math.min(5, Math.max(3, Math.round(avgRating) - (i === 1 ? 1 : 0))),
-    comment: reviewComments[(seed + i) % reviewComments.length],
-    date: new Date(Date.now() - (1000 * 60 * 60 * 24 * (7 + (seed + i * 13) % 60))).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
-    verified: true,
-  }));
-  // totalReviews matches what is actually displayed
-  const totalReviews = fakeReviews.length;
+    const imageElements = document.querySelectorAll(".desktop-product-image");
+    imageElements.forEach((el) => observerRef.current?.observe(el));
+
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  // Real reviews implementation
+  const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
+  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [newReviewComment, setNewReviewComment] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      try {
+        const fetchedReviews = await reviewService.getReviewsByProduct(product.product_id);
+        setReviews(fetchedReviews);
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    }
+    fetchReviews();
+  }, [product.product_id]);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReviewComment.trim()) {
+      toast.error("Please enter a review comment.");
+      return;
+    }
+    setIsSubmittingReview(true);
+    try {
+      const review = await reviewService.createReview(product.product_id, newReviewRating, newReviewComment);
+      if (review) {
+        toast.success("Review submitted successfully! It will appear after admin approval.");
+        setNewReviewComment("");
+        setNewReviewRating(5);
+        setShowReviewForm(false);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
+    : "5.0";
+  const totalReviews = reviews.length;
 
   const productImages = product.image
     ? [product.image, ...(product.gallery || [])]
@@ -185,29 +243,21 @@ export default function ProductDetailsClient({
               )}
             </div>
 
-            {/* ── DESKTOP: Main Viewer + Thumbnail Gallery ── */}
-            <div className="hidden lg:flex flex-col gap-4">
-              {/* Main Large Image */}
-              <div className="relative aspect-[3/4] w-full bg-[#f4f0ea] overflow-hidden rounded-sm border border-[#D4AF37]/10">
-                <Image
-                  src={productImages[selectedImageIndex]}
-                  alt={`${product.title} - Main View`}
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-
-              {/* Thumbnails Strip */}
+            {/* ── DESKTOP: Scroll Spy Stack + Thumbnails ── */}
+            <div className="hidden lg:flex gap-4">
+              {/* Sticky Thumbnails */}
               {productImages.length > 1 && (
-                <div className="grid grid-cols-5 gap-2">
+                <div className="w-[80px] flex-shrink-0 flex flex-col gap-3 sticky top-24 self-start max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide pb-4">
                   {productImages.map((img, i) => (
                     <button
                       key={i}
-                      onClick={() => setSelectedImageIndex(i)}
-                      className={`relative aspect-square w-full bg-[#f4f0ea] border-2 overflow-hidden transition-all duration-300 ${
+                      onClick={() => {
+                        const el = document.getElementById(`prod-img-${i}`);
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }}
+                      className={`relative aspect-[3/4] w-full bg-[#f4f0ea] border overflow-hidden transition-all duration-300 ${
                         selectedImageIndex === i
-                          ? 'border-[#D4AF37] opacity-100 shadow-sm'
+                          ? 'border-[#D4AF37] opacity-100 shadow-sm scale-[1.02]'
                           : 'border-transparent opacity-50 hover:opacity-100'
                       }`}
                     >
@@ -221,6 +271,26 @@ export default function ProductDetailsClient({
                   ))}
                 </div>
               )}
+
+              {/* Main Image Stack */}
+              <div className="flex-1 flex flex-col gap-4">
+                {productImages.map((img, i) => (
+                  <div 
+                    key={i} 
+                    id={`prod-img-${i}`}
+                    data-index={i}
+                    className="desktop-product-image relative aspect-[3/4] w-full bg-[#f4f0ea] overflow-hidden rounded-sm border border-[#D4AF37]/10"
+                  >
+                    <Image
+                      src={img}
+                      alt={`${product.title} - View ${i + 1}`}
+                      fill
+                      className="object-contain"
+                      priority={i === 0}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
 
@@ -508,49 +578,137 @@ export default function ProductDetailsClient({
 
           {/* Reviews Section — Premium Inline */}
           <div className="mt-12 lg:mt-16 pt-8 border-t border-[#D4AF37]/10 max-w-4xl mx-auto">
-            {/* Header */}
+              {/* Header & Write Review Button */}
             <div className="flex flex-col items-center mb-10">
               <span className="font-sans text-[9px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase mb-2">Verified Buyers</span>
               <h3 className="font-serif text-2xl md:text-3xl text-[#2C1810] tracking-wide mb-3" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>Customer Reviews</h3>
-              {/* Overall Rating Bar */}
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`h-5 w-5 ${i < Math.round(avgRating) ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
-                  ))}
+              
+              <div className="flex flex-col md:flex-row items-center gap-6 mt-2">
+                <div className="flex items-center gap-3">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`h-5 w-5 ${i < Math.round(Number(avgRating)) ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
+                    ))}
+                  </div>
+                  <span className="font-serif text-2xl text-[#2C1810]">{avgRating}</span>
+                  <span className="font-sans text-[10px] text-[#7A6B5D] tracking-widest uppercase">({totalReviews} reviews)</span>
                 </div>
-                <span className="font-serif text-2xl text-[#2C1810]">{avgRating}</span>
-                <span className="font-sans text-[10px] text-[#7A6B5D] tracking-widest uppercase">({totalReviews} reviews)</span>
+                
+                <div className="hidden md:block w-px h-8 bg-[#D4AF37]/30"></div>
+                
+                <button 
+                  onClick={() => setShowReviewForm(!showReviewForm)}
+                  className="font-sans text-[10px] font-bold uppercase tracking-widest text-[#2C1810] border border-[#2C1810] px-6 py-2 hover:bg-[#2C1810] hover:text-[#D4AF37] transition-colors"
+                >
+                  Write a Review
+                </button>
               </div>
               <div className="w-10 h-[1px] bg-[#D4AF37] mx-auto mt-6" />
             </div>
 
+            {/* Review Form */}
+            <AnimatePresence>
+              {showReviewForm && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden mb-12"
+                >
+                  <div className="bg-white border border-[#D4AF37]/20 p-6 md:p-8 max-w-2xl mx-auto">
+                    <h4 className="font-serif text-xl text-[#2C1810] mb-6 text-center">Share Your Experience</h4>
+                    <form onSubmit={handleReviewSubmit} className="space-y-6">
+                      <div className="flex flex-col items-center gap-2">
+                        <label className="font-sans text-[10px] font-bold uppercase tracking-widest text-[#7A6B5D]">Rating</label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              type="button"
+                              key={star}
+                              onClick={() => setNewReviewRating(star)}
+                              className="focus:outline-none"
+                            >
+                              <Star className={`w-8 h-8 ${star <= newReviewRating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'} hover:scale-110 transition-transform`} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="font-sans text-[10px] font-bold uppercase tracking-widest text-[#7A6B5D] block mb-2">Your Review</label>
+                        <textarea
+                          value={newReviewComment}
+                          onChange={(e) => setNewReviewComment(e.target.value)}
+                          placeholder="Tell us what you think about the fabric, fit, and design..."
+                          className="w-full min-h-[120px] p-4 border border-[#D4AF37]/30 bg-[#FDFBF7] focus:outline-none focus:border-[#D4AF37] font-sans text-sm text-[#2C1810] resize-y"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="flex justify-end gap-4">
+                        <button
+                          type="button"
+                          onClick={() => setShowReviewForm(false)}
+                          className="font-sans text-[10px] font-bold uppercase tracking-widest text-[#7A6B5D] hover:text-[#2C1810] transition-colors px-4 py-2"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isSubmittingReview}
+                          className="flex items-center gap-2 bg-[#2C1810] text-[#D4AF37] px-8 py-3 hover:bg-[#4A0E17] transition-colors disabled:opacity-50 font-sans text-[10px] font-bold uppercase tracking-widest"
+                        >
+                          {isSubmittingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                          Submit Review
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Review Cards */}
             <div className="space-y-6">
-              {fakeReviews.map((review, i) => (
-                <div key={i} className="border border-[#D4AF37]/15 bg-white p-6 relative">
-                  {review.verified && (
+              {isLoadingReviews ? (
+                <div className="flex justify-center p-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" />
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="text-center p-8 bg-white border border-[#D4AF37]/10">
+                  <p className="font-sans text-sm text-[#7A6B5D]">No reviews yet. Be the first to review this piece!</p>
+                </div>
+              ) : (
+                reviews.map((review) => (
+                  <div key={review.id} className="border border-[#D4AF37]/15 bg-white p-6 relative">
                     <span className="absolute top-4 right-4 font-sans text-[7px] tracking-[0.2em] uppercase text-[#2C1810] bg-[#D4AF37]/10 px-2 py-0.5 border border-[#D4AF37]/20">✓ Verified</span>
-                  )}
-                  <div className="flex items-start gap-4">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
-                      <span className="font-serif text-[14px] font-bold text-[#2C1810]">{review.name[0]}</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">{review.name}</span>
-                        <span className="font-sans text-[9px] text-[#7A6B5D]">{review.date}</span>
+                    
+                    <div className="flex items-start gap-4">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
+                        <span className="font-serif text-[14px] font-bold text-[#2C1810]">
+                          {(review as any).profile?.username?.[0]?.toUpperCase() || "U"}
+                        </span>
                       </div>
-                      <div className="flex mb-2">
-                        {[...Array(5)].map((_, j) => (
-                          <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
-                        ))}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">
+                            {(review as any).profile?.username || "Verified Buyer"}
+                          </span>
+                          <span className="font-sans text-[9px] text-[#7A6B5D]">
+                            {review.created_at ? new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                          </span>
+                        </div>
+                        <div className="flex mb-2">
+                          {[...Array(5)].map((_, j) => (
+                            <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
+                          ))}
+                        </div>
+                        <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
                       </div>
-                      <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
