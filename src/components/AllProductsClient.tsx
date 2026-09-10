@@ -40,7 +40,7 @@ export default function AllProductsClient() {
     let filtered = [...displayProducts]
     
     if (tagFilter) {
-      filtered = filtered.filter(p => p.tags && p.tags.includes(tagFilter))
+      filtered = filtered.filter(p => p.display_tags && p.display_tags.includes(tagFilter))
     }
 
     switch (sortBy) {
