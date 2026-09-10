@@ -103,25 +103,25 @@ export default function ProductDetailsClient({
   };
 
   return (
-    <div className="bg-[#FDFBF7] min-h-screen pb-20 lg:pb-10">
+    <div className="bg-[#FDFBF7] min-h-screen pb-36 lg:pb-10">
       <div className="container mx-auto px-4 py-6 md:py-10">
 
-        {/* Breadcrumb — Premium Style */}
+        {/* Breadcrumb — premium pill style */}
         <motion.nav
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex items-center gap-1.5 mb-8 flex-wrap"
+          className="flex items-center gap-1.5 mb-6 flex-wrap"
         >
-          <Link href="/" className="font-sans text-[9px] tracking-[0.15em] uppercase text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-200">
+          <Link href="/" className="font-sans text-[8px] tracking-[0.18em] uppercase text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-200 py-1 px-2 bg-[#f4f0ea] rounded-sm">
             Home
           </Link>
-          <span className="text-[#D4AF37] text-[10px] font-light">›</span>
-          <Link href={`/${getCategoryName(product.category_id).toLowerCase()}`} className="font-sans text-[9px] tracking-[0.15em] uppercase text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-200">
+          <span className="text-[#D4AF37]/60 text-[12px] font-thin leading-none">/</span>
+          <Link href={`/${getCategoryName(product.category_id).toLowerCase()}`} className="font-sans text-[8px] tracking-[0.18em] uppercase text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-200 py-1 px-2 bg-[#f4f0ea] rounded-sm">
             {getCategoryName(product.category_id)}
           </Link>
-          <span className="text-[#D4AF37] text-[10px] font-light">›</span>
-          <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-[#2C1810] font-semibold max-w-[200px] truncate">
+          <span className="text-[#D4AF37]/60 text-[12px] font-thin leading-none">/</span>
+          <span className="font-sans text-[8px] tracking-[0.18em] uppercase text-[#2C1810] font-bold max-w-[160px] truncate py-1 px-2 bg-[#2C1810]/5 rounded-sm border border-[#D4AF37]/20">
             {product.title}
           </span>
         </motion.nav>
@@ -135,37 +135,49 @@ export default function ProductDetailsClient({
             transition={{ duration: 0.6 }}
             className="lg:col-span-7 w-full"
           >
-            {/* Mobile: Edge-to-edge Carousel — full fill */}
+            {/* ── MOBILE: Natural-height image + thumbnail dots ── */}
             <div className="lg:hidden -mx-4 relative">
-              <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar">
-                {productImages.map((img, i) => (
-                  <div key={i} className="relative w-full flex-none snap-center bg-[#f4f0ea]" style={{ paddingBottom: '133.33%' }}>
-                    <Image
-                      src={img}
-                      alt={`${product.title} - View ${i + 1}`}
-                      fill
-                      className="object-contain"
-                      priority={i === 0}
-                    />
-                  </div>
-                ))}
-              </div>
-              {/* Floating action buttons on Mobile */}
-              <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+
+              {/* Main image — auto height, no blank space */}
+              <div className="relative w-full bg-[#f4f0ea] overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={productImages[selectedImageIndex]}
+                  alt={product.title}
+                  className="w-full h-auto block"
+                  style={{ maxHeight: '85vw', objectFit: 'contain', background: '#f4f0ea' }}
+                />
+                {/* Wishlist floating button */}
                 <button
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-white/80 backdrop-blur-md text-[#2C1810] shadow-sm active:scale-95 transition-transform"
+                  className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center bg-white/85 backdrop-blur-md text-[#2C1810] shadow-sm active:scale-95 transition-transform z-10"
                   onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
                 >
-                  <Heart
-                    className={`h-4 w-4 stroke-[1.5] transition-all duration-300 ${
-                      isFavorited ? "fill-[#4A0E17] text-[#4A0E17] scale-110" : ""
-                    }`}
-                  />
+                  <Heart className={`h-4 w-4 stroke-[1.5] transition-all duration-300 ${ isFavorited ? 'fill-[#4A0E17] text-[#4A0E17]' : '' }`} />
                 </button>
               </div>
+
+              {/* Mobile Thumbnail Strip — visible above sticky bar */}
+              {productImages.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto px-4 pt-3 pb-2 hide-scrollbar">
+                  {productImages.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImageIndex(i)}
+                      className={`flex-shrink-0 w-16 h-16 border-2 overflow-hidden rounded-sm transition-all duration-200 ${
+                        selectedImageIndex === i
+                          ? 'border-[#D4AF37] opacity-100'
+                          : 'border-transparent opacity-50 hover:opacity-80'
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img} alt={`view ${i+1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Desktop & Tablet: Main Viewer + Thumbnail Gallery */}
+            {/* ── DESKTOP: Main Viewer + Thumbnail Gallery ── */}
             <div className="hidden lg:flex flex-col gap-4">
               {/* Main Large Image */}
               <div className="relative aspect-[3/4] w-full bg-[#f4f0ea] overflow-hidden rounded-sm border border-[#D4AF37]/10">
@@ -180,15 +192,15 @@ export default function ProductDetailsClient({
 
               {/* Thumbnails Strip */}
               {productImages.length > 1 && (
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-5 gap-2">
                   {productImages.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setSelectedImageIndex(i)}
-                      className={`relative aspect-square w-full bg-[#f4f0ea] border transition-all duration-300 ${
-                        selectedImageIndex === i 
-                          ? "border-[#D4AF37] ring-1 ring-[#D4AF37] opacity-100" 
-                          : "border-transparent opacity-60 hover:opacity-100"
+                      className={`relative aspect-square w-full bg-[#f4f0ea] border-2 overflow-hidden transition-all duration-300 ${
+                        selectedImageIndex === i
+                          ? 'border-[#D4AF37] opacity-100 shadow-sm'
+                          : 'border-transparent opacity-50 hover:opacity-100'
                       }`}
                     >
                       <Image
