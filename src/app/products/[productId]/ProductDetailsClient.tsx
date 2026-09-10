@@ -362,9 +362,10 @@ export default function ProductDetailsClient({
 
               {/* Display Tags */}
               {product.display_tags && product.display_tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2 pb-1">
+                <div className="flex flex-wrap gap-2.5 pt-3 pb-2">
                   {product.display_tags.map((tag) => (
-                    <span key={tag} className="px-2.5 py-1 bg-[#D4AF37]/10 text-[9px] font-sans font-bold tracking-[0.18em] text-[#2C1810] uppercase border border-[#D4AF37]/20">
+                    <span key={tag} className="px-3 py-1.5 bg-transparent text-[9px] font-sans font-medium tracking-[0.25em] text-[#7A6B5D] uppercase border border-[#D4AF37]/30 rounded-sm shadow-sm flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-[#D4AF37]/60" />
                       {tag}
                     </span>
                   ))}
