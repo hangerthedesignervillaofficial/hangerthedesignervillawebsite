@@ -8,13 +8,14 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { orderService } from "@/services/order/orderService";
 import { addressService } from "@/services/address/addressService";
+import { couponService } from "@/services/coupon/couponService";
 import { motion } from "motion/react";
 import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
 
 export function CheckoutClient() {
   const router = useRouter();
-  const { cartItems, subtotal, clearCart } = useCart();
+  const { cartItems, subtotal, clearCart, appliedCoupon, discountAmount, removeCoupon } = useCart();
   const { user } = useAuth();
   
   const [isProcessing, setIsProcessing] = useState(false);
@@ -32,8 +33,9 @@ export function CheckoutClient() {
 
   // Calculate totals
   const shippingCost = subtotal >= 999 ? 0 : (subtotal > 0 ? 99 : 0);
-  const tax = Math.round(subtotal * 0.18);
-  const total = subtotal + shippingCost + tax;
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+  const tax = Math.round(discountedSubtotal * 0.18);
+  const total = discountedSubtotal + shippingCost + tax;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -114,6 +116,12 @@ export function CheckoutClient() {
       });
 
       await orderService.updateOrderStatus(order.id.toString(), "processing");
+      
+      if (appliedCoupon) {
+        await couponService.recordCouponUsage(appliedCoupon.id);
+        removeCoupon();
+      }
+
       await clearCart();
       
       // If guest user, store the order ID in localStorage to allow them to track it later
@@ -424,6 +432,12 @@ export function CheckoutClient() {
                     <span className="font-sans text-[11px] text-[#7A6B5D]">Subtotal</span>
                     <span className="font-sans text-[11px] font-semibold text-[#2C1810]">₹{subtotal.toLocaleString("en-IN")}</span>
                   </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-green-700">
+                      <span className="font-sans text-[11px] font-semibold">Coupon Discount ({appliedCoupon?.code})</span>
+                      <span className="font-sans text-[11px] font-bold">-₹{discountAmount.toLocaleString("en-IN")}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="font-sans text-[11px] text-[#7A6B5D]">Shipping</span>
                     <span className="font-sans text-[11px] font-semibold text-[#D4AF37]">

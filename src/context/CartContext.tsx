@@ -11,6 +11,7 @@ import * as cartService from '@/services/cart/cartService';
 import { toast } from 'sonner';
 import { useAuth } from './AuthContext';
 import { supabase } from "@/lib/supabase/client";
+import { couponService, Coupon } from "@/services/coupon/couponService";
 
 // Define CartItem interface extending ProductType with quantity for UI consumption
 export interface CartItem extends ProductType {
@@ -27,6 +28,10 @@ interface CartContextType {
   totalItems: number;
   subtotal: number;
   isLoading: boolean;
+  appliedCoupon: Coupon | null;
+  discountAmount: number;
+  applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
+  removeCoupon: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,6 +43,72 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [activeCartId, setActiveCartId] = useState<number | null>(null);
   const { user } = useAuth();
+
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+
+  // Restore coupon from sessionStorage
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("hanger_applied_coupon");
+      if (saved) {
+        setAppliedCoupon(JSON.parse(saved));
+      }
+    } catch (e) {}
+  }, []);
+
+  // Save coupon to sessionStorage
+  useEffect(() => {
+    try {
+      if (appliedCoupon) {
+        sessionStorage.setItem("hanger_applied_coupon", JSON.stringify(appliedCoupon));
+      } else {
+        sessionStorage.removeItem("hanger_applied_coupon");
+      }
+    } catch (e) {}
+  }, [appliedCoupon]);
+
+  // Recalculate discount whenever subtotal or coupon changes
+  useEffect(() => {
+    if (appliedCoupon && subtotal > 0) {
+      if (appliedCoupon.minOrderValue && subtotal < appliedCoupon.minOrderValue) {
+        toast.info(`Coupon ${appliedCoupon.code} removed: Cart total fell below ₹${appliedCoupon.minOrderValue.toLocaleString("en-IN")}`);
+        setAppliedCoupon(null);
+        setDiscountAmount(0);
+      } else {
+        let disc = 0;
+        if (appliedCoupon.discountType === "percentage") {
+          disc = Math.round((subtotal * appliedCoupon.discountValue) / 100);
+          if (appliedCoupon.maxDiscountAmount && disc > appliedCoupon.maxDiscountAmount) {
+            disc = appliedCoupon.maxDiscountAmount;
+          }
+        } else {
+          disc = Math.min(appliedCoupon.discountValue, subtotal);
+        }
+        setDiscountAmount(disc);
+      }
+    } else {
+      setDiscountAmount(0);
+    }
+  }, [subtotal, appliedCoupon]);
+
+  const applyCoupon = async (code: string): Promise<{ success: boolean; message: string }> => {
+    if (!code || !code.trim()) {
+      return { success: false, message: "Please enter a coupon code" };
+    }
+    const res = await couponService.validateCoupon(code, subtotal);
+    if (!res.valid || !res.coupon) {
+      return { success: false, message: res.message };
+    }
+    setAppliedCoupon(res.coupon);
+    setDiscountAmount(res.discount);
+    return { success: true, message: res.message };
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+  };
 
   // Load cart from database when user changes or load local guest cart
   useEffect(() => {
@@ -360,6 +431,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         totalItems,
         subtotal,
         isLoading,
+        appliedCoupon,
+        discountAmount,
+        applyCoupon,
+        removeCoupon,
       }}
     >
       {children}

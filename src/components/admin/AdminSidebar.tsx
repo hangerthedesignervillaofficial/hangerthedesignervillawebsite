@@ -15,7 +15,8 @@ import {
   Bell,
   LogOut,
   Menu,
-  X
+  X,
+  Tag
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
@@ -25,6 +26,7 @@ const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { name: "Coupons & Discounts", href: "/admin/coupons", icon: Tag },
   { name: "Cancellations", href: "/admin/cancellations", icon: XCircle },
   { name: "Restock Requests", href: "/admin/notifications", icon: Bell },
   { name: "Abandoned Carts", href: "/admin/abandoned-carts", icon: CartIcon },

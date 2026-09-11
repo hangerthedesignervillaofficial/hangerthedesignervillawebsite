@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Minus, Plus, Trash2, Tag, ChevronRight } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, Tag, ChevronRight, Check, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatCurrency } from "@/utils/formatCurrency";
 
@@ -15,17 +15,38 @@ interface CartDrawerProps {
 
 export function CartDrawer({ children }: CartDrawerProps) {
   const router = useRouter();
-  const { cartItems, totalItems, subtotal, updateQuantity, removeFromCart } = useCart();
+  const { 
+    cartItems, 
+    totalItems, 
+    subtotal, 
+    updateQuantity, 
+    removeFromCart,
+    appliedCoupon,
+    discountAmount,
+    applyCoupon,
+    removeCoupon
+  } = useCart();
   const [open, setOpen] = useState(false);
   const [showPromo, setShowPromo] = useState(false);
+  const [couponCodeInput, setCouponCodeInput] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   // Constants aligned with CartShoppingPage
   const shippingThreshold = 999;
   const shippingCost = 99;
   const qualifiesForFreeShipping = subtotal >= shippingThreshold;
   const shipping = qualifiesForFreeShipping ? 0 : (subtotal > 0 ? shippingCost : 0);
-  const tax = subtotal * 0.18;
-  const total = subtotal + tax + shipping;
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+  const tax = discountedSubtotal * 0.18;
+  const total = discountedSubtotal + tax + shipping;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCodeInput.trim()) return;
+    setIsApplyingCoupon(true);
+    await applyCoupon(couponCodeInput);
+    setIsApplyingCoupon(false);
+    setCouponCodeInput("");
+  };
 
   const handleCheckout = () => {
     setOpen(false);
@@ -35,7 +56,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger render={children} />
-      <SheetContent className="w-full sm:max-w-md bg-[#FDFBF7] border-l border-[#D4AF37]/20 p-0 flex flex-col h-[100dvh] sm:h-full shadow-2xl z-[85] rounded-none">
+      <SheetContent className="w-full sm:max-w-md bg-[#FDFBF7] border-l border-[#D4AF37]/20 p-0 flex flex-col h-[100dvh] sm:h-full shadow-2xl z-[110] rounded-none">
         <SheetHeader className="p-5 md:p-6 border-b border-[#D4AF37]/15 bg-white/95 backdrop-blur-md sticky top-0 z-20">
           <SheetTitle className="font-serif text-base md:text-lg font-normal tracking-[0.2em] text-[#2C1810] flex items-center justify-between uppercase">
             <span className="flex items-center gap-2.5">
@@ -164,33 +185,65 @@ export function CartDrawer({ children }: CartDrawerProps) {
               </div>
             </div>
 
-            {/* Promo Code Toggle */}
+            {/* Promo Code Section */}
             <div className="border border-[#D4AF37]/20 bg-[#FFFCF7] p-1 overflow-hidden transition-all rounded-none">
-              <button 
-                onClick={() => setShowPromo(!showPromo)}
-                className="w-full flex items-center justify-between p-1.5 md:p-2 text-[9px] font-bold tracking-[0.18em] text-[#2C1810] uppercase cursor-pointer hover:text-[#4A0E17] transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <Tag className="h-3.5 w-3.5 text-[#D4AF37] stroke-[1.5]" />
-                  Have a Promo Code?
-                </div>
-                <ChevronRight className={`h-3.5 w-3.5 transition-transform text-[#7A6B5D] ${showPromo ? 'rotate-90' : ''}`} />
-              </button>
-              {showPromo && (
-                <div className="p-2 flex gap-2 animate-in slide-in-from-top-2 duration-300">
-                  <input 
-                    type="text" 
-                    placeholder="Enter code" 
-                    className="flex-1 border border-[#D4AF37]/25 bg-white text-xs px-3 py-2 focus:outline-none focus:border-[#D4AF37] rounded-none font-sans uppercase tracking-widest placeholder:text-[#7A6B5D]/40" 
-                  />
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="border-[#D4AF37] text-[#2C1810] hover:bg-[#2C1810] hover:text-[#D4AF37] rounded-none font-sans text-[9px] tracking-widest uppercase font-bold"
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between p-2 bg-[#D4AF37]/10 border border-[#D4AF37]/30">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-[#D4AF37]" />
+                    <div className="flex flex-col">
+                      <span className="font-sans font-bold text-[9.5px] tracking-[0.15em] text-[#2C1810] uppercase">
+                        {appliedCoupon.code}
+                      </span>
+                      <span className="text-[8.5px] text-green-700 font-semibold">
+                        {formatCurrency(discountAmount)} discount applied
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={removeCoupon}
+                    className="text-[#7A6B5D] hover:text-red-700 p-1 transition-colors cursor-pointer"
+                    title="Remove coupon"
                   >
-                    Apply
-                  </Button>
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </div>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => setShowPromo(!showPromo)}
+                    className="w-full flex items-center justify-between p-1.5 md:p-2 text-[9px] font-bold tracking-[0.18em] text-[#2C1810] uppercase cursor-pointer hover:text-[#4A0E17] transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-3.5 w-3.5 text-[#D4AF37] stroke-[1.5]" />
+                      Have a Promo Code?
+                    </div>
+                    <ChevronRight className={`h-3.5 w-3.5 transition-transform text-[#7A6B5D] ${showPromo ? 'rotate-90' : ''}`} />
+                  </button>
+                  {showPromo && (
+                    <form 
+                      onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }} 
+                      className="p-2 flex gap-2 animate-in slide-in-from-top-2 duration-300"
+                    >
+                      <input 
+                        type="text" 
+                        placeholder="e.g. HANGER10" 
+                        value={couponCodeInput}
+                        onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
+                        className="flex-1 border border-[#D4AF37]/25 bg-white text-xs px-3 py-2 focus:outline-none focus:border-[#D4AF37] rounded-none font-sans uppercase tracking-widest placeholder:text-[#7A6B5D]/40" 
+                      />
+                      <Button 
+                        type="submit"
+                        size="sm" 
+                        variant="outline" 
+                        disabled={isApplyingCoupon || !couponCodeInput.trim()}
+                        className="border-[#D4AF37] text-[#2C1810] hover:bg-[#2C1810] hover:text-[#D4AF37] rounded-none font-sans text-[9px] tracking-widest uppercase font-bold cursor-pointer"
+                      >
+                        {isApplyingCoupon ? "Applying..." : "Apply"}
+                      </Button>
+                    </form>
+                  )}
+                </>
               )}
             </div>
 
@@ -200,6 +253,14 @@ export function CartDrawer({ children }: CartDrawerProps) {
                 <span className="uppercase tracking-wider">Subtotal</span>
                 <span className="font-semibold text-[#2C1810]">{formatCurrency(subtotal)}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-green-700">
+                  <span className="uppercase tracking-wider font-semibold">
+                    Privilege Discount ({appliedCoupon?.code})
+                  </span>
+                  <span className="font-semibold">-{formatCurrency(discountAmount)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="uppercase tracking-wider">Estimated Tax (18%)</span>
                 <span className="font-semibold text-[#2C1810]">{formatCurrency(tax)}</span>

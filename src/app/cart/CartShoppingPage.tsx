@@ -1,15 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, Heart, Check } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, Heart, Check, Tag, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
+import { useState } from "react";
 
 export default function CartShoppingPage() {
-  const { cartItems, removeFromCart, updateQuantity, subtotal, isLoading } = useCart();
+  const { 
+    cartItems, 
+    removeFromCart, 
+    updateQuantity, 
+    subtotal, 
+    isLoading,
+    appliedCoupon,
+    discountAmount,
+    applyCoupon,
+    removeCoupon
+  } = useCart();
   const { addToWishlist } = useWishlist();
+  const [couponCode, setCouponCode] = useState("");
+  const [isApplying, setIsApplying] = useState(false);
 
   const handleMoveToWishlist = (item: any) => {
     addToWishlist({
@@ -49,8 +62,18 @@ export default function CartShoppingPage() {
   const qualifiesForFreeShipping = subtotal >= shippingThreshold;
   const amountNeededForFreeShipping = shippingThreshold - subtotal;
   const progressPercentage = Math.min((subtotal / shippingThreshold) * 100, 100);
-  const tax = subtotal * 0.18;
-  const total = subtotal + tax + (qualifiesForFreeShipping ? 0 : shippingCost);
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+  const tax = discountedSubtotal * 0.18;
+  const total = discountedSubtotal + tax + (qualifiesForFreeShipping ? 0 : shippingCost);
+
+  const handleApply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponCode.trim()) return;
+    setIsApplying(true);
+    await applyCoupon(couponCode);
+    setIsApplying(false);
+    setCouponCode("");
+  };
 
   return (
     <div className="bg-[#FDFBF7] min-h-screen pb-24 lg:pb-12">
@@ -267,6 +290,48 @@ export default function CartShoppingPage() {
                     </p>
                   </div>
 
+                  {/* Promo Code Box */}
+                  <div className="my-5 p-3 border border-[#D4AF37]/25 bg-white/70">
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4 text-[#D4AF37]" />
+                          <div>
+                            <span className="font-sans font-bold text-[10px] tracking-[0.15em] text-[#2C1810] uppercase block">
+                              {appliedCoupon.code}
+                            </span>
+                            <span className="text-[9px] text-green-700 font-semibold">
+                              ₹{discountAmount.toLocaleString("en-IN")} discount applied
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={removeCoupon}
+                          className="text-[#7A6B5D] hover:text-red-700 p-1 text-[9px] uppercase font-bold tracking-wider cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleApply} className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="PROMO CODE"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                          className="flex-1 bg-white border border-[#D4AF37]/30 px-3 py-2 text-xs font-sans uppercase tracking-widest text-[#2C1810] placeholder:text-[#7A6B5D]/40 focus:outline-none focus:border-[#D4AF37]"
+                        />
+                        <button
+                          type="submit"
+                          disabled={isApplying || !couponCode.trim()}
+                          className="px-4 py-2 bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white font-sans text-[9px] font-bold tracking-widest uppercase transition-colors disabled:opacity-50 cursor-pointer"
+                        >
+                          {isApplying ? "..." : "Apply"}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+
                   <div className="space-y-4 text-[11px] md:text-xs">
                     <div className="flex justify-between">
                       <span className="font-sans text-[10px] text-[#7A6B5D] uppercase tracking-[0.15em]">Bag Subtotal</span>
@@ -274,6 +339,16 @@ export default function CartShoppingPage() {
                         ₹{subtotal.toLocaleString("en-IN")}
                       </span>
                     </div>
+                    {discountAmount > 0 && (
+                      <div className="flex justify-between text-green-700">
+                        <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-bold">
+                          Privilege Discount ({appliedCoupon?.code})
+                        </span>
+                        <span className="font-sans text-xs font-bold">
+                          -₹{discountAmount.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="font-sans text-[10px] text-[#7A6B5D] uppercase tracking-[0.15em]">Estimated Tax (18%)</span>
                       <span className="font-sans text-xs font-semibold text-[#2C1810]">

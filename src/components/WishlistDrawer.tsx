@@ -27,7 +27,7 @@ export function WishlistDrawer({ children }: WishlistDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger render={children} />
-      <SheetContent className="w-full sm:max-w-md bg-[#FDFBF7] border-l border-[#D4AF37]/25 p-0 flex flex-col h-[100dvh] sm:h-full shadow-2xl z-[85] rounded-none">
+      <SheetContent className="w-full sm:max-w-md bg-[#FDFBF7] border-l border-[#D4AF37]/25 p-0 flex flex-col h-[100dvh] sm:h-full shadow-2xl z-[110] rounded-none">
         {/* Header */}
         <SheetHeader className="p-5 md:p-6 border-b border-[#D4AF37]/15 bg-white/95 backdrop-blur-md sticky top-0 z-20">
           <SheetTitle className="font-serif text-base md:text-lg font-normal tracking-[0.2em] text-[#2C1810] flex items-center justify-between uppercase">

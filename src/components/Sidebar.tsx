@@ -46,10 +46,21 @@ export default function Sidebar() {
   const { navItems, loading } = useNavigationBuilder();
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [expandedSubCategory, setExpandedSubCategory] = useState<string | null>(null);
+  const [hasManuallyToggled, setHasManuallyToggled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Default expand first category for user
+  useEffect(() => {
+    if (navItems.length > 0 && !expandedItem && !hasManuallyToggled) {
+      const firstWithSubs = navItems.find((item) => item.hasSub && item.subItems && item.subItems.length > 0) || navItems[0];
+      if (firstWithSubs) {
+        setExpandedItem(firstWithSubs.id);
+      }
+    }
+  }, [navItems, expandedItem, hasManuallyToggled]);
 
   // Auto-close on route change
   useEffect(() => {
@@ -200,6 +211,7 @@ export default function Sidebar() {
                         : "text-[#2C1810]/70 hover:text-[#2C1810]"
                     )}
                     onClick={() => {
+                      setHasManuallyToggled(true);
                       setExpandedItem(isExpanded ? null : item.id);
                       setExpandedSubCategory(null);
                     }}
@@ -209,6 +221,7 @@ export default function Sidebar() {
                       onClick={(e) => {
                          if (item.hasSub) { 
                            e.preventDefault(); 
+                           setHasManuallyToggled(true);
                            setExpandedItem(isExpanded ? null : item.id);
                            setExpandedSubCategory(null);
                          } else {
