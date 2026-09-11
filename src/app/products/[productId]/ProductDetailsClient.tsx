@@ -720,57 +720,85 @@ export default function ProductDetailsClient({
               ) : (
                 <>
                   {/* Real Reviews */}
-                  {reviews.map((review) => (
-                    <div key={review.id} className="border border-[#D4AF37]/15 bg-white p-6 relative">
-                      <span className="absolute top-4 right-4 font-sans text-[7px] tracking-[0.2em] uppercase text-[#2C1810] bg-[#D4AF37]/10 px-2 py-0.5 border border-[#D4AF37]/20">✓ Verified</span>
-                      
-                      <div className="flex items-start gap-4">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
-                          <span className="font-serif text-[14px] font-bold text-[#2C1810]">
-                            {(review as any).profile?.username?.[0]?.toUpperCase() || "U"}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">
-                              {(review as any).profile?.username || "Verified Buyer"}
-                            </span>
-                            <span className="font-sans text-[9px] text-[#7A6B5D]">
-                              {review.created_at ? new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                  {reviews.map((review) => {
+                    const reviewName = (review as any).profile?.username || "Verified Buyer";
+                    const reviewDate = review.created_at ? new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+                    
+                    return (
+                      <div key={review.id} className="py-8 border-b border-[#D4AF37]/15 last:border-0">
+                        <div className="flex flex-col gap-5">
+                          {/* Header: Stars & Date */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex gap-1.5">
+                              {[...Array(5)].map((_, j) => (
+                                <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-transparent text-transparent stroke-[#D4AF37] stroke-[1px]'}`} />
+                              ))}
+                            </div>
+                            <span className="font-sans text-[9px] text-[#9B8E85] tracking-widest uppercase">
+                              {reviewDate}
                             </span>
                           </div>
-                          <div className="flex mb-2">
-                            {[...Array(5)].map((_, j) => (
-                              <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
-                            ))}
+
+                          {/* Body: Review Comment */}
+                          <div>
+                            <p className="font-serif text-[15px] md:text-[17px] leading-[1.8] text-[#2C1810] italic">
+                              "{review.comment}"
+                            </p>
                           </div>
-                          <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
+
+                          {/* Footer: Author & Verified */}
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#2C1810] uppercase">
+                              — {reviewName}
+                            </span>
+                            <span className="w-[1px] h-3 bg-[#D4AF37]/30" />
+                            <span className="font-sans text-[8.5px] tracking-[0.2em] uppercase text-[#D4AF37] font-semibold flex items-center gap-1.5">
+                              <span className="w-3.5 h-3.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] text-[8px]">✓</span>
+                              Verified Buyer
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {/* Dummy Reviews */}
-                  {fakeReviews.map((review, i) => (
-                    <div key={review.id} className="border border-[#D4AF37]/15 bg-white p-6 relative">
-                      {review.verified && (
-                        <span className="absolute top-4 right-4 font-sans text-[7px] tracking-[0.2em] uppercase text-[#2C1810] bg-[#D4AF37]/10 px-2 py-0.5 border border-[#D4AF37]/20">✓ Verified</span>
-                      )}
-                      <div className="flex items-start gap-4">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#2C1810]/20 flex items-center justify-center flex-shrink-0">
-                          <span className="font-serif text-[14px] font-bold text-[#2C1810]">{review.name[0]}</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="font-sans text-[11px] font-bold tracking-wide text-[#2C1810] uppercase">{review.name}</span>
-                            <span className="font-sans text-[9px] text-[#7A6B5D]">{review.date}</span>
-                          </div>
-                          <div className="flex mb-2">
+                  {fakeReviews.map((review) => (
+                    <div key={review.id} className="py-8 border-b border-[#D4AF37]/15 last:border-0">
+                      <div className="flex flex-col gap-5">
+                        {/* Header: Stars & Date */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex gap-1.5">
                             {[...Array(5)].map((_, j) => (
-                              <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-gray-200 text-gray-200'}`} />
+                              <Star key={j} className={`h-3 w-3 ${j < review.rating ? 'fill-[#D4AF37] text-[#D4AF37]' : 'fill-transparent text-transparent stroke-[#D4AF37] stroke-[1px]'}`} />
                             ))}
                           </div>
-                          <p className="font-sans text-[12px] text-[#5A4A42] leading-relaxed">{review.comment}</p>
+                          <span className="font-sans text-[9px] text-[#9B8E85] tracking-widest uppercase">
+                            {review.date}
+                          </span>
+                        </div>
+
+                        {/* Body: Review Comment */}
+                        <div>
+                          <p className="font-serif text-[15px] md:text-[17px] leading-[1.8] text-[#2C1810] italic">
+                            "{review.comment}"
+                          </p>
+                        </div>
+
+                        {/* Footer: Author & Verified */}
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#2C1810] uppercase">
+                            — {review.name}
+                          </span>
+                          {review.verified && (
+                            <>
+                              <span className="w-[1px] h-3 bg-[#D4AF37]/30" />
+                              <span className="font-sans text-[8.5px] tracking-[0.2em] uppercase text-[#D4AF37] font-semibold flex items-center gap-1.5">
+                                <span className="w-3.5 h-3.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] text-[8px]">✓</span>
+                                Verified Buyer
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
