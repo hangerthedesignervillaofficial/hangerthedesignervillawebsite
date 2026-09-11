@@ -94,7 +94,8 @@ export default function AdminProductsPage() {
     (product) =>
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku?.toLowerCase().includes(searchTerm.toLowerCase()),
+      product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (loading) {
@@ -191,6 +192,17 @@ export default function AdminProductsPage() {
               </div>
   
               <div className="p-5">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="inline-flex items-center px-2 py-0.5 text-[8px] font-sans font-bold tracking-[0.2em] uppercase bg-[#D4AF37]/10 text-[#2C1810] border border-[#D4AF37]/30">
+                    {product.category?.name || "UNASSIGNED"}
+                  </span>
+                  {product.sku && (
+                    <span className="font-sans text-[8px] text-[#7A6B5D] tracking-widest uppercase truncate max-w-[120px]">
+                      SKU: {product.sku}
+                    </span>
+                  )}
+                </div>
+
                 <h3 className="font-serif text-base text-[#2C1810] mb-2 line-clamp-1 truncate" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                   {product.title}
                 </h3>
@@ -199,11 +211,9 @@ export default function AdminProductsPage() {
                   <span className="font-sans text-sm font-bold text-[#D4AF37]">
                     {formatCurrency(product.price)}
                   </span>
-                  {product.sku && (
-                    <span className="font-sans text-[9px] text-[#7A6B5D] tracking-widest uppercase">
-                      SKU: {product.sku}
-                    </span>
-                  )}
+                  <span className="font-sans text-[9px] text-[#7A6B5D] tracking-wider uppercase">
+                    Stock: <strong className={product.stock <= 5 ? "text-[#4A0E17]" : "text-[#2C1810]"}>{product.stock}</strong>
+                  </span>
                 </div>
   
                 <div className="flex space-x-2 pt-4 border-t border-[#D4AF37]/15">

@@ -10,7 +10,7 @@ export interface CreateProductData {
   gallery?: string[];
   stock: number;
   sku?: string;
-  category_id?: number;
+  category_id?: number | null;
 
   is_bestseller?: boolean;
   is_new_arrival?: boolean;
