@@ -288,17 +288,36 @@ export default function CMSPage() {
             
             <div className="divide-y divide-[#D4AF37]/10">
               {heroSlides.map((slide, index) => (
-                <div key={slide.id} className="p-6 md:p-8 space-y-6 bg-white relative group">
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <span className="text-[10px] font-bold text-[#7A6B5D] bg-[#FDFBF7] border border-[#D4AF37]/20 px-2 py-1 rounded">
-                      SLIDE {index + 1}
-                    </span>
+                <div key={slide.id} className="p-4 md:p-8 space-y-5 bg-white relative">
+                  {/* Top Slide Header Bar with always-visible Delete Slide control */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FDFBF7] p-3.5 border border-[#D4AF37]/25 shadow-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-serif text-sm font-bold text-[#2C1810] tracking-wide">
+                        Slide {index + 1} of {heroSlides.length}
+                      </span>
+                      {index === 0 ? (
+                        <span className="text-[8px] uppercase tracking-wider font-bold px-2 py-0.5 bg-[#D4AF37]/15 text-[#8A701E] border border-[#D4AF37]/40">
+                          Primary Slide
+                        </span>
+                      ) : null}
+                    </div>
+
                     <button 
-                      onClick={() => removeSlide(slide.id)}
-                      className="text-red-400 hover:text-red-600 p-1 transition-colors opacity-0 group-hover:opacity-100"
-                      title="Remove Slide"
+                      type="button"
+                      onClick={() => {
+                        if (heroSlides.length <= 1) {
+                          toast.error("You must have at least one slide in the hero banner.");
+                          return;
+                        }
+                        if (window.confirm(`Are you sure you want to delete Slide ${index + 1}? This will remove it from the live website immediately.`)) {
+                          removeSlide(slide.id);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 transition-all duration-200 text-[10px] font-bold uppercase tracking-wider cursor-pointer active:scale-95"
+                      title="Delete this slide from website"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete Slide</span>
                     </button>
                   </div>
 
