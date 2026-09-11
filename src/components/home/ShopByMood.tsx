@@ -12,7 +12,7 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
     { title: "OCCASION EDIT", mediaUrl: "/images/curated-couch.jpg", link: "/mood/occasion-edit", type: "image" },
     { title: "STATEMENT EDIT", mediaUrl: "/images/hero-banner.jpg", link: "/mood/statement-edit", type: "image" },
   ]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(1);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +33,26 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
       }
     }
     fetchSettings();
-  }, []);
+  }, [initialMoods]);
+
+  // Default to 2nd slide (index 1) on mobile so user can swipe both left and right immediately
+  useEffect(() => {
+    const scrollToSecondSlide = () => {
+      if (scrollContainerRef.current && moods.length > 1) {
+        scrollContainerRef.current.scrollLeft = 160;
+        setActiveIndex(1);
+      }
+    };
+
+    scrollToSecondSlide();
+    // Re-check after DOM paint / images settle
+    const t1 = setTimeout(scrollToSecondSlide, 50);
+    const t2 = setTimeout(scrollToSecondSlide, 200);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [moods]);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -41,6 +60,16 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
       // width of item (140) + gap (20) = 160
       const newIndex = Math.round(scrollLeft / 160);
       setActiveIndex(Math.min(Math.max(newIndex, 0), moods.length - 1));
+    }
+  };
+
+  const scrollToIndex = (index: number) => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        left: index * 160,
+        behavior: "smooth",
+      });
+      setActiveIndex(index);
     }
   };
 
@@ -224,10 +253,13 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
           {/* Scroll hint dots */}
           <div className="flex items-center justify-center gap-2 mt-2">
             {moods.map((_, i) => (
-              <div
+              <button
                 key={i}
-                className={`rounded-full transition-all duration-300 ease-out ${
-                  i === activeIndex ? "w-5 h-1 bg-[#D4AF37]" : "w-1.5 h-1.5 bg-[#D4AF37]/20"
+                type="button"
+                onClick={() => scrollToIndex(i)}
+                aria-label={`Go to mood ${i + 1}`}
+                className={`rounded-full transition-all duration-300 ease-out focus:outline-none ${
+                  i === activeIndex ? "w-5 h-1 bg-[#D4AF37]" : "w-1.5 h-1.5 bg-[#D4AF37]/20 hover:bg-[#D4AF37]/40"
                 }`}
               />
             ))}
