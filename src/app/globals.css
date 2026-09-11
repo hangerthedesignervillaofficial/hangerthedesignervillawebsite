@@ -502,30 +502,7 @@
   }
 }
 
-/* Custom Toast Styling — Luxury Palette */
-[data-sonner-toaster] [data-type="success"] {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  border: 1px solid #047857 !important;
-  color: white !important;
-}
 
-[data-sonner-toaster] [data-type="error"] {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-  border: 1px solid #b91c1c !important;
-  color: white !important;
-}
-
-[data-sonner-toaster] [data-type="warning"] {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  border: 1px solid #b45309 !important;
-  color: white !important;
-}
-
-[data-sonner-toaster] [data-type="info"] {
-  background: linear-gradient(135deg, #4A0E17 0%, #6B1A24 100%) !important;
-  border: 1px solid #D4AF37 !important;
-  color: #FFF8F0 !important;
-}
 
 /* Mobile bottom nav safe area */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
@@ -534,26 +511,41 @@
   }
 }
 /* Force sonner toasts to be luxury dark */
-[data-sonner-toast] {
+.toaster-wrapper {
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+@media (max-width: 768px) {
+  .toaster-wrapper {
+    margin-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+.custom-luxury-toast {
   background-color: #1A1A1A !important;
   color: #F9F6F1 !important;
   border: 1px solid rgba(212, 175, 55, 0.4) !important;
   border-radius: 2px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.custom-luxury-toast[data-type="success"] {
+  border-color: rgba(212, 175, 55, 0.6) !important;
+}
+
+.custom-luxury-toast[data-type="error"] {
+  border-color: rgba(74, 14, 23, 0.6) !important;
+}
+
+.custom-luxury-title {
   font-family: var(--font-sans) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.15em !important;
   font-size: 10px !important;
   font-weight: bold !important;
-  padding: 16px 24px !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  color: #F9F6F1 !important;
 }
 
-[data-sonner-toast][data-type="success"] {
-  border-color: rgba(212, 175, 55, 0.6) !important;
+.custom-luxury-toast[data-type="success"] .custom-luxury-title {
   color: #D4AF37 !important;
-}
-
-[data-sonner-toast][data-type="error"] {
-  border-color: rgba(74, 14, 23, 0.6) !important;
-  background-color: #1A1A1A !important;
 }

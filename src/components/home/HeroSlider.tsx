@@ -177,18 +177,7 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
 
       {/* ── SLIDE INDICATORS REMOVED ── */}
 
-      {/* ── PROGRESS BAR (bottom edge) ── */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10 z-30">
-          <motion.div
-            key={currentIndex}
-            className="h-full bg-[#C9A962]/70"
-            initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 5.5, ease: "linear" }}
-          />
-        </div>
-      )}
+      {/* ── PROGRESS BAR REMOVED ── */}
     </section>
   );
 }

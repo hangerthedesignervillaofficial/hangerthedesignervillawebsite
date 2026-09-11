@@ -28,7 +28,14 @@ export function AppShell({ children }: AppShellProps) {
       toast.dismiss();
     };
     window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
-    return () => window.removeEventListener("scroll", handleScroll, { capture: true });
+    window.addEventListener("touchmove", handleScroll, { passive: true, capture: true });
+    window.addEventListener("wheel", handleScroll, { passive: true, capture: true });
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll, { capture: true });
+      window.removeEventListener("touchmove", handleScroll, { capture: true });
+      window.removeEventListener("wheel", handleScroll, { capture: true });
+    };
   }, []);
 
   if (isAdmin) {
