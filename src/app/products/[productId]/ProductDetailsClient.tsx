@@ -151,7 +151,7 @@ export default function ProductDetailsClient({
 
   const handleAddToCart = async () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-      alert("Please select a size before adding to bag");
+      toast.error("Please select a size before adding to your shopping bag");
       return;
     }
 
@@ -159,13 +159,15 @@ export default function ProductDetailsClient({
       for (let i = 0; i < quantity; i++) {
         addToCart({
           ...product,
-          selected_size: selectedSize || undefined
+          selected_size: selectedSize || undefined,
         } as any);
       }
       setIsAddedToCart(true);
+      toast.success("Added to your shopping bag");
       setTimeout(() => setIsAddedToCart(false), 2000);
     } catch (err) {
       console.error("Error adding to cart:", err);
+      toast.error("Unable to add item to bag. Please try again.");
     }
   };
 
@@ -853,7 +855,7 @@ export default function ProductDetailsClient({
       </div>
 
       {/* Mobile Sticky Add to Bag Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FDFBF7]/95 backdrop-blur-md border-t border-[#D4AF37]/25 p-3 flex items-center justify-between shadow-xl">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FDFBF7]/95 backdrop-blur-md border-t border-[#D4AF37]/25 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-between shadow-xl">
         <div className="flex items-center gap-3">
           <div className="relative w-12 h-16 border border-[#D4AF37]/15 bg-[#f4f0ea]">
             {product.image && (
