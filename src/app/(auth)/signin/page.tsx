@@ -2,67 +2,102 @@ import { SignInForm } from "./SignInForm";
 import Link from "next/link";
 import { HangerLogo } from "@/components/HangerLogo";
 
- 
 type SignInProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
- 
+
 export default async function SignIn({ searchParams }: SignInProps) {
   const params = await searchParams;
   const message = params.message ? String(params.message) : null;
   const errorParam = params.error ? String(params.error) : null;
- 
+
   return (
-    <div className="bg-[#FDFBF7] flex min-h-screen items-stretch">
-      {/* Left side: Editorial Image (Hidden on mobile) */}
-      <div className="hidden lg:flex w-1/2 relative bg-[#E3DAC9]">
+    <div className="bg-[#FDFBF7] flex min-h-screen items-stretch selection:bg-[#B99A45]/20 selection:text-[#281713]">
+      {/* Left side: Editorial Lookbook Campaign (Desktop only) */}
+      <div className="hidden lg:flex w-1/2 relative bg-[#F5F1E8] overflow-hidden border-r border-[#E7DDC9]">
+        {/* Editorial Background Image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img 
-          src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop" 
-          alt="Luxury Fashion" 
-          className="absolute inset-0 w-full h-full object-cover opacity-90"
+        <img
+          src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1976&auto=format&fit=crop"
+          alt="Hanger Luxury Fashion Campaign"
+          className="absolute inset-0 w-full h-full object-cover object-top filter brightness-[0.92] contrast-[1.03]"
         />
-        <div className="absolute inset-0 bg-[#2C1810]/20" />
-        <div className="absolute inset-0 p-12 flex flex-col justify-end">
-          <h2 className="font-serif text-white text-4xl leading-tight max-w-md" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-            Curating the finest in luxury fashion.
-          </h2>
-          <div className="w-12 h-[1px] bg-[#D4AF37] mt-6" />
+
+        {/* Sophisticated Editorial Vignette Scrim */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#281713]/90 via-[#281713]/30 to-transparent" />
+
+        {/* Editorial Content Overlay */}
+        <div className="absolute inset-0 p-12 xl:p-16 flex flex-col justify-between z-10">
+          {/* Top subtle brand mark */}
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B99A45]" />
+            <span className="font-sans text-[8.5px] font-semibold tracking-[0.3em] uppercase text-white/80">
+              The Atelier Lookbook
+            </span>
+          </div>
+
+          {/* Bottom quote & couture statement */}
+          <div className="space-y-4 max-w-lg">
+            <span className="font-sans text-[8.5px] font-semibold tracking-[0.28em] text-[#B99A45] uppercase block">
+              Curated Designer Silhouettes
+            </span>
+            <h2
+              className="font-serif text-3xl xl:text-4xl text-white font-normal leading-[1.2] tracking-wide"
+              style={{ fontFamily: "var(--font-heading), 'Playfair Display', Georgia, serif" }}
+            >
+              Curating India&apos;s finest handcrafted elegance for your private wardrobe.
+            </h2>
+            <div className="w-12 h-[1px] bg-[#B99A45]/80 mt-6" />
+          </div>
         </div>
       </div>
 
-      {/* Right side: Form Container */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 relative overflow-hidden">
-        {/* Decorative background element for subtle luxury feel */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-        
-        <div className="w-full max-w-[420px] bg-transparent relative z-10">
-          
-          {/* Logo Stack at top of Sign In */}
-          <div className="flex flex-col mb-12 relative z-10">
-            <Link href="/" className="flex items-center gap-3 mb-8 group inline-block">
-              <HangerLogo className="h-12 w-auto transition-transform duration-300 group-hover:scale-105" />
+      {/* Right side: Luxury Sign-In Form Container */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 md:p-14 relative bg-[#FDFBF7]">
+        {/* Very subtle ambient lighting */}
+        <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-[#B99A45]/[0.03] rounded-full blur-3xl pointer-events-none -translate-y-1/3 translate-x-1/4" />
+
+        <div className="w-full max-w-[400px] relative z-10 py-6">
+          {/* Luxury Brand Masthead */}
+          <div className="mb-10 sm:mb-12">
+            <Link
+              href="/"
+              className="group inline-flex items-center gap-3.5 mb-8 outline-none transition-transform duration-300 hover:scale-[1.01]"
+            >
+              <div className="w-11 h-11 rounded-full bg-[#F5F1E8] border border-[#E7DDC9] flex items-center justify-center shrink-0 shadow-xs">
+                <HangerLogo
+                  color="#B99A45"
+                  className="h-6 w-auto transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+
               <div className="flex flex-col text-left">
-                <span className="font-serif text-lg font-bold tracking-[0.2em] text-[#2C1810] uppercase" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                  HANGER
+                <span
+                  className="font-serif text-lg sm:text-xl font-normal tracking-[0.22em] text-[#281713] uppercase leading-none"
+                  style={{ fontFamily: "var(--font-heading), 'Playfair Display', Georgia, serif" }}
+                >
+                  Hanger
                 </span>
-                <span className="font-sans text-[7px] uppercase tracking-[0.3em] text-[#7A6B5D] font-bold">
-                  THE DESIGNER VILLA
+                <span className="font-sans text-[7.5px] uppercase tracking-[0.32em] text-[#82756D] font-semibold mt-1">
+                  The Designer Villa
                 </span>
               </div>
             </Link>
-            
-            <h2 className="font-serif text-2xl md:text-3xl tracking-[0.05em] text-[#2C1810] mb-2" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
+
+            {/* Editorial Heading - Welcome Back as Visual Focal Point */}
+            <h1
+              className="font-serif text-3xl sm:text-[34px] font-normal tracking-[0.02em] text-[#281713] leading-tight"
+              style={{ fontFamily: "var(--font-heading), 'Playfair Display', Georgia, serif" }}
+            >
               Welcome back
-            </h2>
-            <p className="font-sans text-[11px] md:text-xs text-[#7A6B5D] tracking-wide">
+            </h1>
+            <p className="font-sans text-xs sm:text-[12.5px] text-[#82756D] tracking-wide mt-2 leading-relaxed">
               Please enter your details to access your luxury closet.
             </p>
           </div>
-          
-          <div className="relative z-10">
-            <SignInForm message={message} initialError={errorParam} />
-          </div>
+
+          {/* Form Component */}
+          <SignInForm message={message} initialError={errorParam} />
         </div>
       </div>
     </div>

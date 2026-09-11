@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useAuthForm } from "@/hooks/useAuthForm";
 
-export function SignInForm({ message, initialError }: { message: string | null; initialError?: string | null }) {
+export function SignInForm({
+  message,
+  initialError,
+}: {
+  message: string | null;
+  initialError?: string | null;
+}) {
   const {
     formData,
     loading,
@@ -18,113 +22,128 @@ export function SignInForm({ message, initialError }: { message: string | null; 
     handleGoogleSignIn,
   } = useAuthForm();
 
+  const displayError = error || initialError;
+
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {(error || initialError) && (
-          <div className="bg-[#4A0E17]/5 border border-[#4A0E17]/25 text-[#4A0E17] rounded-none p-3 text-[11px] tracking-wide text-center">
-            {error || initialError}
+        {/* Error Notification */}
+        {displayError && (
+          <div className="bg-[#FDF5F5] border border-[#F0D5D8] text-[#8B2635] p-3 text-[11px] font-sans tracking-wide flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#8B2635]" strokeWidth={1.25} />
+            <span>{displayError}</span>
           </div>
         )}
+
+        {/* Success Message */}
         {message && (
-          <div className="bg-green-50 border border-green-200 text-green-700 rounded-none p-3 text-[11px] tracking-wide text-center">
-            {message}
+          <div className="bg-[#F4F8F5] border border-[#D1E7D7] text-[#1B4D2E] p-3 text-[11px] font-sans tracking-wide flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#1B4D2E]" strokeWidth={1.25} />
+            <span>{message}</span>
           </div>
         )}
-        
-        <div className="space-y-6 pt-4">
-          <div className="relative group">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder=" "
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="peer w-full bg-transparent border-b border-[#2C1810]/20 border-t-0 border-l-0 border-r-0 rounded-none h-12 px-0 focus-visible:ring-0 focus:border-[#D4AF37] focus:bg-transparent font-sans text-[13px] text-[#2C1810] transition-colors"
-            />
-            <label 
+
+        <div className="space-y-5">
+          {/* Email Input */}
+          <div className="space-y-1.5">
+            <label
               htmlFor="email"
-              className="absolute left-0 top-0 text-[10px] md:text-xs text-[#2C1810]/50 font-sans uppercase tracking-[0.15em] transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-[#2C1810]/40 peer-focus:-top-3.5 peer-focus:text-[9px] peer-focus:text-[#D4AF37] pointer-events-none"
+              className="block font-sans text-[8.5px] sm:text-[9px] font-semibold tracking-[0.22em] text-[#82756D] uppercase"
             >
               Email Address
             </label>
+            <div className="relative">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="name@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full h-12 bg-white/70 hover:bg-white focus:bg-white border border-[#E7DDC9] focus:border-[#B99A45] text-[#281713] placeholder:text-[#82756D]/40 font-sans text-xs sm:text-[13px] px-3.5 rounded-none transition-all duration-200 outline-none"
+              />
+            </div>
           </div>
- 
-          <div className="relative pt-2 group">
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder=" "
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="peer w-full bg-transparent border-b border-[#2C1810]/20 border-t-0 border-l-0 border-r-0 rounded-none h-12 px-0 pr-8 focus-visible:ring-0 focus:border-[#D4AF37] focus:bg-transparent font-sans text-[13px] text-[#2C1810] transition-colors"
-            />
-            <label 
-              htmlFor="password"
-              className="absolute left-0 top-6 text-[10px] md:text-xs text-[#2C1810]/50 font-sans uppercase tracking-[0.15em] transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-6 peer-placeholder-shown:text-[#2C1810]/40 peer-focus:top-[-2px] peer-focus:text-[9px] peer-focus:text-[#D4AF37] pointer-events-none"
-            >
-              Password
-            </label>
-            <button
-              type="button"
-              className="absolute bottom-0 right-0 inline-flex h-11 cursor-pointer items-center justify-center px-1 text-[#7A6B5D] hover:text-[#4A0E17] transition-colors"
-              onClick={togglePasswordVisibility}
-              tabIndex={-1}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 stroke-[1.5]" />
-              ) : (
-                <Eye className="h-4 w-4 stroke-[1.5]" />
-              )}
-              <span className="sr-only">
-                {showPassword ? "Hide password" : "Show password"}
-              </span>
-            </button>
-          </div>
-          <div className="flex justify-end pt-1">
-            <Link
-              href="/reset-password"
-              className="text-[#7A6B5D] hover:text-[#4A0E17] text-[9.5px] font-sans font-semibold tracking-wide underline transition-colors"
-            >
-              Forgot password?
-            </Link>
+
+          {/* Password Input */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block font-sans text-[8.5px] sm:text-[9px] font-semibold tracking-[0.22em] text-[#82756D] uppercase"
+              >
+                Password
+              </label>
+
+              <Link
+                href="/reset-password"
+                className="font-sans text-[9px] font-medium tracking-[0.14em] uppercase text-[#82756D] hover:text-[#281713] transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full h-12 bg-white/70 hover:bg-white focus:bg-white border border-[#E7DDC9] focus:border-[#B99A45] text-[#281713] placeholder:text-[#82756D]/40 font-sans text-xs sm:text-[13px] px-3.5 pr-11 rounded-none transition-all duration-200 outline-none"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center justify-center w-11 text-[#82756D]/60 hover:text-[#281713] transition-colors cursor-pointer"
+                onClick={togglePasswordVisibility}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" strokeWidth={1.25} />
+                ) : (
+                  <Eye className="w-4 h-4" strokeWidth={1.25} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
- 
-        <div className="flex flex-col pt-4">
-          <Button
+
+        {/* Primary Sign In Button */}
+        <div className="pt-2">
+          <button
             type="submit"
-            className="rounded-none bg-[#2C1810] hover:bg-[#1A0E09] text-white h-[50px] px-8 font-sans text-[11px] font-bold tracking-[0.2em] uppercase w-full transition-all duration-300 shadow-xl shadow-[#2C1810]/10 hover:shadow-[#2C1810]/20 hover:-translate-y-[1px]"
             disabled={loading}
+            className="w-full h-12 bg-[#281713] hover:bg-[#1a0f0d] active:scale-[0.99] text-[#FBF9F4] font-sans text-[10px] sm:text-[10.5px] font-semibold tracking-[0.24em] uppercase transition-all duration-300 border border-[#281713] hover:border-[#B99A45] shadow-xs cursor-pointer rounded-none flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? "Signing In..." : "Sign In"}
-          </Button>
+          </button>
         </div>
       </form>
 
       {/* Divider */}
-      <div className="relative my-4">
+      <div className="relative my-1">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-[#2C1810]/10" />
+          <span className="w-full border-t border-[#E7DDC9]" />
         </div>
-        <div className="relative flex justify-center text-[9px] uppercase tracking-[0.15em] font-medium">
-          <span className="bg-[#FDFBF7] px-4 text-[#2C1810]/40">Or continue with</span>
+        <div className="relative flex justify-center text-[8.5px] uppercase tracking-[0.24em] font-semibold">
+          <span className="bg-[#FDFBF7] px-4 text-[#82756D]">Or continue with</span>
         </div>
       </div>
 
-      {/* Google Sign In */}
-      <Button
+      {/* Google Authentication */}
+      <button
         type="button"
-        variant="outline"
-        className="w-full rounded-none border border-[#2C1810]/15 hover:bg-[#2C1810]/5 bg-transparent font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-all duration-300 h-[50px] text-[#2C1810] cursor-pointer hover:-translate-y-[1px]"
         onClick={handleGoogleSignIn}
         disabled={loading}
+        className="w-full h-12 rounded-none border border-[#E7DDC9] hover:border-[#B99A45]/60 hover:bg-white bg-white/70 font-sans text-[9.5px] sm:text-[10px] font-semibold tracking-[0.2em] uppercase transition-all duration-300 text-[#281713] cursor-pointer active:scale-[0.99] flex items-center justify-center gap-2.5 disabled:opacity-50"
       >
-        <svg className="mr-2.5 h-3.5 w-3.5" viewBox="0 0 24 24">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
           <path
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
             fill="#4285F4"
@@ -142,14 +161,15 @@ export function SignInForm({ message, initialError }: { message: string | null; 
             fill="#EA4335"
           />
         </svg>
-        Continue with Google
-      </Button>
+        <span>Continue with Google</span>
+      </button>
 
-      <div className="text-center text-xs tracking-wide text-[#7A6B5D] mt-2">
+      {/* Sign Up Navigation */}
+      <div className="text-center font-sans text-xs text-[#82756D] tracking-wide pt-1">
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="text-[#4A0E17] hover:text-[#D4AF37] font-semibold cursor-pointer underline transition-colors"
+          className="text-[#281713] hover:text-[#B99A45] font-semibold uppercase tracking-[0.16em] text-[10.5px] underline underline-offset-4 decoration-[#E7DDC9] hover:decoration-[#B99A45] transition-colors ml-1"
         >
           Sign up
         </Link>
