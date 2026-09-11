@@ -782,18 +782,18 @@ export default function ProductDetailsClient({
 
           {/* YOU MAY ALSO LIKE Section */}
           {relatedProducts.length > 0 && (
-            <div className="mt-20 lg:mt-32 pt-16 border-t border-[#D4AF37]/10">
-              <div className="text-center mb-10">
+            <div className="mt-12 lg:mt-16 pt-12 border-t border-[#D4AF37]/10 pb-8 lg:pb-16">
+              <div className="text-center mb-8">
                 <h2 className="font-serif text-3xl md:text-4xl text-[#2C1810] tracking-wide mb-4">
                   You May Also Like
                 </h2>
                 <div className="w-12 h-[1px] bg-[#D4AF37] mx-auto" />
               </div>
               
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="flex overflow-x-auto gap-4 md:gap-6 pb-6 snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {relatedProducts.map((relProduct) => (
-                  <Link key={relProduct.product_id} href={`/products/${relProduct.product_id}`} className="group block">
-                    <div className="relative aspect-[3/4] bg-[#f4f0ea] mb-4 overflow-hidden">
+                  <Link key={relProduct.product_id} href={`/products/${relProduct.product_id}`} className="group block min-w-[45%] md:min-w-[28%] lg:min-w-[22%] shrink-0 snap-start">
+                    <div className="relative aspect-[3/4] bg-[#f4f0ea] mb-4 overflow-hidden shadow-sm border border-[#D4AF37]/5">
                       <Image 
                         src={relProduct.image || "/placeholder-product.jpg"} 
                         alt={relProduct.title}
@@ -803,8 +803,8 @@ export default function ProductDetailsClient({
                       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                     <div className="text-center space-y-1">
-                      <h4 className="font-serif text-[13px] text-[#2C1810] line-clamp-1">{relProduct.title}</h4>
-                      <p className="font-sans text-[11px] tracking-wide text-[#7A6B5D]">₹{relProduct.price.toLocaleString("en-IN")}</p>
+                      <h4 className="font-serif text-[13px] text-[#2C1810] line-clamp-1 group-hover:text-[#D4AF37] transition-colors">{relProduct.title}</h4>
+                      <p className="font-sans text-[11px] tracking-wide text-[#7A6B5D] font-medium">₹{relProduct.price.toLocaleString("en-IN")}</p>
                     </div>
                   </Link>
                 ))}

@@ -57,6 +57,7 @@ export default function RootLayout({
           position="bottom-center"
           visibleToasts={1}
           theme="dark"
+          closeButton
           className="toaster-wrapper"
           toastOptions={{
             classNames: {

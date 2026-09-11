@@ -34,6 +34,7 @@ export default function AllProductsClient() {
 
   const searchParams = useSearchParams()
   const tagFilter = searchParams.get('tag')
+  const categoryFilter = searchParams.get('category')
 
   // Filter and sort products
   const sortedProducts = useMemo(() => {
@@ -41,6 +42,10 @@ export default function AllProductsClient() {
     
     if (tagFilter) {
       filtered = filtered.filter(p => p.display_tags && p.display_tags.includes(tagFilter))
+    }
+
+    if (categoryFilter) {
+      filtered = filtered.filter(p => p.category_id?.toString() === categoryFilter)
     }
 
     switch (sortBy) {

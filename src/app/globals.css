@@ -513,11 +513,16 @@
 /* Force sonner toasts to be luxury dark */
 .toaster-wrapper {
   margin-bottom: env(safe-area-inset-bottom);
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  bottom: 0 !important;
 }
 
 @media (max-width: 768px) {
   .toaster-wrapper {
-    margin-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+    margin-bottom: calc(65px + env(safe-area-inset-bottom)) !important;
+    width: 92vw !important;
   }
 }
 

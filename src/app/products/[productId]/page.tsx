@@ -25,7 +25,7 @@ export default async function ProductDetailsPage({
     const categoryProducts = await productServerService.getProductsByCategory(product.category_id);
     relatedProducts = categoryProducts
       .filter((p) => p.product_id !== product.product_id)
-      .slice(0, 4);
+      .slice(0, 16);
   }
 
   return <ProductDetailsClient product={product} relatedProducts={relatedProducts} />;

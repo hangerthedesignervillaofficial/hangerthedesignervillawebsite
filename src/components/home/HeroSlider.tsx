@@ -73,7 +73,7 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
     <section
       aria-label="Hero carousel"
       className="relative w-full overflow-hidden bg-[#1A1310]
-        h-[65svh] min-h-[65svh] max-h-[65svh]
+        h-[73svh] min-h-[73svh] max-h-[73svh]
         md:h-[80vh] md:min-h-0 md:max-h-[900px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
