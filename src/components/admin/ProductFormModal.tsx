@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
-import "react-quill-new/dist/quill.snow.css";
+// Removed react-quill to fix findDOMNode error in Next.js 14+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -616,11 +615,11 @@ export function ProductFormModal({
                 Description <span className="text-[#D4AF37]">•</span>
               </Label>
               <div className="bg-white">
-                <ReactQuill
-                  theme="snow"
+                <textarea
                   value={formData.description}
-                  onChange={(val) => handleInputChange("description", val)}
-                  className={`${errors.description ? "border border-red-400" : ""}`}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  className={`flex min-h-[120px] w-full border border-[#D4AF37]/25 bg-transparent px-3 py-2 font-sans text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37] disabled:cursor-not-allowed disabled:opacity-50 ${errors.description ? "border-red-400 focus-visible:ring-red-400" : ""}`}
+                  placeholder="Enter product description..."
                 />
               </div>
             </div>
@@ -630,10 +629,11 @@ export function ProductFormModal({
                 Fabric & Fit
               </Label>
               <div className="bg-white">
-                <ReactQuill
-                  theme="snow"
+                <textarea
                   value={formData.fabric_fit}
-                  onChange={(val) => handleInputChange("fabric_fit", val)}
+                  onChange={(e) => handleInputChange("fabric_fit", e.target.value)}
+                  className="flex min-h-[100px] w-full border border-[#D4AF37]/25 bg-transparent px-3 py-2 font-sans text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
+                  placeholder="Enter fabric and fit details..."
                 />
               </div>
             </div>
@@ -643,10 +643,11 @@ export function ProductFormModal({
                 Shipping & Returns
               </Label>
               <div className="bg-white">
-                <ReactQuill
-                  theme="snow"
+                <textarea
                   value={formData.shipping_returns}
-                  onChange={(val) => handleInputChange("shipping_returns", val)}
+                  onChange={(e) => handleInputChange("shipping_returns", e.target.value)}
+                  className="flex min-h-[100px] w-full border border-[#D4AF37]/25 bg-transparent px-3 py-2 font-sans text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
+                  placeholder="Enter shipping and returns policy..."
                 />
               </div>
             </div>
