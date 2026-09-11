@@ -13,7 +13,7 @@ interface ProductCardProps {
   badge?: "NEW" | "BESTSELLER" | "OUT OF STOCK";
 }
 
-export function ProductCard({ product, badge }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [imageLoaded, setImageLoaded] = useState(false);
   const isWishlisted = isInWishlist(product.product_id);

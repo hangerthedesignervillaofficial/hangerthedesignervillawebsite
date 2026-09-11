@@ -23,7 +23,7 @@ export function useNavigationBuilder() {
   useEffect(() => {
     async function fetchNav() {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("categories")
           .select("id, name")
           .order('name');

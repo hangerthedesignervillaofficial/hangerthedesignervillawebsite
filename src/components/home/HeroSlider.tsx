@@ -58,8 +58,6 @@ export function HeroSlider({ initialSlides }: { initialSlides?: any[] | null }) 
     );
     return () => clearInterval(t);
   }, [slides.length, isPaused]);
-
-  const goTo = (i: number) => setCurrentIndex((i + slides.length) % slides.length);
   const slide = slides[currentIndex];
   if (!slide) return null;
 

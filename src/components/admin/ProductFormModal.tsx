@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 
 // Removed react-quill to fix findDOMNode error in Next.js 14+

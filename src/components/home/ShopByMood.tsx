@@ -37,7 +37,7 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
-      const { scrollLeft, clientWidth } = scrollContainerRef.current;
+      const { scrollLeft } = scrollContainerRef.current;
       // width of item (140) + gap (20) = 160
       const newIndex = Math.round(scrollLeft / 160);
       setActiveIndex(Math.min(Math.max(newIndex, 0), moods.length - 1));

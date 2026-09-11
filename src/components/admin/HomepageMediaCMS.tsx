@@ -120,7 +120,7 @@ export function HomepageMediaCMS() {
     { label: "New Arrivals", value: "/new-arrivals" },
     { label: "Best Sellers", value: "/bestsellers" },
     { label: "-- Categories --", value: "", disabled: true },
-    ...categories.map(cat => ({ label: cat.name.toUpperCase(), value: `/${cat.slug}` })),
+    ...categories.map(cat => ({ label: cat.name.toUpperCase(), value: `/category/${cat.id}` })),
     { label: "-- Moods --", value: "", disabled: true },
     { label: "Everyday Edit", value: "/mood/everyday-edit" },
     { label: "Festive Edit", value: "/mood/festive-edit" },

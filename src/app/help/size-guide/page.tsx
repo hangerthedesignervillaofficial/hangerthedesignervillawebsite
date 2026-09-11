@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Ruler, Sparkles, HelpCircle, Phone } from "lucide-react";
+import { Ruler, Sparkles, Phone } from "lucide-react";
 
 export const metadata = {
   title: "Size Guide | Hanger The Designer Villa",
