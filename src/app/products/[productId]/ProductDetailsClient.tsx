@@ -490,12 +490,23 @@ export default function ProductDetailsClient({
                   <h3 className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase">
                     Select Size
                   </h3>
-                  <button 
-                    onClick={() => setIsSizeGuideOpen(true)}
-                    className="text-[8px] font-sans text-[#7A6B5D] hover:text-[#4A0E17] underline tracking-wider uppercase cursor-pointer"
-                  >
-                    Size Guide
-                  </button>
+                  <div className="flex items-center gap-2.5">
+                    <button 
+                      type="button"
+                      onClick={() => setIsSizeGuideOpen(true)}
+                      className="text-[8.5px] font-sans text-[#7A6B5D] hover:text-[#4A0E17] underline tracking-wider uppercase cursor-pointer"
+                    >
+                      Size Chart
+                    </button>
+                    <span className="text-[#D4AF37]/40 text-[8px]">•</span>
+                    <Link
+                      href="/help/size-guide"
+                      target="_blank"
+                      className="text-[8.5px] font-sans font-medium text-[#D4AF37] hover:underline tracking-wider uppercase"
+                    >
+                      Full Guide ↗
+                    </Link>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size) => (

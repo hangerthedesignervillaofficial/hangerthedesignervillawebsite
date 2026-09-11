@@ -500,6 +500,27 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #D4AF37;
   }
+
+  /* Buttery Smooth Interactions & Mobile Click Optimization */
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  button:active:not(:disabled), a:active {
+    transform: scale(0.985);
+    transition: transform 0.08s ease-out;
+  }
 }
 
 

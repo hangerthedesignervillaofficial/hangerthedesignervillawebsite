@@ -10,10 +10,10 @@ import { useWishlist } from "@/context/WishlistContext";
 
 interface ProductCardProps {
   product: ProductType;
-  badge?: "NEW" | "BESTSELLER" | "OUT OF STOCK";
+  badge?: "NEW" | "BESTSELLER" | "OUT OF STOCK" | string;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, badge }: ProductCardProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [imageLoaded, setImageLoaded] = useState(false);
   const isWishlisted = isInWishlist(product.product_id);
@@ -69,17 +69,25 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Inner gold frame overlay on hover */}
         <div className="absolute inset-3 border border-[#D4AF37]/35 scale-[0.96] opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none z-10" />
         
-        {/* Top Left Badge (Only for Out of Stock) */}
-        {product.stock <= 0 && (
+        {/* Top Left Badge */}
+        {product.stock <= 0 ? (
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.3 }}
+            transition={{ delay: 0.2, duration: 0.2 }}
             className="absolute top-3 left-3 px-2.5 py-1 text-[8px] font-sans font-bold tracking-[0.15em] uppercase shadow-sm z-10 border bg-[#2C1810] text-white border-[#2C1810]"
           >
             OUT OF STOCK
           </motion.div>
-        )}
+        ) : badge ? (
+          <div className="absolute top-3 left-3 px-2.5 py-1 text-[7.5px] font-sans font-bold tracking-[0.18em] uppercase shadow-xs z-10 bg-[#D4AF37] text-white">
+            {badge}
+          </div>
+        ) : product.is_bestseller ? (
+          <div className="absolute top-3 left-3 px-2.5 py-1 text-[7.5px] font-sans font-bold tracking-[0.18em] uppercase shadow-xs z-10 bg-[#2C1810] text-[#D4AF37] border border-[#D4AF37]/40">
+            Bestseller
+          </div>
+        ) : null}
 
         {/* Top Right Heart */}
         <button 
