@@ -82,9 +82,12 @@ export const adminUserService = {
             .eq("user_id", user.profile_id);
 
           const userOrders = orders || [];
+          const validOrders = userOrders.filter(
+            (o: any) => o.status !== "cancelled" && o.status !== "failed" && o.status !== "refunded"
+          );
           const totalOrders = userOrders.length;
-          const totalSpent = userOrders.reduce(
-            (sum, order) => sum + order.total,
+          const totalSpent = validOrders.reduce(
+            (sum, order) => sum + (Number(order.total) || 0),
             0,
           );
           const lastOrderDate =
@@ -282,8 +285,11 @@ export const adminUserService = {
             .eq("user_id", user.profile_id);
 
           const userOrders = orders || [];
-          const totalSpent = userOrders.reduce(
-            (sum, order) => sum + order.total,
+          const validOrders = userOrders.filter(
+            (o: any) => o.status !== "cancelled" && o.status !== "failed" && o.status !== "refunded"
+          );
+          const totalSpent = validOrders.reduce(
+            (sum, order) => sum + (Number(order.total) || 0),
             0,
           );
 

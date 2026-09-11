@@ -1,4 +1,5 @@
 import SignUpForm from "./SignUpForm";
+import { HangerLogo } from "@/components/HangerLogo";
 
 export default function SignUp() {
   return (
@@ -9,11 +10,7 @@ export default function SignUp() {
           <div className="border border-[#D4AF37]/10 p-5 md:p-7">
             {/* Brand logo */}
             <div className="flex flex-col items-center mb-6">
-              <img
-                src="/images/logo-icon.png"
-                alt="HANGER"
-                className="h-12 w-auto object-contain mb-3"
-              />
+              <HangerLogo className="h-12 w-auto mb-3" />
               <h1
                 className="font-serif text-xl font-bold tracking-[0.22em] text-[#2C1810] uppercase"
                 style={{ fontFamily: "var(--font-heading), Georgia, serif" }}

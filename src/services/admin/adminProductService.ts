@@ -282,7 +282,8 @@ export const adminProductService = {
         .select("price, stock");
 
       const totalInventoryValue = (products || []).reduce(
-        (sum, product) => sum + product.price * product.stock,
+        (sum, product) =>
+          sum + (Number(product.price) || 0) * (Number(product.stock) || 0),
         0,
       );
 

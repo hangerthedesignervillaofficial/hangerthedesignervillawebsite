@@ -21,6 +21,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { LogOut, Package, Settings, MessageSquare } from "lucide-react";
 import { useNavigationMenu } from "@/hooks/useNavigationMenu";
 import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
+import { HangerLogo } from "@/components/HangerLogo";
 
 // ─── Static nav structure (mirrors Sidebar) ────────────────────────────
 // Replaced by useNavigationBuilder hook
@@ -166,11 +167,7 @@ export function Navbar() {
           {/* Col 2 — Brand logo: perfectly centered */}
           <div className="flex justify-center px-6">
             <Link href="/" className="flex items-center gap-3 group logo-shimmer px-4 py-2">
-              <img
-                src="/images/logo-icon.png"
-                alt="HANGER"
-                className="h-11 w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-[2deg]"
-              />
+              <HangerLogo className="h-11 w-auto transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-[2deg] shrink-0" />
               <div className="flex flex-col items-start">
                 <h1
                   className="font-serif text-xl font-bold tracking-[0.22em] text-[#2C1810] uppercase group-hover:text-[#4A0E17] group-hover:tracking-[0.26em] transition-all duration-500 leading-none whitespace-nowrap"
@@ -322,11 +319,7 @@ export function Navbar() {
             {/* Center: Brand logo */}
             <div className="flex justify-center">
               <Link href="/" className="flex items-center gap-1.5 sm:gap-2 group shrink-0">
-                <img
-                  src="/images/logo-icon.png"
-                  alt="HANGER"
-                  className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-active:scale-95 shrink-0"
-                />
+                <HangerLogo className="h-8 sm:h-10 w-auto transition-transform duration-300 group-active:scale-95 shrink-0" />
                 <div className="flex flex-col items-start min-w-0">
                   <span
                     className="font-serif text-[15px] sm:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.24em] text-[#2C1810] uppercase leading-none whitespace-nowrap"

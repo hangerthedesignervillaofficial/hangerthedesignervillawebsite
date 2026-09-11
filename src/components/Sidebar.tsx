@@ -25,6 +25,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { Sidebar as ShadcnSidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
 import { SidebarCategoryProducts } from "./SidebarCategoryProducts";
+import { HangerLogo } from "@/components/HangerLogo";
 
 // Instagram Icon
 function InstagramIcon({ className }: { className?: string }) {
@@ -77,7 +78,7 @@ export default function Sidebar() {
         {/* ── TOP BAR ─────────────────────────────────── */}
         <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-[#2C1810]/5">
           <Link href="/" onClick={handleClose} className="flex items-center gap-3 group">
-            <img src="/images/logo-icon.png" alt="HANGER" className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+            <HangerLogo className="h-9 w-auto transition-transform group-hover:scale-105" />
             <div>
               <div className="font-serif text-[18px] font-bold tracking-[0.25em] text-[#2C1810] uppercase leading-none" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>
                 HANGER

@@ -272,19 +272,28 @@ export const adminOrderService = {
 
       const allOrders = orders || [];
 
-      // Calculate basic metrics
+      // Exclude cancelled/failed/refunded orders from revenue & AOV calculations
+      const validOrders = allOrders.filter(
+        (order) =>
+          order.status !== "cancelled" &&
+          order.status !== "failed" &&
+          order.status !== "refunded",
+      );
+
+      // Calculate basic metrics safely
       const totalOrders = allOrders.length;
-      const totalRevenue = allOrders.reduce(
-        (sum, order) => sum + order.total,
+      const totalRevenue = validOrders.reduce(
+        (sum, order) => sum + (Number(order.total) || 0),
         0,
       );
       const averageOrderValue =
-        totalOrders > 0 ? totalRevenue / totalOrders : 0;
+        validOrders.length > 0 ? totalRevenue / validOrders.length : 0;
 
       // Orders by status
       const ordersByStatus = allOrders.reduce(
         (acc, order) => {
-          acc[order.status] = (acc[order.status] || 0) + 1;
+          const status = order.status || "pending";
+          acc[status] = (acc[status] || 0) + 1;
           return acc;
         },
         {} as Record<string, number>,
@@ -296,10 +305,11 @@ export const adminOrderService = {
         profile: order.profiles,
       }));
 
-      // Top customers
-      const customerStats = allOrders.reduce<Record<string, CustomerStat>>(
+      // Top customers (only counting valid non-cancelled orders)
+      const customerStats = validOrders.reduce<Record<string, CustomerStat>>(
         (acc, order) => {
           const userId = order.user_id;
+          if (!userId) return acc;
           if (!acc[userId]) {
             acc[userId] = {
               userId,
@@ -310,13 +320,17 @@ export const adminOrderService = {
             };
           }
           acc[userId].totalOrders += 1;
-          acc[userId].totalSpent += order.total;
+          acc[userId].totalSpent += (Number(order.total) || 0);
           return acc;
         },
         {},
       );
 
       const topCustomers: CustomerStat[] = Object.values(customerStats)
+        .map((stat) => ({
+          ...stat,
+          totalSpent: Number(stat.totalSpent.toFixed(2)),
+        }))
         .sort((a, b) => b.totalSpent - a.totalSpent)
         .slice(0, 10);
 

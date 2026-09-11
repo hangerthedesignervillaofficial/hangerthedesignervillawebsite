@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useNavigationMenu } from "@/hooks/useNavigationMenu";
+import { HangerLogo } from "@/components/HangerLogo";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -91,11 +92,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="w-full md:w-1/4 flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="flex flex-col items-center md:items-start gap-4 mb-6 group">
-              <img 
-                src="/images/logo-icon.png" 
-                alt="HANGER" 
-                className="h-16 md:h-12 w-auto object-contain dark:invert group-active:scale-95 transition-transform duration-350"
-              />
+              <HangerLogo className="h-16 md:h-12 w-auto group-active:scale-95 transition-transform duration-350" />
               <div className="flex flex-col items-center md:items-start">
                 <h1 className="font-serif text-[24px] md:text-lg font-bold tracking-[0.25em] text-[#2C1810] dark:text-[#FFF8F0] uppercase leading-none" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                   HANGER
@@ -210,8 +207,8 @@ export function Footer() {
               <ul className="space-y-3 md:space-y-2">
                 {[
                   { label: 'Privacy Policy', href: '/policies/privacy' },
-                  { label: 'Terms', href: '/policies/privacy' },
-                  { label: 'Refund Policy', href: '/help/returns' }
+                  { label: 'Terms', href: '/policies/terms' },
+                  { label: 'Refund Policy', href: '/policies/refund' }
                 ].map((item) => (
                   <li key={item.label}>
                     <Link href={item.href} className="font-sans text-[10px] text-[#7A6B5D] hover:text-[#D4AF37] transition-colors duration-500">{item.label}</Link>
@@ -225,7 +222,7 @@ export function Footer() {
             <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 pt-6 border-t border-[#D4AF37]/15">
               <div className="text-center md:text-left">
                 <p className="font-sans text-[9px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase mb-1.5">
-                  FLAGSHIP STORE & STUDIO
+                  HANGER THE DESIGNER VILLA
                 </p>
                 <p className="font-sans text-[11px] text-[#7A6B5D] leading-relaxed">
                   GF-67/68, GROUND FLOOR, GLOBAL FOYER MALL, PALAM VIHAR, GURUGRAM

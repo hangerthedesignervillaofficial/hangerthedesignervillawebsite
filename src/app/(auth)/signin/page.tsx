@@ -1,5 +1,7 @@
 import { SignInForm } from "./SignInForm";
 import Link from "next/link";
+import { HangerLogo } from "@/components/HangerLogo";
+
  
 type SignInProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -39,11 +41,7 @@ export default async function SignIn({ searchParams }: SignInProps) {
           {/* Logo Stack at top of Sign In */}
           <div className="flex flex-col mb-12 relative z-10">
             <Link href="/" className="flex items-center gap-3 mb-8 group inline-block">
-              <img 
-                src="/images/logo-icon.png" 
-                alt="HANGER" 
-                className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-              />
+              <HangerLogo className="h-12 w-auto transition-transform duration-300 group-hover:scale-105" />
               <div className="flex flex-col text-left">
                 <span className="font-serif text-lg font-bold tracking-[0.2em] text-[#2C1810] uppercase" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                   HANGER

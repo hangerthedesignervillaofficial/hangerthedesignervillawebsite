@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Search, Home } from "lucide-react";
+import { HangerLogo } from "@/components/HangerLogo";
 
 export default function NotFoundPage() {
   return (
@@ -13,11 +14,9 @@ export default function NotFoundPage() {
             </div>
 
             {/* Brand */}
-            <img
-              src="/images/logo-icon.png"
-              alt="HANGER"
-              className="h-7 w-auto mx-auto mb-4 object-contain opacity-30"
-            />
+            <div className="flex justify-center mb-4 opacity-40">
+              <HangerLogo className="h-7 w-auto" />
+            </div>
 
             <h1
               className="font-serif text-5xl font-normal text-[#D4AF37]/30 tracking-wider mb-2"
