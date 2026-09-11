@@ -97,22 +97,24 @@ export function Navbar() {
   }, []);
 
   // Find products for current active menu from DB data
-  const getMenuProducts = (key: string) => {
-    if (key === "new-arrivals") {
+  const getMenuProducts = (key: string, catId?: string) => {
+    if (key === "new-arrivals" || catId === "new-arrivals") {
       return menuData.find((m) => m.category.id === -1)?.products ?? [];
     }
-    if (key === "best-sellers") {
+    if (key === "best-sellers" || catId === "best-sellers") {
       return menuData.find((m) => m.category.id === -2)?.products ?? [];
     }
-    // Try match by category name
+    // Try match by category id or name
     const matched = menuData.find(
-      (m) => m.category.name.toLowerCase().replace(/\s+/g, "-") === key || m.category.id.toString() === key
+      (m) => (catId && m.category.id.toString() === catId) ||
+             m.category.name.toLowerCase().replace(/\s+/g, "-") === key ||
+             m.category.name.toLowerCase() === key.toLowerCase()
     );
     return matched?.products ?? [];
   };
 
   const activeNavItem = navItems.find((n) => n.id === activeMenu) ?? null;
-  const activeProducts = activeMenu ? getMenuProducts(activeNavItem?.title.toLowerCase().replace(/\s+/g, "-") || "") : [];
+  const activeProducts = activeNavItem ? getMenuProducts(activeNavItem.title.toLowerCase().replace(/\s+/g, "-"), activeNavItem.id) : [];
 
   return (
     <>
@@ -472,12 +474,15 @@ export function Navbar() {
                 {/* Sub-links */}
                 {activeNavItem.subItems && activeNavItem.subItems.length > 0 && (
                   <div className="flex flex-col gap-1">
+                    <p className="font-sans text-[8px] font-bold tracking-[0.25em] text-[#7A6B5D] uppercase mb-1">
+                      Subcategories
+                    </p>
                     {activeNavItem.subItems.map((sub) => (
                       <Link
                         key={sub.id}
                         href={sub.href}
                         onClick={() => setActiveMenu(null)}
-                        className="group/sub flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#F4E7DA] transition-all duration-200"
+                        className="group/sub flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#F4E7DA] transition-all duration-200 border border-transparent hover:border-[#D4AF37]/20"
                       >
                         <span className="font-sans text-[11px] font-semibold tracking-[0.14em] text-[#2C1810] uppercase group-hover/sub:text-[#4A0E17] transition-colors">
                           {sub.title}

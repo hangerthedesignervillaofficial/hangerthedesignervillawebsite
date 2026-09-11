@@ -23,20 +23,35 @@ export function useNavigationBuilder() {
   useEffect(() => {
     async function fetchNav() {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("categories")
-          .select("id, name")
-          .order('name');
-        
+          .select("id, name, parent_id")
+          .order("id");
+
+        if (error) throw error;
+
         if (data && data.length > 0) {
-          const items: NavItem[] = data.map((cat: any) => ({
-            id: cat.id.toString(),
-            title: cat.name,
-            href: `/products?category=${cat.id}`,
-            icon: 'FolderHeart', // Default elegant icon since categories table lacks icons
-            hasSub: true, // Always true to enable product dropdowns
-            subItems: []
-          }));
+          const mainCategories = data.filter((c) => !c.parent_id);
+
+          const items: NavItem[] = mainCategories.map((cat: any) => {
+            const children: NavSubItem[] = data
+              .filter((c) => c.parent_id === cat.id)
+              .map((sub: any) => ({
+                id: sub.id.toString(),
+                title: sub.name,
+                href: `/products?category=${sub.id}`,
+              }));
+
+            return {
+              id: cat.id.toString(),
+              title: cat.name,
+              href: `/products?category=${cat.id}`,
+              icon: "FolderHeart",
+              hasSub: true,
+              subItems: children,
+            };
+          });
+
           setNavItems(items);
         } else {
           setNavItems([]);

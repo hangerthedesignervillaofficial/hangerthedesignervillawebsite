@@ -422,11 +422,42 @@ export function ProductFormModal({
     }
   };
 
+  // Split into main categories and subcategories
+  const mainCategoriesList = useMemo(() => {
+    return categoriesList.filter((c) => !c.parent_id);
+  }, [categoriesList]);
+
+  const getSubcategoriesOf = useCallback(
+    (parentId: number) => {
+      return categoriesList.filter((c) => c.parent_id === parentId);
+    },
+    [categoriesList],
+  );
+
   // Find currently selected category object for visual highlight
   const currentCategory = useMemo(() => {
-    if (!formData.category_id || formData.category_id === "no-category") return null;
-    return categoriesList.find((c) => c.id.toString() === formData.category_id.toString());
+    if (!formData.category_id || formData.category_id === "no-category")
+      return null;
+    return categoriesList.find(
+      (c) => c.id.toString() === formData.category_id.toString(),
+    );
   }, [formData.category_id, categoriesList]);
+
+  const [activeParentCategoryId, setActiveParentCategoryId] = useState<
+    number | null
+  >(null);
+
+  useEffect(() => {
+    if (currentCategory) {
+      if (currentCategory.parent_id) {
+        setActiveParentCategoryId(currentCategory.parent_id);
+      } else {
+        setActiveParentCategoryId(currentCategory.id);
+      }
+    } else {
+      setActiveParentCategoryId(null);
+    }
+  }, [currentCategory]);
 
   const getCategoryIcon = (catName: string) => {
     const upper = catName.toUpperCase();
@@ -578,35 +609,53 @@ export function ProductFormModal({
               </span>
             </div>
 
-            {/* Interactive Luxury Category Cards */}
+            {/* Interactive Luxury Category & Subcategory Cards */}
             <div>
-              <Label className="font-sans text-[10px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-2">
-                Select Luxury Category
-              </Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="font-sans text-[10px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase">
+                  1. Select Main Category
+                </Label>
+                {activeParentCategoryId && (
+                  <span className="text-[9px] font-sans font-bold text-[#D4AF37] uppercase tracking-wider">
+                    Active: {mainCategoriesList.find(c => c.id === activeParentCategoryId)?.name}
+                  </span>
+                )}
+              </div>
+
+              {/* Main Categories Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {categoriesList.map((cat) => {
-                  const isSelected = formData.category_id === cat.id.toString();
+                {mainCategoriesList.map((cat) => {
+                  const subs = getSubcategoriesOf(cat.id);
+                  const isParentSelected = activeParentCategoryId === cat.id;
+                  const isExactlyAssigned = formData.category_id === cat.id.toString();
+
                   return (
                     <button
                       key={cat.id}
                       type="button"
-                      onClick={() => handleInputChange("category_id", cat.id.toString())}
-                      className={`relative flex flex-col items-center justify-center p-3.5 transition-all duration-200 border cursor-pointer text-center group ${
-                        isSelected
+                      onClick={() => {
+                        setActiveParentCategoryId(cat.id);
+                        if (subs.length === 0) {
+                          handleInputChange("category_id", cat.id.toString());
+                        } else if (!isParentSelected) {
+                          handleInputChange("category_id", cat.id.toString());
+                        }
+                      }}
+                      className={`relative flex flex-col items-center justify-center p-3 transition-all duration-200 border cursor-pointer text-center group ${
+                        isParentSelected
                           ? "bg-[#2C1810] border-[#D4AF37] text-white shadow-md ring-1 ring-[#D4AF37]"
                           : "bg-white border-[#D4AF37]/25 text-[#2C1810] hover:border-[#D4AF37]/70 hover:bg-[#FDFBF7]"
                       }`}
                     >
-                      {/* Check badge when selected */}
-                      {isSelected && (
+                      {isExactlyAssigned && (
                         <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[#D4AF37] text-[#2C1810] flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 stroke-[3]" />
                         </span>
                       )}
 
                       <div
-                        className={`mb-1.5 transition-transform duration-200 group-hover:scale-110 ${
-                          isSelected ? "text-[#D4AF37]" : "text-[#7A6B5D]"
+                        className={`mb-1 transition-transform duration-200 group-hover:scale-110 ${
+                          isParentSelected ? "text-[#D4AF37]" : "text-[#7A6B5D]"
                         }`}
                       >
                         {getCategoryIcon(cat.name)}
@@ -614,25 +663,99 @@ export function ProductFormModal({
                       <span className="font-sans text-xs font-bold tracking-widest uppercase">
                         {cat.name}
                       </span>
-                      {cat.description && (
-                        <span
-                          className={`text-[9px] font-sans mt-0.5 line-clamp-1 ${
-                            isSelected ? "text-[#D4AF37]/80" : "text-[#7A6B5D]/60"
-                          }`}
-                        >
-                          {cat.description}
-                        </span>
-                      )}
+                      <span
+                        className={`text-[9px] font-sans mt-0.5 line-clamp-1 ${
+                          isParentSelected ? "text-[#D4AF37]/80" : "text-[#7A6B5D]/60"
+                        }`}
+                      >
+                        {subs.length > 0 ? `${subs.length} Subcategories` : (cat.description || "Main Category")}
+                      </span>
                     </button>
                   );
                 })}
               </div>
 
+              {/* Subcategories Selector (if the active main category has subcategories) */}
+              {activeParentCategoryId && (() => {
+                const activeMain = mainCategoriesList.find(c => c.id === activeParentCategoryId);
+                const subs = activeMain ? getSubcategoriesOf(activeMain.id) : [];
+                if (subs.length === 0) return null;
+
+                const isAssignedToParent = formData.category_id === activeMain?.id.toString();
+
+                return (
+                  <div className="mt-3 p-3.5 bg-[#FFFDF9] border border-[#D4AF37]/35 rounded-none shadow-xs">
+                    <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-[#D4AF37]/15">
+                      <span className="font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#2C1810]">
+                        2. Select Subcategory under &quot;{activeMain?.name}&quot;
+                      </span>
+                      <span className="text-[9px] font-sans text-[#7A6B5D]">
+                        Choose specific subcategory or assign to entire collection
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {/* Option to assign to main parent */}
+                      <button
+                        type="button"
+                        onClick={() => handleInputChange("category_id", activeMain!.id.toString())}
+                        className={`px-3 py-1.5 text-[10px] font-sans font-bold uppercase tracking-wider border cursor-pointer transition-all ${
+                          isAssignedToParent
+                            ? "bg-[#2C1810] border-[#D4AF37] text-[#D4AF37] shadow-xs"
+                            : "bg-white border-[#D4AF37]/30 text-[#7A6B5D] hover:border-[#D4AF37] hover:text-[#2C1810]"
+                        }`}
+                      >
+                        {isAssignedToParent && "✓ "}All {activeMain?.name} (Main)
+                      </button>
+
+                      {/* Subcategories list */}
+                      {subs.map((sub) => {
+                        const isSubSelected = formData.category_id === sub.id.toString();
+                        return (
+                          <button
+                            key={sub.id}
+                            type="button"
+                            onClick={() => handleInputChange("category_id", sub.id.toString())}
+                            className={`px-3 py-1.5 text-[10px] font-sans font-bold uppercase tracking-wider border cursor-pointer transition-all ${
+                              isSubSelected
+                                ? "bg-[#2C1810] border-[#D4AF37] text-[#D4AF37] shadow-xs ring-1 ring-[#D4AF37]"
+                                : "bg-white border-[#D4AF37]/30 text-[#2C1810] hover:border-[#D4AF37] hover:bg-[#FDFBF7]"
+                            }`}
+                          >
+                            {isSubSelected && "✓ "}{sub.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Status Banner */}
+              {currentCategory && (
+                <div className="mt-3 p-2.5 bg-[#FFFDF9] border border-[#D4AF37]/40 flex items-center justify-between text-xs">
+                  <span className="text-[#2C1810] font-sans">
+                    Assigned:{" "}
+                    <strong>
+                      {currentCategory.parent_id
+                        ? `${categoriesList.find((c) => c.id === currentCategory.parent_id)?.name} → ${currentCategory.name}`
+                        : `${currentCategory.name} (Main Category)`}
+                    </strong>
+                  </span>
+                  <span className="text-[#D4AF37] font-bold text-[9px] uppercase tracking-widest flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Ready
+                  </span>
+                </div>
+              )}
+
               {/* Reset to unassigned button */}
               <div className="mt-2 flex items-center justify-between">
                 <button
                   type="button"
-                  onClick={() => handleInputChange("category_id", "no-category")}
+                  onClick={() => {
+                    handleInputChange("category_id", "no-category");
+                    setActiveParentCategoryId(null);
+                  }}
                   className={`text-[10px] font-sans tracking-wider uppercase underline transition-colors ${
                     formData.category_id === "no-category"
                       ? "text-[#4A0E17] font-bold"
@@ -649,10 +772,10 @@ export function ProductFormModal({
               </div>
             </div>
 
-            {/* Synchronized Native Luxury Dropdown for 100% Mobile & Laptop Reliability */}
+            {/* Synchronized Hierarchical Native Luxury Dropdown */}
             <div className="pt-2 border-t border-[#D4AF37]/10">
               <Label className="font-sans text-[10px] font-bold tracking-[0.18em] text-[#7A6B5D] uppercase block mb-1.5">
-                Category Dropdown
+                Category & Subcategory Dropdown
               </Label>
               <div className="relative">
                 <select
@@ -661,11 +784,28 @@ export function ProductFormModal({
                   className="w-full bg-white border border-[#D4AF37]/30 h-11 px-3 text-sm text-[#2C1810] font-sans tracking-wide rounded-none focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] cursor-pointer appearance-none"
                 >
                   <option value="no-category">No Category (Unassigned)</option>
-                  {categoriesList.map((cat) => (
-                    <option key={cat.id} value={cat.id.toString()}>
-                      {cat.name} {cat.description ? `— ${cat.description}` : ""}
-                    </option>
-                  ))}
+                  {mainCategoriesList.map((mainCat) => {
+                    const subs = getSubcategoriesOf(mainCat.id);
+                    if (subs.length > 0) {
+                      return (
+                        <optgroup key={mainCat.id} label={`★ ${mainCat.name}`}>
+                          <option value={mainCat.id.toString()}>
+                            All {mainCat.name} (Main Category)
+                          </option>
+                          {subs.map((sub) => (
+                            <option key={sub.id} value={sub.id.toString()}>
+                              &nbsp;&nbsp;↳ {sub.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      );
+                    }
+                    return (
+                      <option key={mainCat.id} value={mainCat.id.toString()}>
+                        {mainCat.name}
+                      </option>
+                    );
+                  })}
                 </select>
                 <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#D4AF37]">
                   ▼

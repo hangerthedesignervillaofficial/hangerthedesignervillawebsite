@@ -38,23 +38,37 @@ export default function AllProductsClient() {
   const searchParams = useSearchParams()
   const tagFilter = searchParams.get('tag')
   const categoryFilter = searchParams.get('category')
+  const [matchingCategoryIds, setMatchingCategoryIds] = useState<string[]>([])
 
   useEffect(() => {
-    async function fetchCategoryName() {
+    async function fetchCategoryDetails() {
       if (categoryFilter) {
-        const { data } = await supabase
+        const { data: cat } = await supabase
           .from("categories")
-          .select("name")
+          .select("id, name")
           .eq("id", categoryFilter)
           .single();
-        if (data && data.name) {
-          setCategoryName(data.name);
+        if (cat && cat.name) {
+          setCategoryName(cat.name);
         }
+
+        // Also fetch any subcategories belonging to this category
+        const { data: subcats } = await supabase
+          .from("categories")
+          .select("id")
+          .eq("parent_id", categoryFilter);
+
+        const ids = [categoryFilter.toString()];
+        if (subcats && subcats.length > 0) {
+          subcats.forEach((s: { id: number }) => ids.push(s.id.toString()));
+        }
+        setMatchingCategoryIds(ids);
       } else {
         setCategoryName(null);
+        setMatchingCategoryIds([]);
       }
     }
-    fetchCategoryName();
+    fetchCategoryDetails();
   }, [categoryFilter]);
 
   // Filter and sort products
@@ -66,7 +80,11 @@ export default function AllProductsClient() {
     }
 
     if (categoryFilter) {
-      filtered = filtered.filter(p => p.category_id?.toString() === categoryFilter)
+      if (matchingCategoryIds.length > 0) {
+        filtered = filtered.filter(p => p.category_id && matchingCategoryIds.includes(p.category_id.toString()))
+      } else {
+        filtered = filtered.filter(p => p.category_id?.toString() === categoryFilter)
+      }
     }
 
     switch (sortBy) {
@@ -83,7 +101,7 @@ export default function AllProductsClient() {
         break
     }
     return filtered
-  }, [displayProducts, sortBy, tagFilter])
+  }, [displayProducts, sortBy, tagFilter, categoryFilter, matchingCategoryIds])
 
   return (
     <ErrorBoundary>

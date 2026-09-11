@@ -49,10 +49,21 @@ export const productService = {
 
   async getProductsByCategory(categoryId: number): Promise<ProductType[]> {
     try {
+      // Check if this category has child subcategories
+      const { data: subcategories } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('parent_id', categoryId);
+
+      const targetIds = [categoryId];
+      if (subcategories && subcategories.length > 0) {
+        subcategories.forEach((sub: { id: number }) => targetIds.push(sub.id));
+      }
+
       const { data, error } = await supabase
         .from('products')
         .select('*, category:categories(*)')
-        .eq('category_id', categoryId)
+        .in('category_id', targetIds)
         .order('title');
 
       if (error) {

@@ -120,5 +120,6 @@ export interface CategoryType {
   id: number;
   name: string;
   description: string;
-  parent_id?: number;
+  parent_id?: number | null;
+  subcategories?: CategoryType[];
 }

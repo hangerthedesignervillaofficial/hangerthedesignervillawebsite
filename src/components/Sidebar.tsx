@@ -46,6 +46,7 @@ export default function Sidebar() {
   const { isMobile, toggleSidebar } = useSidebar();
   const { navItems, loading } = useNavigationBuilder();
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [expandedSubCategory, setExpandedSubCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
@@ -58,6 +59,8 @@ export default function Sidebar() {
     { label: "New Arrivals", href: "/new-arrivals", icon: Sparkles },
     { label: "Best Sellers", href: "/bestsellers", icon: Star },
     { label: "All Products", href: "/products", icon: ArrowRight },
+    { label: "Our Story", href: "/about", icon: Sparkles },
+    { label: "Contact Us", href: "/help/contact", icon: Phone },
   ];
 
   const accountLinks = [
@@ -68,24 +71,27 @@ export default function Sidebar() {
   ];
 
   return (
-    <ShadcnSidebar
-      collapsible="offcanvas"
-      className="z-[80] border-r-0 font-sans shadow-[4px_0_24px_rgba(0,0,0,0.02)]"
-      style={{ "--sidebar-background": "#FDFBF7", "--sidebar-border": "transparent" } as React.CSSProperties}
-    >
-      <SidebarContent className="relative bg-[#FDFBF7] text-[#2C1810] flex flex-col h-[100dvh] overflow-y-auto scrollbar-none select-none">
+    <div className="fixed inset-0 z-50 flex">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300"
+        onClick={handleClose}
+      />
 
-        {/* ── TOP BAR ─────────────────────────────────── */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-[#2C1810]/5">
+      {/* Drawer */}
+      <div className="relative w-[340px] max-w-[85vw] h-full bg-[#FDFBF7] shadow-2xl flex flex-col z-10 overflow-y-auto">
+        
+        {/* ── HEADER: Brand + Close ────────────────────── */}
+        <div className="flex items-center justify-between px-6 pt-7 pb-5 border-b border-[#2C1810]/8">
           <Link href="/" onClick={handleClose} className="flex items-center gap-3 group">
             <HangerLogo className="h-9 w-auto transition-transform group-hover:scale-105" />
-            <div>
-              <div className="font-serif text-[18px] font-bold tracking-[0.25em] text-[#2C1810] uppercase leading-none" style={{ fontFamily: "var(--font-heading), Georgia, serif" }}>
+            <div className="flex flex-col">
+              <span className="font-serif text-[15px] font-bold tracking-[0.25em] text-[#2C1810] uppercase leading-none" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
                 HANGER
-              </div>
-              <div className="text-[7px] font-bold tracking-[0.35em] text-[#D4AF37] uppercase mt-[3px]">
+              </span>
+              <span className="font-sans text-[6px] tracking-[0.4em] text-[#D4AF37] uppercase font-bold mt-1">
                 THE DESIGNER VILLA
-              </div>
+              </span>
             </div>
           </Link>
           <button
@@ -134,7 +140,7 @@ export default function Sidebar() {
 
         {/* ── SHOP BY CATEGORY ─────────────────────────── */}
         <div className="px-6">
-          <div className="text-[8px] font-bold tracking-[0.35em] text-[#D4AF37] uppercase mb-4">Shop</div>
+          <div className="text-[8px] font-bold tracking-[0.35em] text-[#D4AF37] uppercase mb-4">Shop Collections</div>
           <nav className="flex flex-col gap-1">
             {loading ? (
               <div className="flex justify-center py-4">
@@ -153,13 +159,21 @@ export default function Sidebar() {
                         ? "text-[#D4AF37]"
                         : "text-[#2C1810]/70 hover:text-[#2C1810]"
                     )}
-                    onClick={() => setExpandedItem(isExpanded ? null : item.id)}
+                    onClick={() => {
+                      setExpandedItem(isExpanded ? null : item.id);
+                      setExpandedSubCategory(null);
+                    }}
                   >
                     <Link
                       href={item.href}
                       onClick={(e) => {
-                         if (item.hasSub) { e.preventDefault(); setExpandedItem(isExpanded ? null : item.id); }
-                         else handleClose();
+                         if (item.hasSub) { 
+                           e.preventDefault(); 
+                           setExpandedItem(isExpanded ? null : item.id);
+                           setExpandedSubCategory(null);
+                         } else {
+                           handleClose();
+                         }
                       }}
                       className="font-sans text-[13px] font-medium tracking-[0.12em] uppercase flex-1"
                     >
@@ -170,7 +184,7 @@ export default function Sidebar() {
                     )}
                   </div>
 
-                  {/* Sub-items (products) */}
+                  {/* Sub-items (Subcategories & Product Cards) */}
                   <AnimatePresence>
                     {item.hasSub && isExpanded && (
                       <motion.div
@@ -180,7 +194,122 @@ export default function Sidebar() {
                         transition={{ duration: 0.25 }}
                         className="overflow-hidden"
                       >
-                        <SidebarCategoryProducts href={item.href} handleClose={handleClose} />
+                        {item.subItems && item.subItems.length > 0 ? (
+                          <div className="pt-2 pb-3 pl-3 flex flex-col gap-1 relative before:absolute before:left-1.5 before:top-2 before:bottom-3 before:w-[1px] before:bg-[#D4AF37]/25">
+                            {/* All Category Products Option */}
+                            <div className="flex flex-col">
+                              <div className="flex items-center justify-between py-1.5 pr-2 group">
+                                <Link
+                                  href={item.href}
+                                  onClick={handleClose}
+                                  className="font-sans text-[11px] font-bold tracking-[0.15em] uppercase text-[#D4AF37] hover:text-[#2C1810] transition-colors"
+                                >
+                                  All {item.title}
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedSubCategory(
+                                      expandedSubCategory === `all-${item.id}`
+                                        ? null
+                                        : `all-${item.id}`
+                                    )
+                                  }
+                                  className="p-1 text-[#D4AF37] hover:text-[#2C1810] transition-colors cursor-pointer"
+                                  aria-label="Toggle all products"
+                                >
+                                  <ChevronDown
+                                    className={cn(
+                                      "w-3 h-3 transition-transform duration-200",
+                                      expandedSubCategory === `all-${item.id}` && "rotate-180"
+                                    )}
+                                  />
+                                </button>
+                              </div>
+                              <AnimatePresence>
+                                {expandedSubCategory === `all-${item.id}` && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <SidebarCategoryProducts
+                                      categoryId={item.id}
+                                      handleClose={handleClose}
+                                    />
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+
+                            {/* Child Subcategories */}
+                            {item.subItems.map((sub: any) => {
+                              const isSubOpen = expandedSubCategory === sub.id;
+
+                              return (
+                                <div key={sub.id} className="flex flex-col">
+                                  <div
+                                    className="flex items-center justify-between py-1.5 pr-2 group cursor-pointer"
+                                    onClick={() =>
+                                      setExpandedSubCategory(isSubOpen ? null : sub.id)
+                                    }
+                                  >
+                                    <Link
+                                      href={sub.href}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleClose();
+                                      }}
+                                      className="font-sans text-[11px] font-medium tracking-[0.1em] uppercase text-[#2C1810]/80 group-hover:text-[#D4AF37] transition-colors flex-1"
+                                    >
+                                      {sub.title}
+                                    </Link>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setExpandedSubCategory(isSubOpen ? null : sub.id);
+                                      }}
+                                      className="p-1 text-[#2C1810]/40 group-hover:text-[#D4AF37] transition-colors cursor-pointer"
+                                      aria-label={`Show ${sub.title} items`}
+                                    >
+                                      <ChevronDown
+                                        className={cn(
+                                          "w-3 h-3 transition-transform duration-200",
+                                          isSubOpen && "rotate-180 text-[#D4AF37]"
+                                        )}
+                                      />
+                                    </button>
+                                  </div>
+
+                                  <AnimatePresence>
+                                    {isSubOpen && (
+                                      <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="overflow-hidden"
+                                      >
+                                        <SidebarCategoryProducts
+                                          subCategoryId={sub.id}
+                                          handleClose={handleClose}
+                                        />
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <SidebarCategoryProducts
+                            categoryId={item.id}
+                            handleClose={handleClose}
+                          />
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -278,7 +407,7 @@ export default function Sidebar() {
             <span className="text-[#D4AF37] text-[8px]">◆</span>
           </div>
         </div>
-      </SidebarContent>
-    </ShadcnSidebar>
+      </div>
+    </div>
   );
 }

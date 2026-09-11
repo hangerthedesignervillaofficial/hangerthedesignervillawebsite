@@ -20,33 +20,41 @@ export function useNavigationMenu() {
       if (categoryError) throw categoryError;
       if (!categories || categories.length === 0) return [];
 
-      // 2. Fetch top products for these categories
+      // 2. Fetch top products
       const { data: products, error: productError } = await supabase
         .from("products")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(100);
+        .limit(200);
 
       if (productError) throw productError;
 
-      // 3. Group products by category_id, taking up to 8 per category
-      const menuData: NavMenuData[] = categories.map((cat: CategoryType) => {
+      // 3. Separate main categories (parent_id is null/falsy)
+      const mainCategories = categories.filter((c: CategoryType) => !c.parent_id);
+
+      // 4. Map main categories with their subcategories and combined products
+      const menuData: NavMenuData[] = mainCategories.map((cat: CategoryType) => {
+        const subcategories = categories.filter((c: CategoryType) => c.parent_id === cat.id);
+        const subIds = subcategories.map((s: CategoryType) => s.id);
+        const allCategoryIds = [cat.id, ...subIds];
+
         const categoryProducts = (products || [])
-          .filter((p: ProductType) => p.category_id === cat.id)
+          .filter((p: ProductType) => p.category_id && allCategoryIds.includes(p.category_id))
           .slice(0, 8);
         
         return {
-          category: cat,
+          category: {
+            ...cat,
+            subcategories,
+          },
           products: categoryProducts,
         };
       });
 
-      // 4. Inject Bestsellers and New Arrivals
+      // 5. Inject Bestsellers and New Arrivals
       const bestsellers = (products || []).filter(p => p.is_bestseller).slice(0, 8);
       const newArrivals = (products || []).filter(p => p.is_new_arrival).slice(0, 8);
 
-      // We'll push them as special categories with string IDs to distinguish them, 
-      // but since CategoryType expects number ID, we'll use negative numbers.
       menuData.unshift({
         category: { id: -1, name: "New Arrivals", description: "Discover the latest premium additions to our collection." },
         products: newArrivals
