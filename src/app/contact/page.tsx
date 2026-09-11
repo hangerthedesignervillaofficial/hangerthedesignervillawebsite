@@ -177,13 +177,40 @@ export default function ContactPage() {
               </div>
             </div>
             
-            <div className="aspect-[4/3] relative w-full bg-[#f4f0ea] border border-[#D4AF37]/20 overflow-hidden">
-               <iframe
-                 title="Hanger Location"
-                 src="https://maps.google.com/maps?q=Global+Foyer+Mall+Palam+Vihar+Gurugram&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                 className="w-full h-full border-0"
-                 loading="lazy"
-               />
+            <div className="relative w-full bg-[#f4f0ea] border border-[#D4AF37]/30 shadow-md overflow-hidden flex flex-col">
+              <div className="relative aspect-[16/11] w-full">
+                <iframe
+                  title="Hanger Flagship Boutique Location - Global Foyer Mall"
+                  src="https://maps.google.com/maps?q=Global+Foyer+Mall,+Palam+Vihar,+Gurugram,+Haryana&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                  allowFullScreen
+                />
+                <div className="absolute top-3 left-3 bg-[#2C1810]/90 backdrop-blur-xs text-white border border-[#D4AF37]/40 px-3 py-2 shadow-lg">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <div>
+                      <p className="font-serif text-[11px] font-bold tracking-wider text-[#D4AF37] uppercase">HANGER – THE DESIGNER VILLA</p>
+                      <p className="font-sans text-[8px] text-[#FDFBF7]/80 tracking-wider">GF-67/68, Global Foyer Mall, Palam Vihar</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-[#FFFDFC] border-t border-[#D4AF37]/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                  <p className="font-sans text-[10px] font-bold text-[#2C1810] uppercase tracking-wider">Plan Your Visit</p>
+                  <p className="font-sans text-[9px] text-[#7A6B5D]">Palam Vihar, Gurugram • Free Valet & Mall Parking</p>
+                </div>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Global+Foyer+Mall+Palam+Vihar+Gurugram"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white px-5 py-2.5 font-sans text-[9px] font-bold tracking-[0.2em] uppercase border border-[#D4AF37]/35 transition-all shadow-sm"
+                >
+                  <MapPin className="w-3 h-3" /> Get Directions
+                </a>
+              </div>
             </div>
           </div>
         </div>

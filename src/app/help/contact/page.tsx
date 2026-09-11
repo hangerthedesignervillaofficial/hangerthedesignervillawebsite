@@ -96,8 +96,31 @@ export default function ContactPage() {
                 <p className="font-sans text-[10px] font-bold tracking-widest text-[#D4AF37] uppercase">
                   Open 7 Days a Week (10:30 AM - 8:30 PM)
                 </p>
+                <div className="mt-4">
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Global+Foyer+Mall+Palam+Vihar+Gurugram"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[9px] font-sans font-bold tracking-[0.2em] text-[#D4AF37] hover:text-[#4A0E17] uppercase border-b border-[#D4AF37]/50 pb-0.5 transition-colors"
+                  >
+                    <MapPin className="w-3 h-3" /> Get Directions on Google Maps →
+                  </a>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Pinned Google Map Embed */}
+        <div className="mt-16 bg-white border border-[#D4AF37]/25 p-2 shadow-sm">
+          <div className="relative aspect-[21/9] w-full bg-[#f4f0ea] overflow-hidden">
+            <iframe
+              title="Flagship Location - Global Foyer Mall Palam Vihar"
+              src="https://maps.google.com/maps?q=Global+Foyer+Mall,+Palam+Vihar,+Gurugram,+Haryana&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              className="w-full h-full border-0"
+              loading="lazy"
+              allowFullScreen
+            />
           </div>
         </div>
       </div>
