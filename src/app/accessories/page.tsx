@@ -5,7 +5,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 export default function AccessoriesPage() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <CategoryPage categoryName="Accessories" categoryId={3} />
+      <CategoryPage categoryName="Accessories" categoryId={5} />
     </Suspense>
   );
 }

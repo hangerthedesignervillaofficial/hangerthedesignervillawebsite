@@ -8,7 +8,7 @@ import { useState, useMemo } from 'react'
 export interface FilterOptions {
   sortBy: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'default';
   stockFilter: 'all' | 'in-stock' | 'out-of-stock';
-  categoryFilter: 'all' | 'electronics' | 'clothing' | 'accessories';
+  categoryFilter: 'all' | 'clothing' | 'footwear' | 'jewellery' | 'accessories';
 }
 
 // Query Keys - Following TanStack Query key factory pattern
@@ -28,9 +28,10 @@ export const productKeys = {
 // Helper function to map category names to category_id
 const getCategoryId = (categoryName: string): number | null => {
   const categoryMap: { [key: string]: number } = {
-    electronics: 3,
     clothing: 1,
-    accessories: 2,
+    footwear: 2,
+    jewellery: 3,
+    accessories: 5,
   };
   return categoryMap[categoryName] || null;
 };

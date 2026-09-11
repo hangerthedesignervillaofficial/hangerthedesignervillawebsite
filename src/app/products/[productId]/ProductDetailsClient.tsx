@@ -24,11 +24,11 @@ const getCategoryName = (categoryId?: number) => {
     case 1:
       return "Clothing";
     case 2:
-      return "Jewellery";
-    case 3:
-      return "Accessories";
-    case 4:
       return "Footwear";
+    case 3:
+      return "Jewellery";
+    case 5:
+      return "Accessories";
     default:
       return "Exclusive Collection";
   }

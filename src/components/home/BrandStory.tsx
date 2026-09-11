@@ -2,8 +2,33 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 
-export function BrandStory() {
+export function BrandStory({ initialData }: { initialData?: any }) {
+  const [data, setData] = useState<any>(
+    initialData || { mediaUrl: "/images/moments-banner.jpg", type: "image" }
+  );
+
+  useEffect(() => {
+    if (initialData) return;
+    (async () => {
+      try {
+        const { data: res } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "homepage_media")
+          .single();
+        if (res?.value?.brand_story) {
+          setData(res.value.brand_story);
+        }
+      } catch {}
+    })();
+  }, []);
+
+  const bgUrl = data?.mediaUrl || "/images/moments-banner.jpg";
+  const isVideo = data?.type === "video";
+
   return (
     <section
       id="brand-story"
@@ -12,11 +37,22 @@ export function BrandStory() {
         md:h-[80vh] md:min-h-[600px] md:max-h-[900px]
         flex items-center justify-center"
     >
-      {/* Background lifestyle image */}
-      <div
-        className="absolute inset-0 w-full h-full bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/moments-banner.jpg')" }}
-      />
+      {/* Background media */}
+      {isVideo ? (
+        <video
+          src={bgUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <div
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: `url('${bgUrl}')` }}
+        />
+      )}
 
       {/* Layered overlays for depth */}
       <div className="absolute inset-0 bg-[#1A1310]/45" />

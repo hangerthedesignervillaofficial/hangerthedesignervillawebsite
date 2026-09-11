@@ -65,7 +65,7 @@ export default async function Home() {
             />
           )}
           
-          <ShopByMood initialMoods={homepageMedia.shop_by_mood} />
+          <ShopByMood initialMoods={homepageMedia.moods} />
           
           {/* Hanger Edits: always shown — tagged products first, bestsellers as fallback */}
           {theHangerEdit.length > 0 && (
@@ -81,12 +81,12 @@ export default async function Home() {
             />
           )}
 
-          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical_grid} />
+          <AsymmetricalFeatureGrid initialData={homepageMedia.asymmetrical} />
           
-          <BrandStory />
+          <BrandStory initialData={homepageMedia.brand_story} />
           <Testimonials />
           
-          <InstagramGrid initialData={homepageMedia.instagram_grid} />
+          <InstagramGrid initialData={homepageMedia.instagram} />
         </main>
       </div>
     </ErrorBoundary>
