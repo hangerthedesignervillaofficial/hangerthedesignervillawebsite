@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ProfileCard } from "@/components/ProfileCard";
 import { OrderCard } from "@/components/OrderCard";
@@ -44,7 +44,9 @@ export default function ProfileClientPage({
   const [phone, setPhone] = useState(initialProfile?.phone || "");
   const [orders, setOrders] = useState<OrderType[]>(initialOrders);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"profile" | "orders">("profile");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") === "orders" ? "orders" : "profile";
+  const [activeTab, setActiveTab] = useState<"profile" | "orders">(initialTab);
 
   // Handle saving profile data
   const handleSaveProfile = async (

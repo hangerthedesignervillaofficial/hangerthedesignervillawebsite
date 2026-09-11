@@ -61,7 +61,7 @@ export default function Sidebar() {
 
   const accountLinks = [
     { label: "My Account", href: user ? "/profile" : "/signin", icon: User },
-    { label: "My Orders", href: "/dashboard", icon: Package },
+    { label: "My Orders", href: user ? "/profile?tab=orders" : "/signin", icon: Package },
     { label: "Wishlist", href: "/wishlist", icon: Heart },
     { label: "Contact Us", href: "/contact", icon: Phone },
   ];

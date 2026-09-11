@@ -226,7 +226,7 @@ export function Navbar() {
                   </div>
                   <div className="py-2 flex flex-col">
                     <DropdownMenuItem className="cursor-pointer focus:bg-[#FDFBF7] focus:text-[#2C1810] rounded-none p-0 group">
-                      <Link href="/profile" className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.15em] text-[#2C1810] font-bold px-6 py-3 w-full transition-all group-hover:pl-8">
+                      <Link href="/profile?tab=orders" className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.15em] text-[#2C1810] font-bold px-6 py-3 w-full transition-all group-hover:pl-8">
                         <Package className="h-4 w-4 text-[#D4AF37] stroke-[1.5]" />
                         My Orders
                       </Link>
