@@ -43,7 +43,7 @@ export default function Sidebar() {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const pathname = usePathname();
-  const { isMobile, toggleSidebar } = useSidebar();
+  const { openMobile, setOpenMobile } = useSidebar();
   const { navItems, loading } = useNavigationBuilder();
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [expandedSubCategory, setExpandedSubCategory] = useState<string | null>(null);
@@ -51,9 +51,19 @@ export default function Sidebar() {
   const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Auto-close sidebar on route change
+  useEffect(() => {
+    if (openMobile) {
+      setOpenMobile(false);
+    }
+  }, [pathname]);
+
   if (!mounted) return null;
 
-  const handleClose = () => { if (isMobile) toggleSidebar(); };
+  const handleClose = () => {
+    setOpenMobile(false);
+  };
 
   const discoverLinks = [
     { label: "New Arrivals", href: "/new-arrivals", icon: Sparkles },
@@ -71,15 +81,27 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300"
-        onClick={handleClose}
-      />
+    <AnimatePresence>
+      {openMobile && (
+        <div className="fixed inset-0 z-[100] flex pointer-events-auto">
+          {/* Backdrop */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            onClick={handleClose}
+          />
 
-      {/* Drawer */}
-      <div className="relative w-[340px] max-w-[85vw] h-full bg-[#FDFBF7] shadow-2xl flex flex-col z-10 overflow-y-auto">
+          {/* Drawer */}
+          <motion.div 
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 28, stiffness: 280 }}
+            className="relative w-[340px] max-w-[85vw] h-full bg-[#FDFBF7] shadow-2xl flex flex-col z-10 overflow-y-auto"
+          >
         
         {/* ── HEADER: Brand + Close ────────────────────── */}
         <div className="flex items-center justify-between px-6 pt-7 pb-5 border-b border-[#2C1810]/8">
@@ -407,7 +429,9 @@ export default function Sidebar() {
             <span className="text-[#D4AF37] text-[8px]">◆</span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
-  );
+  )}
+</AnimatePresence>
+);
 }
