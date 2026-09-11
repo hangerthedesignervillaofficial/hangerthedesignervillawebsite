@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, Heart, Check, Tag, X } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, Heart, Check, Tag, X, AlertCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import Image from "next/image";
@@ -23,6 +23,7 @@ export default function CartShoppingPage() {
   const { addToWishlist } = useWishlist();
   const [couponCode, setCouponCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   const handleMoveToWishlist = (item: any) => {
     addToWishlist({
@@ -54,8 +55,6 @@ export default function CartShoppingPage() {
     );
   }
 
-
-
   // Free shipping variables
   const shippingThreshold = 999;
   const shippingCost = 99;
@@ -66,13 +65,23 @@ export default function CartShoppingPage() {
   const tax = discountedSubtotal * 0.18;
   const total = discountedSubtotal + tax + (qualifiesForFreeShipping ? 0 : shippingCost);
 
-  const handleApply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!couponCode.trim()) return;
+  const handleApply = async (e?: React.FormEvent, codeToUse?: string) => {
+    if (e) e.preventDefault();
+    const code = (codeToUse || couponCode).trim().toUpperCase();
+    if (!code) {
+      setCouponError("Please enter a voucher code");
+      return;
+    }
+    setCouponError(null);
     setIsApplying(true);
-    await applyCoupon(couponCode);
+    const res = await applyCoupon(code);
     setIsApplying(false);
-    setCouponCode("");
+    if (!res.success) {
+      setCouponError(res.message);
+    } else {
+      setCouponError(null);
+      setCouponCode("");
+    }
   };
 
   return (
@@ -313,22 +322,33 @@ export default function CartShoppingPage() {
                         </button>
                       </div>
                     ) : (
-                      <form onSubmit={handleApply} className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="PROMO CODE"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                          className="flex-1 bg-white border border-[#D4AF37]/30 px-3 py-2 text-xs font-sans uppercase tracking-widest text-[#2C1810] placeholder:text-[#7A6B5D]/40 focus:outline-none focus:border-[#D4AF37]"
-                        />
-                        <button
-                          type="submit"
-                          disabled={isApplying || !couponCode.trim()}
-                          className="px-4 py-2 bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white font-sans text-[9px] font-bold tracking-widest uppercase transition-colors disabled:opacity-50 cursor-pointer"
-                        >
-                          {isApplying ? "..." : "Apply"}
-                        </button>
-                      </form>
+                      <>
+                        <form onSubmit={handleApply} className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="PROMO CODE"
+                            value={couponCode}
+                            onChange={(e) => {
+                              setCouponCode(e.target.value.toUpperCase());
+                              setCouponError(null);
+                            }}
+                            className="flex-1 bg-white border border-[#D4AF37]/30 px-3 py-2 text-xs font-sans uppercase tracking-widest text-[#2C1810] placeholder:text-[#7A6B5D]/40 focus:outline-none focus:border-[#D4AF37]"
+                          />
+                          <button
+                            type="submit"
+                            disabled={isApplying || !couponCode.trim()}
+                            className="px-4 py-2 bg-[#2C1810] text-[#D4AF37] hover:bg-[#4A0E17] hover:text-white font-sans text-[9px] font-bold tracking-widest uppercase transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            {isApplying ? "..." : "Apply"}
+                          </button>
+                        </form>
+                        {couponError && (
+                          <div className="mt-2 text-xs font-sans text-red-700 flex items-center gap-1.5 p-2 bg-red-50 border border-red-200">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600" />
+                            <span>{couponError}</span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
 
