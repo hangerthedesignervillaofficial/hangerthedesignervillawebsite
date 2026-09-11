@@ -38,8 +38,9 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, clientWidth } = scrollContainerRef.current;
-      const newIndex = Math.round(scrollLeft / (clientWidth * 0.4)); // Approximation based on item width + gap
-      setActiveIndex(Math.min(newIndex, moods.length - 1));
+      // width of item (140) + gap (20) = 160
+      const newIndex = Math.round(scrollLeft / 160);
+      setActiveIndex(Math.min(Math.max(newIndex, 0), moods.length - 1));
     }
   };
 
@@ -129,83 +130,95 @@ export function ShopByMood({ initialMoods }: { initialMoods?: any[] }) {
           </motion.div>
 
           {/* Horizontal snap-scroll container */}
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className="flex overflow-x-auto gap-4 pb-3 pt-1 px-5 scroll-smooth snap-x snap-mandatory hide-scrollbar"
-            style={{
-              WebkitOverflowScrolling: "touch",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
-            {moods.map((mood, index) => (
-              <motion.div
-                key={mood.title}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: index * 0.07 }}
-                className="flex-shrink-0"
-                style={{ scrollSnapAlign: "start" }}
-              >
-                <Link
-                  href={mood.link}
-                  className="group flex flex-col items-center text-center gap-3 w-[120px]"
-                >
-                  {/* Circular image */}
-                  <div
-                    className="relative overflow-hidden bg-[#F0E6D8]/60 border border-[#D4AF37]/20 shadow-md transition-all duration-350 group-active:scale-95"
-                    style={{
-                      width: 112,
-                      height: 112,
-                      borderRadius: "50%",
-                      boxShadow: "0 4px 18px rgba(44,24,16,0.10)",
-                    }}
+          <div className="relative w-full overflow-hidden mb-6">
+            <div
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
+              className="flex overflow-x-auto gap-5 pb-6 pt-6 scroll-smooth snap-x snap-mandatory scrollbar-none"
+              style={{
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                paddingLeft: "calc(50vw - 70px)",
+                paddingRight: "calc(50vw - 70px)",
+              }}
+            >
+              {moods.map((mood, index) => {
+                const isActive = index === activeIndex;
+                return (
+                  <motion.div
+                    key={mood.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="flex-shrink-0 snap-center"
+                    style={{ width: 140 }}
                   >
-                    {/* Ring on hover/active */}
-                    <div
-                      className="absolute inset-0 rounded-full border-2 border-[#D4AF37] opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-300 z-10"
-                      style={{ borderRadius: "50%" }}
-                    />
-
-                    {mood.type === "video" ? (
-                      <video
-                        src={mood.mediaUrl}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div
-                        className="absolute inset-0 bg-cover bg-[center_top] transition-transform duration-500 ease-out group-hover:scale-110 group-active:scale-110"
-                        style={{ backgroundImage: `url(${mood.mediaUrl})` }}
-                      />
-                    )}
-
-                    {/* Subtle inner gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 rounded-full" />
-                  </div>
-
-                  {/* Label */}
-                  <div className="flex flex-col items-center gap-0.5">
-                    <h3
-                      className="font-sans text-[9.5px] font-bold tracking-[0.12em] text-[#2C1810] uppercase leading-tight group-hover:text-[#4A0E17] group-active:text-[#4A0E17] transition-colors"
-                      style={{ maxWidth: 100 }}
+                    <Link
+                      href={mood.link}
+                      className="group flex flex-col items-center text-center gap-4 w-full outline-none"
                     >
-                      {mood.title.split(" ").map((word: string, idx: number) => (
-                        <span key={idx} className="block leading-[1.4]">{word}</span>
-                      ))}
-                    </h3>
-                    <span className="text-[7.5px] font-semibold tracking-[0.1em] text-[#D4AF37] uppercase mt-0.5">
-                      Explore →
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                      {/* Circular image */}
+                      <div
+                        className="relative overflow-visible transition-all duration-500 ease-[0.25,1,0.5,1]"
+                        style={{
+                          width: isActive ? 140 : 116,
+                          height: isActive ? 140 : 116,
+                          opacity: isActive ? 1 : 0.6,
+                          transform: isActive ? 'scale(1)' : 'scale(0.95)',
+                        }}
+                      >
+                        <div className="absolute inset-0 rounded-full overflow-hidden bg-[#F0E6D8]/60 shadow-[0_8px_30px_rgba(44,24,16,0.12)]">
+                          {mood.type === "video" ? (
+                            <video
+                              src={mood.mediaUrl}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div
+                              className="absolute inset-0 bg-cover bg-[center_top] transition-transform duration-700 ease-out group-hover:scale-110 group-active:scale-110"
+                              style={{ backgroundImage: `url(${mood.mediaUrl})` }}
+                            />
+                          )}
+                          {/* Subtle inner gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
+                        </div>
+                        
+                        {/* Ring on hover/active */}
+                        <div
+                          className={`absolute -inset-1.5 rounded-full border border-[#D4AF37] transition-all duration-500 ease-out z-10 ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 group-hover:opacity-50 group-active:opacity-100'}`}
+                        />
+                      </div>
+
+                      {/* Label */}
+                      <div 
+                        className="flex flex-col items-center gap-1 transition-all duration-500"
+                        style={{
+                          opacity: isActive ? 1 : 0.4,
+                          transform: isActive ? 'translateY(0)' : 'translateY(-4px)'
+                        }}
+                      >
+                        <h3
+                          className="font-sans text-[10px] font-bold tracking-[0.15em] text-[#2C1810] uppercase leading-tight transition-colors"
+                        >
+                          {mood.title.split(" ").map((word: string, idx: number) => (
+                            <span key={idx} className="block leading-[1.4]">{word}</span>
+                          ))}
+                        </h3>
+                        <span className={`text-[8px] font-semibold tracking-[0.1em] text-[#D4AF37] uppercase transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                          Explore →
+                        </span>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Scroll hint dots */}
