@@ -22,7 +22,6 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Sidebar as ShadcnSidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
 import { SidebarCategoryProducts } from "./SidebarCategoryProducts";
 import { HangerLogo } from "@/components/HangerLogo";
@@ -52,12 +51,31 @@ export default function Sidebar() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Auto-close sidebar on route change
+  // Auto-close on route change
+  useEffect(() => {
+    setOpenMobile(false);
+  }, [pathname, setOpenMobile]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenMobile(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [setOpenMobile]);
+
+  // Lock body scroll on mobile when open
   useEffect(() => {
     if (openMobile) {
-      setOpenMobile(false);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  }, [pathname]);
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [openMobile]);
 
   if (!mounted) return null;
 
@@ -83,14 +101,14 @@ export default function Sidebar() {
   return (
     <AnimatePresence>
       {openMobile && (
-        <div className="fixed inset-0 z-[100] flex pointer-events-auto">
+        <div className="xl:hidden fixed inset-0 z-[100] flex pointer-events-auto">
           {/* Backdrop */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
             onClick={handleClose}
           />
 
@@ -100,7 +118,7 @@ export default function Sidebar() {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 280 }}
-            className="relative w-[340px] max-w-[85vw] h-full bg-[#FDFBF7] shadow-2xl flex flex-col z-10 overflow-y-auto"
+            className="relative w-[340px] max-w-[85vw] h-full bg-[#FDFBF7] shadow-2xl flex flex-col z-10 overflow-y-auto scrollbar-none select-none text-[#2C1810]"
           >
         
         {/* ── HEADER: Brand + Close ────────────────────── */}
@@ -429,9 +447,9 @@ export default function Sidebar() {
             <span className="text-[#D4AF37] text-[8px]">◆</span>
           </div>
         </div>
-      </motion.div>
-    </div>
-  )}
-</AnimatePresence>
-);
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
 }

@@ -31,7 +31,7 @@ export function Navbar() {
   const { isAdmin } = useAdmin();
   const { totalItems } = useCart();
   const { totalWishlistItems } = useWishlist();
-  const { toggleSidebar, setOpenMobile } = useSidebar();
+  const { openMobile, setOpenMobile } = useSidebar();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -132,7 +132,7 @@ export function Navbar() {
         {/* ─── DESKTOP HEADER ─────────────────────────────────────────── */}
         <div
           ref={navRef}
-          className="hidden lg:grid lg:grid-cols-[1fr_auto_1fr] items-center px-4 xl:px-8 h-20 max-w-[1600px] mx-auto"
+          className="hidden xl:grid xl:grid-cols-[1fr_auto_1fr] items-center px-8 h-20 max-w-[1600px] mx-auto"
         >
           {/* Col 1 — Left nav links */}
           <nav className="flex items-center justify-start h-full overflow-hidden">
@@ -303,7 +303,7 @@ export function Navbar() {
         </div>
 
         {/* ─── MOBILE HEADER ──────────────────────────────────────────── */}
-        <div className="lg:hidden bg-[#FDFBF7] shadow-sm">
+        <div className="xl:hidden bg-[#FDFBF7] shadow-sm">
           <div className="grid grid-cols-[1fr_auto_1fr] items-center px-3 md:px-6 h-[64px] sm:h-[70px] w-full">
             {/* Left: Hamburger */}
             <div className="flex justify-start">
@@ -311,7 +311,7 @@ export function Navbar() {
                 variant="ghost"
                 size="icon"
                 className="text-[#2C1810] hover:text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all duration-300 rounded-full h-10 w-10 flex items-center justify-center active:scale-90 cursor-pointer"
-                onClick={() => setOpenMobile((prev) => !prev)}
+                onClick={() => setOpenMobile(!openMobile)}
               >
                 <Menu className="h-5 w-5 sm:h-[22px] sm:w-[22px] stroke-[1.5]" />
                 <span className="sr-only">Toggle menu</span>
@@ -433,7 +433,7 @@ export function Navbar() {
       {/* ─── DESKTOP MEGA MENU (Full-screen slidebar, outside sticky header) ─── */}
       {/* Backdrop */}
       <div
-        className={`hidden lg:block fixed inset-0 top-20 bg-[#1a0f09]/40 backdrop-blur-[2px] z-40 transition-all duration-400 ${
+        className={`hidden xl:block fixed inset-0 top-20 bg-[#1a0f09]/40 backdrop-blur-[2px] z-40 transition-all duration-400 ${
           activeMenu ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setActiveMenu(null)}
@@ -442,7 +442,7 @@ export function Navbar() {
       {/* Mega Panel */}
       <div
         ref={megaMenuRef}
-        className={`hidden lg:block fixed left-0 right-0 top-20 z-[45] bg-[#FDFBF7] border-b-2 border-[#D4AF37]/30 shadow-[0_20px_60px_rgba(44,24,16,0.18)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`hidden xl:block fixed left-0 right-0 top-20 z-[45] bg-[#FDFBF7] border-b-2 border-[#D4AF37]/30 shadow-[0_20px_60px_rgba(44,24,16,0.18)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           activeMenu
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-4 pointer-events-none"
