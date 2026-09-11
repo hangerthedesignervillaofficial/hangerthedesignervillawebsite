@@ -816,3 +816,4 @@ export function ProductFormModal({
     </Dialog>
   );
 }
+console.log('Force cache invalidation');
