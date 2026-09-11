@@ -131,6 +131,7 @@ export function CheckoutClient() {
       }
       
       toast.success("Order placed successfully!");
+      router.refresh();
       router.push(`/checkout/success?checkout_id=${order.id}`);
 
     } catch (error) {
