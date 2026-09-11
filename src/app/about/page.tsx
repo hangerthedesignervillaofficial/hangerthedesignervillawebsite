@@ -88,15 +88,19 @@ export default function AboutPage() {
             <div>
               <p className="font-bold mb-2">Location</p>
               <p className="text-[#FDFBF7] font-normal leading-loose">
-                123 Luxury Avenue<br/>
-                Fashion District, 110001
+                GF-67/68, GROUND FLOOR<br/>
+                GLOBAL FOYER MALL, PALAM VIHAR<br/>
+                GURUGRAM, HARYANA
               </p>
+              <a href="tel:+919999167840" className="text-[#D4AF37] font-bold text-xs tracking-wider block mt-2 hover:underline">
+                +91 9999167840
+              </a>
             </div>
             <div>
-              <p className="font-bold mb-2">Hours</p>
+              <p className="font-bold mb-2">Boutique Hours</p>
               <p className="text-[#FDFBF7] font-normal leading-loose">
-                Mon - Sat: 11:00 AM - 8:00 PM<br/>
-                Sun: By Appointment
+                Mon - Sun: 10:30 AM - 8:30 PM<br/>
+                Private Styling by Appointment
               </p>
             </div>
           </div>

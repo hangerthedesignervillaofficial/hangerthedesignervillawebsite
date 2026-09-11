@@ -142,7 +142,11 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Boutique Address</h3>
-                    <p className="text-[#2C1810]">123 Luxury Avenue<br />Design District<br />Mumbai, 400001</p>
+                    <p className="text-[#2C1810] font-medium leading-relaxed">
+                      GF-67/68, GROUND FLOOR,<br />
+                      GLOBAL FOYER MALL, PALAM VIHAR,<br />
+                      GURUGRAM, HARYANA
+                    </p>
                   </div>
                 </div>
 
@@ -151,9 +155,11 @@ export default function ContactPage() {
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Phone</h3>
-                    <p className="text-[#2C1810]">+91 98765 43210</p>
-                    <p className="text-[#7A6B5D] text-sm mt-1">Mon-Sat, 10am to 7pm</p>
+                    <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Phone & WhatsApp</h3>
+                    <a href="tel:+919999167840" className="text-[#2C1810] hover:text-[#D4AF37] font-bold text-base transition-colors">
+                      +91 9999167840
+                    </a>
+                    <p className="text-[#7A6B5D] text-xs mt-1">Mon - Sun, 10:30 AM to 8:30 PM</p>
                   </div>
                 </div>
 
@@ -163,16 +169,21 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Email</h3>
-                    <p className="text-[#2C1810]">hangerthedesignervillaofficial@gmail.com</p>
+                    <a href="mailto:hangerthedesignervillaofficial@gmail.com" className="text-[#2C1810] hover:text-[#D4AF37] transition-colors">
+                      hangerthedesignervillaofficial@gmail.com
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="aspect-[4/3] relative w-full bg-[#f4f0ea] border border-[#D4AF37]/20">
-               <div className="absolute inset-0 flex items-center justify-center">
-                 <p className="font-serif text-[#7A6B5D]/50 text-xl italic">Google Map Integration</p>
-               </div>
+            <div className="aspect-[4/3] relative w-full bg-[#f4f0ea] border border-[#D4AF37]/20 overflow-hidden">
+               <iframe
+                 title="Hanger Location"
+                 src="https://maps.google.com/maps?q=Global+Foyer+Mall+Palam+Vihar+Gurugram&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                 className="w-full h-full border-0"
+                 loading="lazy"
+               />
             </div>
           </div>
         </div>

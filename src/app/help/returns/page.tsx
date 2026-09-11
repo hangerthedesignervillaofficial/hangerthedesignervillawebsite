@@ -88,10 +88,18 @@ export default function ReturnsPage() {
             </div>
           </section>
 
-          <section className="text-center pt-8">
-            <Link href="/help/contact" className="inline-flex items-center justify-center bg-[#2C1810] text-[#D4AF37] px-8 py-4 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#4A0E17] hover:text-white transition-colors">
-              Request a Return
-            </Link>
+          <section className="text-center pt-8 space-y-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/help/contact" className="inline-flex items-center justify-center bg-[#2C1810] text-[#D4AF37] px-8 py-4 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#4A0E17] hover:text-white transition-colors">
+                Request a Return Online
+              </Link>
+              <a href="https://wa.me/919999167840?text=Hi%20Hanger%20Team,%20I%20would%20like%20to%20request%20a%20return%20or%20exchange." target="_blank" rel="noreferrer" className="inline-flex items-center justify-center border border-[#D4AF37] text-[#2C1810] px-8 py-4 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#D4AF37]/10 transition-colors">
+                WhatsApp Concierge: +91 9999167840
+              </a>
+            </div>
+            <p className="font-sans text-[11px] text-[#7A6B5D] max-w-md mx-auto pt-2">
+              In-person returns and exchanges are also accepted at our Flagship Store: GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram.
+            </p>
           </section>
         </div>
 

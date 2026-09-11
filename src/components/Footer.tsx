@@ -221,14 +221,28 @@ export function Footer() {
             </div>
             </div>
 
-            {/* Payment Methods */}
-            <div className="text-center md:text-right flex flex-col items-center md:items-end gap-3 mt-4 md:mt-0 pt-6 md:pt-0 border-t border-[#D4AF37]/10 md:border-0">
-              <h4 className="font-sans text-[10px] md:text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-1 md:mb-2">We Accept</h4>
-              <div className="flex items-center justify-center md:justify-end gap-2 text-[6px] md:text-[6px] font-sans font-bold tracking-wider text-gray-400">
-                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#1A1F71]">VISA</div>
-                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#EB001B]">MC</div>
-                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#0070CD]">AMEX</div>
-                <div className="w-8 h-5 border border-gray-200/60 flex items-center justify-center bg-white rounded-sm text-[#003087]">PAYPAL</div>
+            {/* Payment & Contact Info */}
+            <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 pt-6 border-t border-[#D4AF37]/15">
+              <div className="text-center md:text-left">
+                <p className="font-sans text-[9px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase mb-1.5">
+                  FLAGSHIP STORE & STUDIO
+                </p>
+                <p className="font-sans text-[11px] text-[#7A6B5D] leading-relaxed">
+                  GF-67/68, GROUND FLOOR, GLOBAL FOYER MALL, PALAM VIHAR, GURUGRAM
+                </p>
+                <p className="font-sans text-[11px] text-[#2C1810] font-medium mt-1">
+                  Concierge: <a href="tel:+919999167840" className="text-[#D4AF37] hover:underline font-bold">+91 9999167840</a>
+                </p>
+              </div>
+
+              <div className="text-center md:text-right flex flex-col items-center md:items-end gap-2.5">
+                <h4 className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#2C1810] uppercase">We Accept</h4>
+                <div className="flex items-center justify-center md:justify-end gap-2 text-[7px] font-sans font-bold tracking-wider text-gray-400">
+                  <div className="w-9 h-6 border border-gray-200/80 flex items-center justify-center bg-white rounded-sm text-[#1A1F71] shadow-xs">VISA</div>
+                  <div className="w-9 h-6 border border-gray-200/80 flex items-center justify-center bg-white rounded-sm text-[#EB001B] shadow-xs">MC</div>
+                  <div className="w-9 h-6 border border-gray-200/80 flex items-center justify-center bg-white rounded-sm text-[#0070CD] shadow-xs">AMEX</div>
+                  <div className="w-9 h-6 border border-gray-200/80 flex items-center justify-center bg-white rounded-sm text-[#003087] shadow-xs">UPI</div>
+                </div>
               </div>
             </div>
           </div>

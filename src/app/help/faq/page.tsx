@@ -34,15 +34,28 @@ const faqs = [
     ]
   },
   {
+    category: "Store & Concierge",
+    questions: [
+      {
+        q: "Where is the Hanger flagship boutique located?",
+        a: "Our flagship villa is located at GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram, Haryana. We welcome you to experience our exclusive collections in person Monday through Sunday, 10:30 AM to 8:30 PM.",
+      },
+      {
+        q: "How can I contact customer care or book a styling appointment?",
+        a: "You can reach our dedicated concierge team directly by calling or messaging us on WhatsApp at +91 9999167840, or via email at hangerthedesignervillaofficial@gmail.com.",
+      },
+    ]
+  },
+  {
     category: "Product & Styling",
     questions: [
       {
-        q: "Are the colors on the website exactly what I will receive?",
-        a: "We make every effort to display the colors of our silhouettes as accurately as possible. However, as computer monitors and screens vary, we cannot guarantee that your monitor's display of any color will be completely accurate.",
+        q: "Are the colors and craftsmanship on the website true to reality?",
+        a: "Every silhouette is photographed under studio lighting with exact color calibration. As each piece features artisanal hand-embroidery and pure fabrics, slight organic variations in weave and tone reflect true bespoke luxury.",
       },
       {
-        q: "Do you offer private styling appointments?",
-        a: "Absolutely. We offer exclusive virtual or in-person styling consultations at our Villa. Please contact our concierge team to schedule an appointment with our head stylist.",
+        q: "Can garments be customized or altered to my measurements?",
+        a: "Yes! We provide complimentary basic alterations and custom made-to-measure tailoring for select designer silhouettes. Contact our styling concierge at +91 9999167840 before placing your order.",
       }
     ]
   }

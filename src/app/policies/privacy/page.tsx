@@ -70,10 +70,16 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-[11px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-4 border-l-2 border-[#D4AF37] pl-3">
-              5. Your Rights
+              5. Your Rights & Grievance Contact
             </h2>
-            <p>
-              You have the right to access, correct, or delete your personal information. If you wish to exercise these rights, please contact our Data Protection Officer at privacy@hangerthedesignervilla.com.
+            <p className="mb-2">
+              You have the right to access, correct, or delete your personal information. If you wish to exercise these rights or have any questions regarding your data privacy, please contact us:
+            </p>
+            <p className="text-[#2C1810] font-medium leading-relaxed mt-3">
+              <strong>Hanger The Designer Villa</strong><br/>
+              GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram, Haryana<br/>
+              Phone: +91 9999167840<br/>
+              Email: hangerthedesignervillaofficial@gmail.com
             </p>
           </section>
 

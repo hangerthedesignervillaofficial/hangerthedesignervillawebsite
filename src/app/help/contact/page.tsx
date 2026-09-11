@@ -76,8 +76,8 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-serif text-lg text-[#2C1810] uppercase tracking-wider mb-2">Call Us</h3>
                 <p className="font-sans text-sm text-[#7A6B5D] mb-1">Available Mon - Sat, 11:00 AM - 8:00 PM.</p>
-                <a href="tel:+919876543210" className="font-sans text-[11px] font-bold tracking-widest text-[#D4AF37] hover:text-[#2C1810] transition-colors">
-                  +91 98765 43210
+                <a href="tel:+919999167840" className="font-sans text-[12px] font-bold tracking-widest text-[#D4AF37] hover:text-[#2C1810] transition-colors">
+                  +91 9999167840
                 </a>
               </div>
             </div>
@@ -87,14 +87,14 @@ export default function ContactPage() {
                 <MapPin className="h-5 w-5 text-[#D4AF37] stroke-[1.5]" />
               </div>
               <div>
-                <h3 className="font-serif text-lg text-[#2C1810] uppercase tracking-wider mb-2">The Villa</h3>
+                <h3 className="font-serif text-lg text-[#2C1810] uppercase tracking-wider mb-2">The Villa Flagship Store</h3>
                 <p className="font-sans text-sm text-[#7A6B5D] mb-2 leading-relaxed">
-                  123 Luxury Avenue<br/>
-                  Fashion District, 110001<br/>
-                  New Delhi, India
+                  GF-67/68, GROUND FLOOR,<br/>
+                  GLOBAL FOYER MALL, PALAM VIHAR,<br/>
+                  GURUGRAM, HARYANA
                 </p>
                 <p className="font-sans text-[10px] font-bold tracking-widest text-[#D4AF37] uppercase">
-                  By Appointment Only
+                  Open 7 Days a Week (10:30 AM - 8:30 PM)
                 </p>
               </div>
             </div>

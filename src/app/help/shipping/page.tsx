@@ -85,13 +85,21 @@ export default function ShippingPage() {
             </div>
           </section>
 
-          <section className="text-center pt-8">
-            <p className="font-sans text-sm text-[#7A6B5D] mb-6">
-              Need assistance tracking an existing order?
+          <section className="text-center pt-8 space-y-4">
+            <p className="font-sans text-sm text-[#7A6B5D]">
+              Need urgent express delivery or wish to collect your piece directly from our store?
             </p>
-            <Link href="/help/contact" className="inline-flex items-center justify-center bg-transparent border border-[#2C1810] text-[#2C1810] px-8 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#2C1810] hover:text-[#D4AF37] transition-colors">
-              Contact Customer Care
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/help/contact" className="inline-flex items-center justify-center bg-[#2C1810] text-[#D4AF37] px-8 py-3.5 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#4A0E17] hover:text-white transition-colors">
+                Contact Customer Care
+              </Link>
+              <a href="tel:+919999167840" className="inline-flex items-center justify-center border border-[#D4AF37] text-[#2C1810] px-8 py-3.5 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#D4AF37]/10 transition-colors">
+                Call Concierge: +91 9999167840
+              </a>
+            </div>
+            <p className="font-sans text-[11px] text-[#7A6B5D] max-w-md mx-auto pt-2">
+              Same-day boutique pickup is available at GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram.
+            </p>
           </section>
         </div>
 
