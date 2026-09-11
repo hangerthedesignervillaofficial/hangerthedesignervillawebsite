@@ -17,7 +17,7 @@ export async function removeCartItem(cartItemId: number) {
     return true;
   } catch (error) {
     console.error('Error in removeCartItem:', error);
-    toast.error('Something went wrong');
+    
     return false;
   }
 }

@@ -29,7 +29,7 @@ export async function updateCartItemQuantity(
     return data as CartItemType;
   } catch (error) {
     console.error('Error in updateCartItemQuantity:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

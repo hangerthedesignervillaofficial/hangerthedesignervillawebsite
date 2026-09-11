@@ -27,7 +27,7 @@ export async function getActiveCart() {
     return data as CartType | null;
   } catch (error) {
     console.error('Error in getActiveCart:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }
@@ -58,7 +58,7 @@ export async function createCart() {
     return data as CartType;
   } catch (error) {
     console.error('Error in createCart:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }
@@ -108,7 +108,7 @@ export async function getCartItems(cartId: number) {
     ) as (CartItemType & { product: ProductType })[];
   } catch (error) {
     console.error('Error in getCartItems:', error);
-    toast.error('Something went wrong');
+    
     return [];
   }
 }
@@ -176,7 +176,7 @@ export async function addItemToCart(
     }
   } catch (error) {
     console.error('Error in addItemToCart:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }
@@ -208,7 +208,7 @@ export async function updateCartItemQuantity(
     return data as CartItemType;
   } catch (error) {
     console.error('Error in updateCartItemQuantity:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }
@@ -230,7 +230,7 @@ export async function removeCartItem(cartItemId: number) {
     return true;
   } catch (error) {
     console.error('Error in removeCartItem:', error);
-    toast.error('Something went wrong');
+    
     return false;
   }
 }
@@ -252,7 +252,7 @@ export async function clearCart(cartId: number) {
     return true;
   } catch (error) {
     console.error('Error in clearCart:', error);
-    toast.error('Something went wrong');
+    
     return false;
   }
 }
@@ -279,7 +279,7 @@ export async function findCartItemByProductId(
     return data as CartItemType | null;
   } catch (error) {
     console.error('Error in findCartItemByProductId:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

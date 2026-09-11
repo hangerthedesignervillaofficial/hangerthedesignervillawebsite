@@ -24,7 +24,7 @@ export async function updateProfile(
     return data as ProfileType;
   } catch (error) {
     console.error('Error in updateProfile:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

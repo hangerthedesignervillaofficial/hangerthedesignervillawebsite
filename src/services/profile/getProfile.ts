@@ -19,7 +19,7 @@ export async function getProfile(userId: string): Promise<ProfileType | null> {
     return data as ProfileType | null;
   } catch (error) {
     console.error('Error in getProfile:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

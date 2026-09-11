@@ -27,7 +27,7 @@ export const reviewService = {
       return (data as ReviewType[]) || [];
     } catch (error) {
       console.error('Error in getReviewsByProduct:', error);
-      toast.error('Something went wrong');
+      
       return [];
     }
   },
@@ -49,7 +49,7 @@ export const reviewService = {
       return data as ReviewType;
     } catch (error) {
       console.error('Error in getReviewById:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -92,7 +92,7 @@ export const reviewService = {
       return data as ReviewType;
     } catch (error) {
       console.error('Error in createReview:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -130,7 +130,7 @@ export const reviewService = {
       return data as ReviewType;
     } catch (error) {
       console.error('Error in updateReview:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -158,7 +158,7 @@ export const reviewService = {
       return true;
     } catch (error) {
       console.error('Error in deleteReview:', error);
-      toast.error('Something went wrong');
+      
       return false;
     }
   },

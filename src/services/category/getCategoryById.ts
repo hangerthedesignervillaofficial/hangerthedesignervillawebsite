@@ -21,7 +21,7 @@ export async function getCategoryById(
     return data as CategoryType;
   } catch (error) {
     console.error('Error in getCategoryById:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

@@ -64,7 +64,7 @@ export async function addItemToCart(
     }
   } catch (error) {
     console.error('Error in addItemToCart:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

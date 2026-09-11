@@ -23,7 +23,7 @@ export async function findCartItemByProductId(
     return data as CartItemType | null;
   } catch (error) {
     console.error('Error in findCartItemByProductId:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

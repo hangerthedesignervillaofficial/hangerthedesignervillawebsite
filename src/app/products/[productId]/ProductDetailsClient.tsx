@@ -792,7 +792,7 @@ export default function ProductDetailsClient({
               
               <div className="flex overflow-x-auto gap-4 md:gap-6 pb-6 snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {relatedProducts.map((relProduct) => (
-                  <Link key={relProduct.product_id} href={`/products/${relProduct.product_id}`} className="group block min-w-[45%] md:min-w-[28%] lg:min-w-[22%] shrink-0 snap-start">
+                  <Link key={relProduct.product_id} href={`/products/${relProduct.product_id}`} className="group block w-[65vw] sm:w-[45vw] md:w-[28vw] lg:w-[22vw] max-w-[280px] shrink-0 snap-start">
                     <div className="relative aspect-[3/4] bg-[#f4f0ea] mb-4 overflow-hidden shadow-sm border border-[#D4AF37]/5">
                       <Image 
                         src={relProduct.image || "/placeholder-product.jpg"} 

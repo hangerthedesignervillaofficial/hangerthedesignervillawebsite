@@ -10,6 +10,8 @@ import { ErrorState } from '@/components/ErrorState'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { supabase } from '@/lib/supabase/client'
+import { useEffect } from 'react'
 
 const sortOptions = [
   { label: 'NEWEST', value: 'newest' },
@@ -31,10 +33,29 @@ export default function AllProductsClient() {
 
   const [sortBy, setSortBy] = useState('newest')
   const [showFilters, setShowFilters] = useState(false)
+  const [categoryName, setCategoryName] = useState<string | null>(null)
 
   const searchParams = useSearchParams()
   const tagFilter = searchParams.get('tag')
   const categoryFilter = searchParams.get('category')
+
+  useEffect(() => {
+    async function fetchCategoryName() {
+      if (categoryFilter) {
+        const { data } = await supabase
+          .from("categories")
+          .select("name")
+          .eq("id", categoryFilter)
+          .single();
+        if (data && data.name) {
+          setCategoryName(data.name);
+        }
+      } else {
+        setCategoryName(null);
+      }
+    }
+    fetchCategoryName();
+  }, [categoryFilter]);
 
   // Filter and sort products
   const sortedProducts = useMemo(() => {
@@ -111,7 +132,7 @@ export default function AllProductsClient() {
                 </span>
               </div>
               <h1 className="font-serif text-3xl md:text-5xl font-normal tracking-wide uppercase mb-3 leading-none text-[#2C1810]" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
-                All Products
+                {categoryName ? categoryName : "All Products"}
               </h1>
               <p className="font-sans text-xs text-[#7A6B5D] leading-relaxed max-w-lg">
                 Explore our complete collection of luxury pieces — from timeless clothing to statement accessories, each handpicked for the discerning eye.

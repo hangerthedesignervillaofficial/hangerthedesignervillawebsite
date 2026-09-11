@@ -30,7 +30,7 @@ export const profileService = {
       return data as ProfileType;
     } catch (error) {
       console.error('Error in getProfileById:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -50,7 +50,7 @@ export const profileService = {
       return await this.getProfileById(user.id);
     } catch (error) {
       console.error('Error in getCurrentProfile:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -86,7 +86,7 @@ export const profileService = {
       return profile as ProfileType;
     } catch (error) {
       console.error('Error in updateProfile:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -109,7 +109,7 @@ export const profileService = {
       return await this.updateProfile(user.id, data);
     } catch (error) {
       console.error('Error in updateCurrentProfile:', error);
-      toast.error('Something went wrong');
+      
       return null;
     }
   },
@@ -347,7 +347,7 @@ export const profileService = {
       return true;
     } catch (error) {
       console.error('Error in deleteProfile:', error);
-      toast.error('Something went wrong');
+      
       return false;
     }
   },
@@ -367,7 +367,7 @@ export const profileService = {
       return await this.deleteProfile(user.id);
     } catch (error) {
       console.error('Error in deleteCurrentProfile:', error);
-      toast.error('Something went wrong');
+      
       return false;
     }
   },

@@ -25,7 +25,7 @@ export async function createProfile(
     return data as ProfileType;
   } catch (error) {
     console.error('Error in createProfile:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

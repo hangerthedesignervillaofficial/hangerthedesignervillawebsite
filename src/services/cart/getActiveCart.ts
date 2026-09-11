@@ -26,7 +26,7 @@ export async function getActiveCart() {
     return data as CartType | null;
   } catch (error) {
     console.error('Error in getActiveCart:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

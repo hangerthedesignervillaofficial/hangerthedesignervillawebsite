@@ -37,7 +37,7 @@ export async function getCartItems(cartId: number) {
     ) as (CartItemType & { product: ProductType })[];
   } catch (error) {
     console.error('Error in getCartItems:', error);
-    toast.error('Something went wrong');
+    
     return [];
   }
 }

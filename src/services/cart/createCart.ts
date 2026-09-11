@@ -28,7 +28,7 @@ export async function createCart() {
     return data as CartType;
   } catch (error) {
     console.error('Error in createCart:', error);
-    toast.error('Something went wrong');
+    
     return null;
   }
 }

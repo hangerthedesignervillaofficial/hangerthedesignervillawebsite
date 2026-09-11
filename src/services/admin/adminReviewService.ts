@@ -40,7 +40,7 @@ export const adminReviewService = {
       return true;
     } catch (error) {
       console.error("Error in updateReviewStatus:", error);
-      toast.error("Something went wrong");
+      
       return false;
     }
   },
@@ -62,7 +62,7 @@ export const adminReviewService = {
       return true;
     } catch (error) {
       console.error("Error in deleteReview:", error);
-      toast.error("Something went wrong");
+      
       return false;
     }
   }
