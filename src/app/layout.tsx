@@ -13,7 +13,7 @@ import { Playfair_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { PhoneNumberModal } from "@/components/PhoneNumberModal";
 import { PresenceTracker } from "@/components/PresenceTracker";
-import { ReactPolyfill } from "@/components/ReactPolyfill";
+
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-heading', weight: ['400', '500', '600', '700', '800', '900'] });
@@ -34,7 +34,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
       </head>
       <body className="bg-background min-h-screen" suppressHydrationWarning>
-        <ReactPolyfill />
+
         <ErrorBoundary>
           <TanStackQueryProvider>
             <AuthProvider>
