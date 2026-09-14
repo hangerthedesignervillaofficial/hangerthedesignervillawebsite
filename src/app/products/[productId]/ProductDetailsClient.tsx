@@ -10,7 +10,7 @@ import Link from "next/link";
 import {
   ShoppingCart, Heart, Minus, Plus, Truck, Shield, RotateCcw,
   Check, Bell, ChevronDown, Star, ZoomIn, X, Play, Pause,
-  Maximize2, Minimize2, Award, IndianRupee, Gem,
+  Maximize2, Minimize2, Award, IndianRupee, Gem, Volume2, VolumeX,
 } from "lucide-react";
 import { NotifyMeModal } from "@/components/NotifyMeModal";
 import { reviewService } from "@/services/review/reviewService";
@@ -97,40 +97,370 @@ function ImageZoomModal({ src, alt, onClose }: { src: string; alt: string; onClo
 }
 
 // ═══════════════════════════════════════════════════
-// FLOATING VIDEO
 // ═══════════════════════════════════════════════════
-function ProductVideoPlayer({ videoUrl, onDismiss }: { videoUrl: string; onDismiss: () => void }) {
-  const ref = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(true);
-  const [expanded, setExpanded] = useState(false);
-  useEffect(() => { ref.current?.play().catch(() => setPlaying(false)); }, []);
-  const toggle = () => { if (!ref.current) return; if (playing) { ref.current.pause(); setPlaying(false); } else { ref.current.play(); setPlaying(true); } };
+// LUXURY FLOATING & DRAGGABLE VIDEO PLAYER (REEL)
+// ═══════════════════════════════════════════════════
+interface ProductVideoPlayerProps {
+  videoUrl: string;
+  product?: ProductType;
+  onAddToCart?: () => void;
+  onDismiss: () => void;
+}
 
-  if (expanded) return (
-    <div className="fixed inset-0 z-[500] bg-black/96 flex items-center justify-center">
-      <button onClick={() => setExpanded(false)} className="absolute top-5 right-16 text-white/60 hover:text-white w-9 h-9 flex items-center justify-center border border-white/10"><Minimize2 className="w-4 h-4"/></button>
-      <button onClick={onDismiss} className="absolute top-5 right-5 text-white/60 hover:text-white w-9 h-9 flex items-center justify-center border border-white/10"><X className="w-4 h-4"/></button>
-      <video ref={ref} src={videoUrl} autoPlay loop playsInline className="max-w-[90vw] max-h-[90vh]" onClick={toggle}/>
-    </div>
-  );
+function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: ProductVideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const modalVideoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [dragBounds, setDragBounds] = useState({ left: -300, right: 15, top: -500, bottom: 40 });
+  const isDragging = useRef(false);
+  const [addedDirectly, setAddedDirectly] = useState(false);
+
+  // Compute dynamic drag boundaries relative to viewport
+  useEffect(() => {
+    const updateBounds = () => {
+      if (typeof window === "undefined") return;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setDragBounds({
+        left: -(w - 180),
+        right: 15,
+        top: -(h - 300),
+        bottom: 50,
+      });
+    };
+    updateBounds();
+    window.addEventListener("resize", updateBounds);
+    return () => window.removeEventListener("resize", updateBounds);
+  }, []);
+
+  // Autoplay attempt
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+      videoRef.current.play().catch(() => setPlaying(false));
+    }
+  }, [isMuted]);
+
+  // Sync state between mini and expanded video
+  useEffect(() => {
+    if (expanded && modalVideoRef.current && videoRef.current) {
+      modalVideoRef.current.currentTime = videoRef.current.currentTime;
+      modalVideoRef.current.muted = isMuted;
+      modalVideoRef.current.play().catch(() => {});
+    } else if (!expanded && videoRef.current && modalVideoRef.current) {
+      videoRef.current.currentTime = modalVideoRef.current.currentTime;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [expanded, isMuted]);
+
+  const togglePlay = () => {
+    const v = expanded ? modalVideoRef.current : videoRef.current;
+    if (!v) return;
+    if (playing) {
+      v.pause();
+      setPlaying(false);
+    } else {
+      v.play().catch(() => {});
+      setPlaying(true);
+    }
+  };
+
+  const toggleMute = () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    if (videoRef.current) videoRef.current.muted = nextMuted;
+    if (modalVideoRef.current) modalVideoRef.current.muted = nextMuted;
+  };
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const target = e.currentTarget;
+    if (target.duration) {
+      setProgress((target.currentTime / target.duration) * 100);
+    }
+  };
+
+  const handleAddFromReel = () => {
+    if (onAddToCart) {
+      onAddToCart();
+      setAddedDirectly(true);
+      setTimeout(() => setAddedDirectly(false), 2000);
+    }
+  };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 60 }}
-      className="fixed bottom-[80px] lg:bottom-6 right-4 lg:right-6 z-[300] w-[130px] sm:w-[150px] shadow-2xl border border-[#D4AF37]/30 bg-black overflow-hidden">
-      <div className="absolute inset-0 z-10 hover:flex hidden items-center justify-center bg-black/30">
-        <button onClick={toggle} className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center text-white">
-          {playing ? <Pause className="w-3.5 h-3.5"/> : <Play className="w-3.5 h-3.5 translate-x-0.5"/>}
-        </button>
-      </div>
-      <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-1.5 bg-gradient-to-b from-black/70 to-transparent">
-        <span className="text-[7px] text-white/70 font-sans tracking-widest uppercase">Campaign</span>
-        <div className="flex gap-0.5">
-          <button onClick={() => setExpanded(true)} className="w-5 h-5 flex items-center justify-center text-white/60 hover:text-white"><Maximize2 className="w-2.5 h-2.5"/></button>
-          <button onClick={onDismiss} className="w-5 h-5 flex items-center justify-center text-white/60 hover:text-white"><X className="w-2.5 h-2.5"/></button>
-        </div>
-      </div>
-      <video ref={ref} src={videoUrl} autoPlay muted loop playsInline className="w-full aspect-[9/16] object-cover"/>
-    </motion.div>
+    <>
+      {/* ─── FULLSCREEN / EXPANDED REEL MODAL ─── */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[600] bg-black/92 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6"
+            onClick={() => setExpanded(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.88, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.88, y: 30, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 280 }}
+              className="relative w-full max-w-[400px] h-[85vh] max-h-[780px] rounded-3xl overflow-hidden bg-black border border-[#D4AF37]/40 shadow-[0_25px_80px_rgba(0,0,0,0.9),0_0_50px_rgba(212,175,55,0.2)] flex flex-col justify-between select-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Header Bar */}
+              <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-3.5 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-[#D4AF37]/35 text-[9px] font-sans font-bold tracking-[0.2em] text-[#D4AF37] uppercase">
+                  <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
+                  STUDIO LOOKBOOK
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* Sound Toggle */}
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    title={isMuted ? "Unmute" : "Mute"}
+                    className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 hover:border-[#D4AF37] text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+                  >
+                    {isMuted ? <VolumeX className="w-4 h-4 text-white/70 stroke-[2]" /> : <Volume2 className="w-4 h-4 text-[#D4AF37] stroke-[2]" />}
+                  </button>
+
+                  {/* Minimize */}
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(false)}
+                    title="Minimize"
+                    className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 hover:border-[#D4AF37] text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+                  >
+                    <Minimize2 className="w-4 h-4 stroke-[2]" />
+                  </button>
+
+                  {/* Close / Dismiss */}
+                  <button
+                    type="button"
+                    onClick={() => { setExpanded(false); onDismiss(); }}
+                    title="Close Video"
+                    className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 hover:border-red-400 hover:bg-[#4A0E17] text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+                  >
+                    <X className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Video Surface */}
+              <div className="relative w-full h-full cursor-pointer" onClick={togglePlay}>
+                <video
+                  ref={modalVideoRef}
+                  src={videoUrl}
+                  autoPlay
+                  loop
+                  playsInline
+                  onTimeUpdate={handleTimeUpdate}
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Pause icon overlay */}
+                <AnimatePresence>
+                  {!playing && (
+                    <motion.div
+                      initial={{ scale: 0.6, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.6, opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center bg-black/35 pointer-events-none"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-black/70 backdrop-blur-md border border-[#D4AF37]/60 flex items-center justify-center shadow-2xl text-[#D4AF37]">
+                        <Play className="w-7 h-7 translate-x-0.5 fill-current" />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Bottom Section: Progress + Shoppable Drawer */}
+              <div className="absolute bottom-0 inset-x-0 z-30 bg-gradient-to-t from-black/95 via-black/75 to-transparent pt-6 pb-4 px-4 space-y-3">
+                {/* Progress bar */}
+                <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] transition-[width] duration-150 rounded-full"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+
+                {/* Shoppable Product Card */}
+                {product && (
+                  <div className="flex items-center justify-between gap-3 p-2.5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/15 shadow-xl">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {product.image && (
+                        <div className="relative w-11 h-12 rounded-lg overflow-hidden bg-black/40 shrink-0 border border-white/10">
+                          <Image src={product.image} alt={product.title} fill className="object-cover" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-serif text-[12px] text-white truncate font-medium leading-tight">{product.title}</p>
+                        <p className="font-sans text-[11px] font-bold text-[#D4AF37] mt-0.5">₹{product.price.toLocaleString("en-IN")}</p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleAddFromReel}
+                      className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full font-sans text-[9px] font-bold tracking-[0.16em] uppercase transition-all duration-300 shadow-md cursor-pointer active:scale-95 border"
+                      style={{
+                        background: addedDirectly ? "#2C7A4B" : "linear-gradient(135deg, #D4AF37, #AA7C11)",
+                        color: addedDirectly ? "#fff" : "#1A0E0B",
+                        borderColor: addedDirectly ? "#2C7A4B" : "rgba(212,175,55,0.6)",
+                      }}
+                    >
+                      {addedDirectly ? (
+                        <><Check className="w-3.5 h-3.5 stroke-[2.5]" /> Added</>
+                      ) : (
+                        <><ShoppingCart className="w-3 h-3 stroke-[2]" /> Add to Bag</>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── FLOATING & DRAGGABLE MINI WIDGET (SHOPIFY STYLE) ─── */}
+      {!expanded && (
+        <motion.div
+          drag
+          dragMomentum={true}
+          dragElastic={0.16}
+          dragConstraints={dragBounds}
+          onDragStart={() => { isDragging.current = true; }}
+          onDragEnd={() => { setTimeout(() => { isDragging.current = false; }, 180); }}
+          whileDrag={{
+            scale: 1.08,
+            boxShadow: "0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(212,175,55,0.5)",
+            cursor: "grabbing",
+            zIndex: 999,
+          }}
+          whileHover={{ scale: 1.02 }}
+          initial={{ opacity: 0, scale: 0.45, y: 70 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.45, y: 70 }}
+          transition={{
+            type: "spring",
+            stiffness: 220,
+            damping: 20,
+            mass: 0.8,
+            delay: 0.5,
+          }}
+          onClick={() => {
+            if (!isDragging.current) {
+              setExpanded(true);
+            }
+          }}
+          className="fixed bottom-[92px] lg:bottom-8 right-4 lg:right-8 z-[300] w-[138px] sm:w-[158px] aspect-[9/16] rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border-2 border-[#D4AF37]/60 shadow-[0_14px_40px_rgba(0,0,0,0.65),0_0_24px_rgba(212,175,55,0.22)] bg-black select-none group touch-none"
+        >
+          {/* Top Controls Overlay */}
+          <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-2 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
+            {/* Live Reel Badge */}
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-[#D4AF37]/40 text-[7px] font-sans font-bold tracking-[0.16em] text-[#D4AF37] uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+              REEL
+            </div>
+
+            {/* Action Buttons */}
+            <div
+              className="flex items-center gap-1"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Sound Toggle */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleMute();
+                }}
+                title={isMuted ? "Unmute Sound" : "Mute Sound"}
+                aria-label={isMuted ? "Unmute Sound" : "Mute Sound"}
+                className="w-6 h-6 rounded-full bg-black/70 backdrop-blur-md border border-white/20 hover:border-[#D4AF37] hover:bg-black/90 text-white/90 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+              >
+                {isMuted ? (
+                  <VolumeX className="w-3 h-3 text-white/70 stroke-[2]" />
+                ) : (
+                  <Volume2 className="w-3 h-3 text-[#D4AF37] stroke-[2]" />
+                )}
+              </button>
+
+              {/* Size Badhane Ka (Maximize) */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded(true);
+                }}
+                title="Expand Video"
+                aria-label="Expand Video"
+                className="w-6 h-6 rounded-full bg-black/70 backdrop-blur-md border border-white/20 hover:border-[#D4AF37] hover:bg-[#1A0E0B] text-white/90 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+              >
+                <Maximize2 className="w-3 h-3 stroke-[2]" />
+              </button>
+
+              {/* Cut / Close Button */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismiss();
+                }}
+                title="Dismiss Video"
+                aria-label="Dismiss Video"
+                className="w-6 h-6 rounded-full bg-black/70 backdrop-blur-md border border-white/20 hover:border-red-400 hover:bg-[#4A0E17] text-white/90 hover:text-white flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+              >
+                <X className="w-3 h-3 stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Center Play/Pause subtle indicator on hover */}
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+          >
+            <div className="w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shadow-lg">
+              {playing ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 translate-x-0.5 fill-current" />}
+            </div>
+          </div>
+
+          {/* Swipe/Move helper pill at bottom */}
+          <div className="absolute bottom-2.5 inset-x-0 z-20 flex justify-center pointer-events-none">
+            <span className="text-[6.5px] font-sans font-bold tracking-[0.14em] uppercase text-white/70 bg-black/55 backdrop-blur-xs px-2 py-0.5 rounded-full border border-white/10">
+              Drag to Move
+            </span>
+          </div>
+
+          {/* Video Timeline Progress */}
+          <div className="absolute bottom-0 inset-x-0 h-1 bg-white/20 z-20">
+            <div
+              className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] transition-[width] duration-150"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          {/* Video element */}
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            onTimeUpdate={handleTimeUpdate}
+            className="w-full h-full object-cover pointer-events-none"
+          />
+        </motion.div>
+      )}
+    </>
   );
 }
 
@@ -313,7 +643,14 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
 
       {/* Video */}
       <AnimatePresence>
-        {product.video_url && showVideo && <ProductVideoPlayer videoUrl={product.video_url} onDismiss={() => setShowVideo(false)}/>}
+        {product.video_url && showVideo && (
+          <ProductVideoPlayer
+            videoUrl={product.video_url}
+            product={product}
+            onAddToCart={handleAddToCart}
+            onDismiss={() => setShowVideo(false)}
+          />
+        )}
       </AnimatePresence>
 
       {/* ═══════════════════════════════════════════════════════
