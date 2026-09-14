@@ -111,7 +111,7 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
   const videoRef = useRef<HTMLVideoElement>(null);
   const modalVideoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [dragBounds, setDragBounds] = useState({ left: -300, right: 15, top: -500, bottom: 40 });
@@ -136,13 +136,47 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
     return () => window.removeEventListener("resize", updateBounds);
   }, []);
 
-  // Autoplay attempt
+  // Autoplay attempt with voice / audio
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      videoRef.current.play().catch(() => setPlaying(false));
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = false;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setPlaying(true);
+          setIsMuted(false);
+        })
+        .catch(() => {
+          // Browser requires user interaction before audio can play
+          // Fall back to muted visual playback, then unmute on first gesture!
+          video.muted = true;
+          setIsMuted(true);
+          video.play().catch(() => setPlaying(false));
+
+          const enableAudioOnGesture = () => {
+            if (videoRef.current) {
+              videoRef.current.muted = false;
+              setIsMuted(false);
+            }
+            if (modalVideoRef.current) {
+              modalVideoRef.current.muted = false;
+            }
+            window.removeEventListener("pointerdown", enableAudioOnGesture);
+            window.removeEventListener("touchstart", enableAudioOnGesture);
+            window.removeEventListener("click", enableAudioOnGesture);
+            window.removeEventListener("scroll", enableAudioOnGesture);
+          };
+
+          window.addEventListener("pointerdown", enableAudioOnGesture, { once: true, passive: true });
+          window.addEventListener("touchstart", enableAudioOnGesture, { once: true, passive: true });
+          window.addEventListener("click", enableAudioOnGesture, { once: true, passive: true });
+          window.addEventListener("scroll", enableAudioOnGesture, { once: true, passive: true });
+        });
     }
-  }, [isMuted]);
+  }, []);
 
   // Sync state between mini and expanded video
   useEffect(() => {
@@ -363,10 +397,26 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
         >
           {/* Top Controls Overlay */}
           <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-2 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
-            {/* Live Reel Badge */}
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-[#D4AF37]/40 text-[7px] font-sans font-bold tracking-[0.16em] text-[#D4AF37] uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
-              REEL
+            {/* Live Reel Badge + Sound Status */}
+            <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-[#D4AF37]/40 text-[7px] font-sans font-bold tracking-[0.16em] text-[#D4AF37] uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+                REEL
+              </div>
+              {isMuted && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleMute();
+                  }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  title="Enable Voice"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#4A0E17]/85 backdrop-blur-md border border-[#D4AF37]/50 text-[6.5px] font-sans font-bold tracking-wider text-[#D4AF37] uppercase animate-pulse cursor-pointer shadow"
+                >
+                  <Volume2 className="w-2.5 h-2.5" /> Sound
+                </button>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -517,7 +567,7 @@ function TrustBadge({ icon: Icon, label, sub }: { icon: any; label: string; sub:
 function ProductCard({ product }: { product: ProductType }) {
   return (
     <Link href={`/products/${product.product_id}`} className="group block w-[48vw] sm:w-[36vw] md:w-[26vw] lg:w-[22vw] xl:w-[18vw] max-w-[260px] shrink-0 snap-start">
-      <div className="relative aspect-square bg-[#f4f0ea] overflow-hidden border border-[#D4AF37]/8 group-hover:border-[#D4AF37]/30 transition-colors duration-500">
+      <div className="relative aspect-square bg-[#FAF8F5] overflow-hidden border border-[#D4AF37]/8 group-hover:border-[#D4AF37]/30 transition-colors duration-500">
         <Image src={product.image || "/placeholder-product.jpg"} alt={product.title} fill sizes="260px"
           className="object-contain transition-transform duration-700 group-hover:scale-[1.04]"/>
         <div className="absolute inset-0 bg-gradient-to-t from-black/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"/>
@@ -679,7 +729,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
 
             {/* MOBILE: 1:1 Swipe Slider */}
             <div className="lg:hidden -mx-4">
-              <div className="relative w-full aspect-square bg-[#f4f0ea]">
+              <div className="relative w-full aspect-square bg-[#FAF8F5]">
                 {/* Slider */}
                 <div id="mobile-img-slider"
                   className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth"
@@ -687,7 +737,11 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
                   onScroll={e => {
                     const el = e.target as HTMLElement;
                     const idx = Math.round(el.scrollLeft / el.clientWidth);
-                    if (idx !== selectedImageIndex && idx >= 0 && idx < productImages.length) setSelectedImageIndex(idx);
+                    if (idx !== selectedImageIndex && idx >= 0 && idx < productImages.length) {
+                      setSelectedImageIndex(idx);
+                      const thumb = document.getElementById(`mob-thumb-${idx}`);
+                      if (thumb) thumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                    }
                   }}>
                   {productImages.map((img, i) => (
                     <div key={i} id={`mob-img-${i}`} className="flex-shrink-0 w-full h-full snap-center relative">
@@ -714,18 +768,40 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
                 )}
               </div>
 
-              {/* Mobile Thumbnail Strip — dots, not big yellow line */}
+              {/* Mobile Thumbnail Strip — Real mini photos with animated gold active indicator */}
               {productImages.length > 1 && (
-                <div className="flex justify-center items-center gap-2 py-3 bg-[#f4f0ea] border-t border-[#D4AF37]/10">
-                  {productImages.map((_, i) => (
-                    <button key={i}
-                      onClick={() => {
-                        setSelectedImageIndex(i);
-                        document.getElementById(`mob-img-${i}`)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-                      }}
-                      className={`transition-all duration-300 rounded-full ${selectedImageIndex === i ? "w-5 h-1.5 bg-[#D4AF37]" : "w-1.5 h-1.5 bg-[#D4AF37]/30 hover:bg-[#D4AF37]/60"}`}
-                    />
-                  ))}
+                <div className="px-4 py-3 bg-[#FAF8F5] border-t border-[#D4AF37]/15">
+                  <div
+                    className="flex items-center gap-2.5 overflow-x-auto pb-1 scroll-smooth"
+                    style={{ scrollbarWidth: "none" }}
+                  >
+                    {productImages.map((img, i) => {
+                      const isActive = selectedImageIndex === i;
+                      return (
+                        <button
+                          key={i}
+                          id={`mob-thumb-${i}`}
+                          onClick={() => {
+                            setSelectedImageIndex(i);
+                            document.getElementById(`mob-img-${i}`)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                          }}
+                          className={`relative w-14 h-16 shrink-0 rounded-lg overflow-hidden transition-all duration-300 border-2 bg-white ${
+                            isActive
+                              ? "border-[#D4AF37] scale-105 shadow-[0_4px_14px_rgba(212,175,55,0.4)] ring-2 ring-[#D4AF37]/40"
+                              : "border-[#D4AF37]/15 opacity-60 hover:opacity-90"
+                          }`}
+                        >
+                          <Image src={img} alt={`Thumbnail ${i + 1}`} fill sizes="60px" className="object-cover" />
+                          {isActive && (
+                            <motion.div
+                              layoutId="active-mobile-thumb-indicator"
+                              className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11]"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -738,8 +814,8 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
                   {productImages.map((img, i) => (
                     <button key={i}
                       onClick={() => document.getElementById(`prod-img-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                      className={`relative aspect-square w-full bg-[#f0ece5] overflow-hidden border-2 transition-all duration-300 ${
-                        selectedImageIndex === i ? "border-[#D4AF37] scale-[1.03]" : "border-transparent opacity-45 hover:opacity-80"
+                      className={`relative aspect-square w-full bg-[#FAF8F5] overflow-hidden border-2 transition-all duration-300 ${
+                        selectedImageIndex === i ? "border-[#D4AF37] scale-[1.03] shadow-[0_4px_12px_rgba(212,175,55,0.25)]" : "border-transparent opacity-45 hover:opacity-80"
                       }`}>
                       <Image src={img} alt={`View ${i + 1}`} fill sizes="80px" className="object-contain"/>
                     </button>
@@ -751,7 +827,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
               <div className="flex-1 flex flex-col gap-3">
                 {productImages.map((img, i) => (
                   <div key={i} id={`prod-img-${i}`} data-index={i}
-                    className="desktop-product-image relative aspect-square w-full bg-[#f4f0ea] overflow-hidden group border border-[#E8E0D4]">
+                    className="desktop-product-image relative aspect-square w-full bg-[#FAF8F5] overflow-hidden group border border-[#EDE7DC]">
                     <Image src={img} alt={`${product.title} — View ${i + 1}`} fill
                       sizes="(max-width: 1280px) 55vw, 48vw"
                       className="object-contain" priority={i === 0}/>
@@ -1068,7 +1144,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
           ═══════════════════════════════════════════════════════ */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#FDFBF7]/96 backdrop-blur-md border-t border-[#D4AF37]/20 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-between shadow-lg">
         <div className="flex items-center gap-2.5">
-          <div className="relative w-11 h-11 bg-[#f0ece5] border border-[#D4AF37]/15 shrink-0">
+          <div className="relative w-11 h-11 bg-[#FAF8F5] border border-[#D4AF37]/15 shrink-0">
             {product.image && <Image src={product.image} alt={product.title} fill sizes="44px" className="object-contain"/>}
           </div>
           <div>
