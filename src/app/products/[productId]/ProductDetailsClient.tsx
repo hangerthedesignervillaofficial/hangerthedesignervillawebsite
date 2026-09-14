@@ -53,61 +53,260 @@ function getRecentlyViewed(excludeId: string): ProductType[] {
 // ═══════════════════════════════════════════════════
 // ZOOM MODAL
 // ═══════════════════════════════════════════════════
-function ImageZoomModal({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
-  const [scale, setScale] = useState(1);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [dragging, setDragging] = useState(false);
-  const drag = useRef({ sx: 0, sy: 0, px: 0, py: 0 });
+// LUXURY OPTICAL DETAIL MAGNIFIER & INSPECTOR
+// ═══════════════════════════════════════════════════
+interface ImageMagnifierModalProps {
+  images: string[];
+  initialIndex: number;
+  productTitle: string;
+  onClose: () => void;
+}
+
+function InteractiveImageMagnifierModal({
+  images,
+  initialIndex,
+  productTitle,
+  onClose,
+}: ImageMagnifierModalProps) {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [zoomLevel, setZoomLevel] = useState(3.0);
+  const [isLoupeActive, setIsLoupeActive] = useState(false);
+  const [loupePos, setLoupePos] = useState({ x: 0, y: 0 });
+  const [imgDim, setImgDim] = useState({ width: 0, height: 0, left: 0, top: 0 });
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const activeSrc = images[currentIndex] || images[0];
+  const LENS_SIZE = 240; // 240px circular magnifying loupe
+  const radius = LENS_SIZE / 2;
+
+  const measureImg = () => {
+    if (imgRef.current) {
+      const rect = imgRef.current.getBoundingClientRect();
+      setImgDim({
+        width: rect.width,
+        height: rect.height,
+        left: rect.left,
+        top: rect.top,
+      });
+    }
+  };
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", onKey);
-    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKey); };
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
   }, [onClose]);
 
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+      setIsLoupeActive(true);
+      setLoupePos({ x, y });
+      setImgDim({
+        width: rect.width,
+        height: rect.height,
+        left: rect.left,
+        top: rect.top,
+      });
+    } else {
+      setIsLoupeActive(false);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-[600] bg-black/96 flex items-center justify-center" onClick={onClose}>
-      <button onClick={onClose} className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center text-white/60 hover:text-white border border-white/10 hover:border-white/30 transition-all">
-        <X className="w-4 h-4" />
-      </button>
-      <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/30 text-[10px] tracking-[0.3em] uppercase">Scroll to zoom · Click to toggle</p>
+    <div
+      className="fixed inset-0 z-[700] bg-black/96 backdrop-blur-2xl flex flex-col justify-between select-none overflow-hidden"
+      onClick={onClose}
+    >
+      {/* Top Luxury Inspector Header */}
       <div
-        className="w-full h-full flex items-center justify-center overflow-hidden"
-        onClick={e => e.stopPropagation()}
-        onWheel={e => {
-          const ns = Math.min(4, Math.max(1, scale - e.deltaY * 0.005));
-          setScale(ns);
-          if (ns === 1) setPos({ x: 0, y: 0 });
-        }}
-        onMouseDown={e => { if (scale > 1) { setDragging(true); drag.current = { sx: e.clientX, sy: e.clientY, px: pos.x, py: pos.y }; } }}
-        onMouseMove={e => { if (dragging) setPos({ x: drag.current.px + (e.clientX - drag.current.sx), y: drag.current.py + (e.clientY - drag.current.sy) }); }}
-        onMouseUp={() => setDragging(false)}
-        style={{ cursor: scale > 1 ? (dragging ? "grabbing" : "grab") : "zoom-in" }}
+        className="relative z-50 flex items-center justify-between px-4 sm:px-8 py-3.5 border-b border-[#D4AF37]/20 bg-black/85 backdrop-blur-md"
+        onClick={(e) => e.stopPropagation()}
       >
-        <img
-          src={src} alt={alt} draggable={false}
-          className="max-w-[88vw] max-h-[88vh] object-contain select-none"
-          style={{ transform: `scale(${scale}) translate(${pos.x / scale}px,${pos.y / scale}px)`, transition: dragging ? "none" : "transform 0.1s" }}
-          onClick={() => { if (scale === 1) setScale(2.5); else { setScale(1); setPos({ x: 0, y: 0 }); } }}
-        />
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37]">
+            <ZoomIn className="w-3.5 h-3.5" />
+          </div>
+          <div>
+            <p className="font-sans text-[8.5px] font-bold tracking-[0.24em] text-[#D4AF37] uppercase">
+              Detail Inspector • High Resolution
+            </p>
+            <p className="font-serif text-[12px] text-white/90 truncate max-w-[200px] sm:max-w-[400px]">
+              {productTitle}
+            </p>
+          </div>
+        </div>
+
+        {/* Center: Magnification Presets */}
+        <div className="flex items-center gap-1.5 bg-white/5 border border-[#D4AF37]/30 rounded-full p-1">
+          <span className="text-[7.5px] font-sans font-bold tracking-widest text-[#D4AF37] px-2 uppercase hidden sm:inline">
+            Zoom:
+          </span>
+          {[2.0, 3.0, 4.5].map((lvl) => (
+            <button
+              key={lvl}
+              type="button"
+              onClick={() => setZoomLevel(lvl)}
+              className={`px-2.5 sm:px-3 py-1 rounded-full text-[8.5px] sm:text-[9px] font-sans font-bold transition-all cursor-pointer ${
+                zoomLevel === lvl
+                  ? "bg-[#D4AF37] text-[#1A0E0B] shadow-md scale-105"
+                  : "text-white/70 hover:text-white"
+              }`}
+            >
+              {lvl.toFixed(1)}x
+            </button>
+          ))}
+        </div>
+
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close Inspector"
+          className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-[#4A0E17] border border-white/20 hover:border-red-400 text-white/80 hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 shadow-lg"
+        >
+          <X className="w-4 h-4 stroke-[2]" />
+        </button>
+      </div>
+
+      {/* Main Image Stage */}
+      <div
+        className="relative flex-1 flex items-center justify-center p-3 sm:p-8 overflow-hidden touch-none"
+        onClick={(e) => e.stopPropagation()}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={() => setIsLoupeActive(false)}
+      >
+        <div className="relative max-w-[85vw] max-h-[70vh] flex items-center justify-center">
+          <img
+            ref={imgRef}
+            src={activeSrc}
+            alt={productTitle}
+            onLoad={measureImg}
+            draggable={false}
+            className="max-w-[85vw] max-h-[70vh] object-contain rounded-lg shadow-2xl pointer-events-auto cursor-crosshair select-none"
+            style={{ imageRendering: "auto" }}
+          />
+
+          {/* Optical Magnifying Loupe (Circular Lens) */}
+          <AnimatePresence>
+            {isLoupeActive && imgDim.width > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ duration: 0.12 }}
+                className="absolute pointer-events-none rounded-full border-2 border-[#D4AF37] shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_30px_rgba(212,175,55,0.45)] overflow-hidden bg-black z-40"
+                style={{
+                  width: LENS_SIZE,
+                  height: LENS_SIZE,
+                  left: loupePos.x - radius,
+                  top: loupePos.y - radius,
+                }}
+              >
+                {/* Magnified Image Surface */}
+                <div
+                  className="absolute"
+                  style={{
+                    width: imgDim.width * zoomLevel,
+                    height: imgDim.height * zoomLevel,
+                    left: -(loupePos.x * zoomLevel - radius),
+                    top: -(loupePos.y * zoomLevel - radius),
+                  }}
+                >
+                  <img
+                    src={activeSrc}
+                    alt={productTitle}
+                    draggable={false}
+                    className="w-full h-full object-contain select-none"
+                    style={{ imageRendering: "auto" }}
+                  />
+                </div>
+
+                {/* Delicate crosshair reticle & lens reflection */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div className="w-6 h-px bg-[#D4AF37]/50" />
+                  <div className="h-6 w-px bg-[#D4AF37]/50 absolute" />
+                  <div className="w-3 h-3 rounded-full border border-[#D4AF37]/60 absolute" />
+                </div>
+                {/* Glass reflection gradient */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
+                {/* Zoom badge inside lens */}
+                <div className="absolute bottom-2.5 inset-x-0 flex justify-center pointer-events-none">
+                  <span className="text-[7.5px] font-sans font-extrabold tracking-widest text-[#D4AF37] bg-black/80 px-2.5 py-0.5 rounded-full border border-[#D4AF37]/40 shadow">
+                    {zoomLevel.toFixed(1)}X MAGNIFICATION
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Bottom Control & Thumbnail Tray */}
+      <div
+        className="relative z-50 px-4 sm:px-8 py-3.5 border-t border-[#D4AF37]/20 bg-black/85 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Instruction pill */}
+        <div className="flex items-center gap-2 text-white/70 text-[8.5px] sm:text-[9px] font-sans tracking-widest uppercase">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-ping" />
+          <span>Move cursor or drag finger to inspect stitching, embroidery & fabric</span>
+        </div>
+
+        {/* Thumbnail Selector */}
+        {images.length > 1 && (
+          <div className="flex items-center gap-2 overflow-x-auto max-w-[85vw] pb-1" style={{ scrollbarWidth: "none" }}>
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setCurrentIndex(i)}
+                className={`relative w-11 h-13 rounded-lg overflow-hidden border-2 transition-all cursor-pointer bg-black/50 ${
+                  currentIndex === i
+                    ? "border-[#D4AF37] scale-105 shadow-[0_0_12px_rgba(212,175,55,0.6)]"
+                    : "border-white/20 opacity-50 hover:opacity-90"
+                }`}
+              >
+                <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════
 // LUXURY FLOATING & DRAGGABLE VIDEO PLAYER (REEL)
 // ═══════════════════════════════════════════════════
 interface ProductVideoPlayerProps {
   videoUrl: string;
   product?: ProductType;
-  onAddToCart?: () => void;
+  selectedSize: string | null;
+  onSelectSize: (size: string) => void;
+  onAddToCart?: (sizeOverride?: string) => Promise<boolean>;
   onDismiss: () => void;
 }
 
-function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: ProductVideoPlayerProps) {
+function ProductVideoPlayer({
+  videoUrl,
+  product,
+  selectedSize,
+  onSelectSize,
+  onAddToCart,
+  onDismiss,
+}: ProductVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const modalVideoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(true);
@@ -117,6 +316,13 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
   const [dragBounds, setDragBounds] = useState({ left: -300, right: 15, top: -500, bottom: 40 });
   const isDragging = useRef(false);
   const [addedDirectly, setAddedDirectly] = useState(false);
+  const [reelSize, setReelSize] = useState<string | null>(
+    selectedSize || (product?.sizes?.length ? product.sizes[0] : null)
+  );
+
+  useEffect(() => {
+    if (selectedSize) setReelSize(selectedSize);
+  }, [selectedSize]);
 
   // Compute dynamic drag boundaries relative to viewport
   useEffect(() => {
@@ -150,8 +356,6 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
           setIsMuted(false);
         })
         .catch(() => {
-          // Browser requires user interaction before audio can play
-          // Fall back to muted visual playback, then unmute on first gesture!
           video.muted = true;
           setIsMuted(true);
           video.play().catch(() => setPlaying(false));
@@ -216,11 +420,14 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
     }
   };
 
-  const handleAddFromReel = () => {
+  const handleAddFromReel = async () => {
+    const sizeToPass = reelSize || selectedSize || (product?.sizes?.length ? product.sizes[0] : undefined);
     if (onAddToCart) {
-      onAddToCart();
-      setAddedDirectly(true);
-      setTimeout(() => setAddedDirectly(false), 2000);
+      const ok = await onAddToCart(sizeToPass);
+      if (ok) {
+        setAddedDirectly(true);
+        setTimeout(() => setAddedDirectly(false), 2000);
+      }
     }
   };
 
@@ -323,37 +530,71 @@ function ProductVideoPlayer({ videoUrl, product, onAddToCart, onDismiss }: Produ
                   />
                 </div>
 
-                {/* Shoppable Product Card */}
+                {/* Shoppable Product Card with Size Selector */}
                 {product && (
-                  <div className="flex items-center justify-between gap-3 p-2.5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/15 shadow-xl">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {product.image && (
-                        <div className="relative w-11 h-12 rounded-lg overflow-hidden bg-black/40 shrink-0 border border-white/10">
-                          <Image src={product.image} alt={product.title} fill className="object-cover" />
+                  <div className="space-y-2 p-3 rounded-2xl bg-white/12 backdrop-blur-xl border border-white/15 shadow-xl">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {product.image && (
+                          <div className="relative w-11 h-12 rounded-lg overflow-hidden bg-black/40 shrink-0 border border-white/10">
+                            <Image src={product.image} alt={product.title} fill className="object-cover" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-serif text-[12px] text-white truncate font-medium leading-tight">{product.title}</p>
+                          <p className="font-sans text-[11px] font-bold text-[#D4AF37] mt-0.5">₹{product.price.toLocaleString("en-IN")}</p>
                         </div>
-                      )}
-                      <div className="min-w-0">
-                        <p className="font-serif text-[12px] text-white truncate font-medium leading-tight">{product.title}</p>
-                        <p className="font-sans text-[11px] font-bold text-[#D4AF37] mt-0.5">₹{product.price.toLocaleString("en-IN")}</p>
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={handleAddFromReel}
+                        className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full font-sans text-[9px] font-bold tracking-[0.16em] uppercase transition-all duration-300 shadow-md cursor-pointer active:scale-95 border"
+                        style={{
+                          background: addedDirectly ? "#2C7A4B" : "linear-gradient(135deg, #D4AF37, #AA7C11)",
+                          color: addedDirectly ? "#fff" : "#1A0E0B",
+                          borderColor: addedDirectly ? "#2C7A4B" : "rgba(212,175,55,0.6)",
+                        }}
+                      >
+                        {addedDirectly ? (
+                          <><Check className="w-3.5 h-3.5 stroke-[2.5]" /> Added</>
+                        ) : (
+                          <><ShoppingCart className="w-3 h-3 stroke-[2]" /> Add to Bag</>
+                        )}
+                      </button>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={handleAddFromReel}
-                      className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full font-sans text-[9px] font-bold tracking-[0.16em] uppercase transition-all duration-300 shadow-md cursor-pointer active:scale-95 border"
-                      style={{
-                        background: addedDirectly ? "#2C7A4B" : "linear-gradient(135deg, #D4AF37, #AA7C11)",
-                        color: addedDirectly ? "#fff" : "#1A0E0B",
-                        borderColor: addedDirectly ? "#2C7A4B" : "rgba(212,175,55,0.6)",
-                      }}
-                    >
-                      {addedDirectly ? (
-                        <><Check className="w-3.5 h-3.5 stroke-[2.5]" /> Added</>
-                      ) : (
-                        <><ShoppingCart className="w-3 h-3 stroke-[2]" /> Add to Bag</>
-                      )}
-                    </button>
+                    {/* Quick Size Selector within Reel */}
+                    {product.sizes && product.sizes.length > 0 && (
+                      <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/10">
+                        <span className="text-[7.5px] font-sans font-bold tracking-wider text-[#D4AF37] uppercase shrink-0">
+                          Size:
+                        </span>
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }}>
+                          {product.sizes.map((sz) => {
+                            const isChosen = (reelSize || selectedSize) === sz;
+                            return (
+                              <button
+                                key={sz}
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setReelSize(sz);
+                                  onSelectSize(sz);
+                                }}
+                                className={`px-2 py-0.5 rounded text-[8px] font-sans font-bold transition-all cursor-pointer ${
+                                  isChosen
+                                    ? "bg-[#D4AF37] text-[#1A0E0B] shadow-sm font-black scale-105"
+                                    : "bg-white/10 text-white/80 hover:bg-white/20 border border-white/10"
+                                }`}
+                              >
+                                {sz}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -670,33 +911,54 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
 
   const productImages = product.image ? [product.image, ...(product.gallery || [])] : ["/placeholder-product.jpg"];
 
-  const handleAddToCart = async () => {
-    if (product.sizes?.length && !selectedSize) { toast.error("Please select a size first."); return; }
+  const handleAddToCart = async (overrideSize?: string | React.MouseEvent): Promise<boolean> => {
+    const customSize = typeof overrideSize === "string" ? overrideSize : undefined;
+    const chosenSize = customSize || selectedSize || (product.sizes?.length ? product.sizes[0] : undefined);
+    if (product.sizes?.length && !chosenSize) {
+      toast.error("Please select a size first.");
+      return false;
+    }
+    if (chosenSize && !selectedSize) {
+      setSelectedSize(chosenSize);
+    }
     try {
-      for (let i = 0; i < quantity; i++) addToCart({ ...product, selected_size: selectedSize || undefined } as any);
+      for (let i = 0; i < quantity; i++) {
+        addToCart({ ...product, selected_size: chosenSize || undefined } as any);
+      }
       setIsAddedToCart(true);
-      toast.success("Added to your shopping bag");
+      toast.success(chosenSize ? `Added to bag — Size: ${chosenSize}` : "Added to your shopping bag");
       setTimeout(() => setIsAddedToCart(false), 2000);
-    } catch { toast.error("Unable to add. Please try again."); }
+      return true;
+    } catch {
+      toast.error("Unable to add. Please try again.");
+      return false;
+    }
   };
-
-
 
   const toggleSection = (s: string) => setOpenSection(p => p === s ? null : s);
 
   return (
     <div className="bg-[#FDFBF7] min-h-screen pb-28 lg:pb-12">
-      {/* Zoom Modal */}
+      {/* Luxury Detail Magnifier Modal */}
       <AnimatePresence>
-        {zoomedImage && <ImageZoomModal src={zoomedImage} alt={product.title} onClose={() => setZoomedImage(null)}/>}
+        {zoomedImage && (
+          <InteractiveImageMagnifierModal
+            images={productImages}
+            initialIndex={productImages.indexOf(zoomedImage) >= 0 ? productImages.indexOf(zoomedImage) : selectedImageIndex}
+            productTitle={product.title}
+            onClose={() => setZoomedImage(null)}
+          />
+        )}
       </AnimatePresence>
 
-      {/* Video */}
+      {/* Floating Video Reel */}
       <AnimatePresence>
         {product.video_url && showVideo && (
           <ProductVideoPlayer
             videoUrl={product.video_url}
             product={product}
+            selectedSize={selectedSize}
+            onSelectSize={setSelectedSize}
             onAddToCart={handleAddToCart}
             onDismiss={() => setShowVideo(false)}
           />
