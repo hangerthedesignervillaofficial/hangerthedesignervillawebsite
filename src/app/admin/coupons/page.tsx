@@ -8,16 +8,13 @@ import {
   Plus,
   Trash2,
   Edit2,
-  Calendar,
   CheckCircle2,
   XCircle,
   Percent,
-  IndianRupee,
   Copy,
   Check,
   Search,
   Sparkles,
-  ArrowUpDown,
   RefreshCcw,
   Clock,
   Layers,
@@ -194,7 +191,7 @@ export default function AdminCouponsPage() {
             Coupons & Discounts
           </h1>
           <p className="font-sans text-xs text-[#7A6B5D] mt-1">
-            Configure boutique promo codes, order value thresholds, and customer privilege discounts.
+            Configure promo codes, order value thresholds, and customer privilege discounts.
           </p>
         </div>
 
@@ -281,7 +278,7 @@ export default function AdminCouponsPage() {
         {loading ? (
           <div className="py-20 text-center">
             <div className="w-7 h-7 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <span className="text-xs font-sans tracking-widest text-[#7A6B5D] uppercase">Loading boutique coupons...</span>
+            <span className="text-xs font-sans tracking-widest text-[#7A6B5D] uppercase">Loading store coupons...</span>
           </div>
         ) : filteredCoupons.length === 0 ? (
           <div className="py-16 text-center text-[#7A6B5D] space-y-3">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RotateCcw, ShieldAlert, CheckCircle, HelpCircle } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 
 export const metadata = {
   title: "Refund & Cancellation Policy | Hanger The Designer Villa",
@@ -50,7 +50,7 @@ export default function RefundPolicyPage() {
             </h2>
             <ul className="list-disc pl-5 space-y-2">
               <li>Item must be unused, unwashed, unaltered, and with all original designer tags attached.</li>
-              <li>Garments must be returned in their original packaging and boutique garment cover.</li>
+              <li>Garments must be returned in their original packaging and designer garment cover.</li>
               <li>Footwear must only be tried on clean carpeted surfaces with zero scuffs on the soles.</li>
             </ul>
           </section>
@@ -81,7 +81,7 @@ export default function RefundPolicyPage() {
               4. Refund Processing Timeline
             </h2>
             <p>
-              Once your returned item arrives at our flagship atelier and completes quality inspection (within 24-48 hours), your refund will be issued via the original payment method or as boutique store credit, as per your preference. Bank processing typically reflects in <strong>3-7 business days</strong>.
+              Once your returned item arrives at our flagship atelier and completes quality inspection (within 24-48 hours), your refund will be issued via the original payment method or as store credit, as per your preference. Bank processing typically reflects in <strong>3-7 business days</strong>.
             </p>
           </section>
 

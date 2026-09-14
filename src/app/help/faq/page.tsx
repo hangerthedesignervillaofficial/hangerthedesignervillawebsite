@@ -37,12 +37,12 @@ const faqs = [
     category: "Store & Concierge",
     questions: [
       {
-        q: "Where is the Hanger flagship boutique located?",
+        q: "Where is the Hanger flagship studio located?",
         a: "Our flagship villa is located at GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram, Haryana. We welcome you to experience our exclusive collections in person Monday through Sunday, 10:30 AM to 8:30 PM.",
       },
       {
         q: "How can I contact customer care or book a styling appointment?",
-        a: "You can reach our dedicated concierge team directly by calling or messaging us on WhatsApp at +91 9999167840, or via email at hangerthedesignervillaofficial@gmail.com.",
+        a: "You can reach our dedicated concierge team directly by calling or messaging us on WhatsApp at +91 8377050755, or via email at hangerthedesignervillaofficial@gmail.com.",
       },
     ]
   },
@@ -55,7 +55,7 @@ const faqs = [
       },
       {
         q: "Can garments be customized or altered to my measurements?",
-        a: "Yes! We provide complimentary basic alterations and custom made-to-measure tailoring for select designer silhouettes. Contact our styling concierge at +91 9999167840 before placing your order.",
+        a: "Yes! We provide complimentary basic alterations and custom made-to-measure tailoring for select designer silhouettes. Contact our styling concierge at +91 8377050755 before placing your order.",
       }
     ]
   }
@@ -75,7 +75,7 @@ export default function FAQPage() {
             Frequently Asked <span className="italic font-light">Questions</span>
           </h1>
           <p className="font-sans text-sm md:text-base text-[#7A6B5D] max-w-xl mx-auto leading-relaxed">
-            Find answers to common questions about our collections, shipping policies, and boutique services.
+            Find answers to common questions about our collections, shipping policies, and studio services.
           </p>
         </div>
 

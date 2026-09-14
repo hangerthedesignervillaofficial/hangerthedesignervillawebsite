@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, Heart, Check, Tag, X, AlertCircle } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, Heart, Check, AlertCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import Image from "next/image";
@@ -96,7 +96,7 @@ export default function CartShoppingPage() {
           >
             <ArrowLeft className="h-3.5 w-3.5 stroke-[1.5] group-hover/back:-translate-x-1 transition-transform" />
             <span className="font-sans text-[9px] font-bold tracking-[0.2em] uppercase">
-              Back to Boutique
+              Back to Store
             </span>
           </Link>
           <div className="flex items-center gap-3 justify-center">
@@ -265,7 +265,7 @@ export default function CartShoppingPage() {
                     className="font-serif text-base text-[#2C1810] tracking-[0.2em] uppercase mb-6 text-center"
                     style={{ fontFamily: "var(--font-heading), Georgia, serif" }}
                   >
-                    Boutique Summary
+                    Order Summary
                   </h3>
 
                   {/* Free Shipping Tracker */}

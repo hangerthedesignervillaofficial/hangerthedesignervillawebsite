@@ -93,12 +93,12 @@ export default function ShippingPage() {
               <Link href="/help/contact" className="inline-flex items-center justify-center bg-[#2C1810] text-[#D4AF37] px-8 py-3.5 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#4A0E17] hover:text-white transition-colors">
                 Contact Customer Care
               </Link>
-              <a href="tel:+919999167840" className="inline-flex items-center justify-center border border-[#D4AF37] text-[#2C1810] px-8 py-3.5 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#D4AF37]/10 transition-colors">
-                Call Concierge: +91 9999167840
+              <a href="tel:+918377050755" className="inline-flex items-center justify-center border border-[#D4AF37] text-[#2C1810] px-8 py-3.5 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#D4AF37]/10 transition-colors">
+                Call Concierge: +91 8377050755
               </a>
             </div>
             <p className="font-sans text-[11px] text-[#7A6B5D] max-w-md mx-auto pt-2">
-              Same-day boutique pickup is available at GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram.
+              Same-day in-store pickup is available at GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram.
             </p>
           </section>
         </div>

@@ -135,13 +135,13 @@ export default function SizeGuidePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="tel:+919999167840"
+              href="tel:+918377050755"
               className="inline-flex items-center gap-2 bg-[#D4AF37] text-[#2C1810] px-7 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-white transition-colors"
             >
-              <Phone className="w-3.5 h-3.5" /> Call: +91 9999167840
+              <Phone className="w-3.5 h-3.5" /> Call: +91 8377050755
             </a>
             <a
-              href="https://wa.me/919999167840?text=Hi%20Hanger%20Team,%20I%20need%20assistance%20with%20sizing%20and%20fit."
+              href="https://wa.me/918377050755?text=Hi%20Hanger%20Team,%20I%20need%20assistance%20with%20sizing%20and%20fit."
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 border border-[#D4AF37] text-[#D4AF37] px-7 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"

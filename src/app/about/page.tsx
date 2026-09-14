@@ -27,7 +27,7 @@ export default function AboutPage() {
         <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#F0E6D8] border border-[#D4AF37]/20 shadow-xl shadow-[#D4AF37]/5">
           <Image 
             src="https://images.unsplash.com/photo-1596458514167-9359c25095d5?q=80&w=2000&auto=format&fit=crop"
-            alt="Hanger Boutique Interior"
+            alt="Hanger Studio Interior"
             fill
             className="object-cover"
             priority
@@ -72,7 +72,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* The Boutique */}
+      {/* The Studio */}
       <section className="bg-[#2C1810] py-24 md:py-32 text-center text-[#FDFBF7]">
         <div className="container mx-auto px-4">
           <span className="font-sans text-[10px] tracking-[0.3em] text-[#D4AF37] uppercase font-bold block mb-6">
@@ -92,12 +92,12 @@ export default function AboutPage() {
                 GLOBAL FOYER MALL, PALAM VIHAR<br/>
                 GURUGRAM, HARYANA
               </p>
-              <a href="tel:+919999167840" className="text-[#D4AF37] font-bold text-xs tracking-wider block mt-2 hover:underline">
-                +91 9999167840
+              <a href="tel:+918377050755" className="text-[#D4AF37] font-bold text-xs tracking-wider block mt-2 hover:underline">
+                +91 8377050755
               </a>
             </div>
             <div>
-              <p className="font-bold mb-2">Boutique Hours</p>
+              <p className="font-bold mb-2">Studio Hours</p>
               <p className="text-[#FDFBF7] font-normal leading-loose">
                 Mon - Sun: 10:30 AM - 8:30 PM<br/>
                 Private Styling by Appointment

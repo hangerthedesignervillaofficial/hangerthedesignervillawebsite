@@ -18,44 +18,63 @@ export function DrawerHeader({
   onClose,
 }: DrawerHeaderProps) {
   const Icon = type === "cart" ? ShoppingBag : Heart;
+  const accentColor = type === "cart" ? "#B99A45" : "#9B3A4A";
 
   return (
-    <div className="flex items-center justify-between px-6 py-4.5 border-b border-[#E7DDC9] bg-[#FBF9F4]/95 backdrop-blur-md sticky top-0 z-20 shrink-0">
-      {/* Brand & Editorial Title Block */}
-      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-        <div className="w-8 h-8 rounded-full bg-[#F5F1E8] flex items-center justify-center border border-[#E7DDC9] shrink-0">
-          <Icon className="h-3.5 w-3.5 text-[#B99A45]" strokeWidth={1.25} />
-        </div>
+    <div className="shrink-0 sticky top-0 z-20 bg-[#FBF9F4] border-b border-[#E7DDC9]">
+      {/* Ultra-thin gold top accent line */}
+      <div className="h-[2px] w-full" style={{ background: `linear-gradient(to right, transparent, ${accentColor}, transparent)` }} />
 
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2
-              className="font-serif text-[12.5px] sm:text-sm font-normal tracking-[0.16em] sm:tracking-[0.2em] uppercase text-[#281713] leading-none"
-              style={{ fontFamily: "var(--font-heading), 'Playfair Display', Georgia, serif" }}
-            >
-              {title}
-            </h2>
-
-            <span className="inline-flex items-center gap-1 font-sans text-[7px] sm:text-[7.5px] font-semibold text-[#82756D] bg-[#F5F1E8] border border-[#E7DDC9] px-1.5 sm:px-2 py-0.5 tracking-[0.2em] uppercase rounded-none">
-              <span className="w-1 h-1 rounded-full bg-[#B99A45]" />
-              {itemCount} {itemCount === 1 ? "Piece" : "Pieces"}
-            </span>
+      <div className="flex items-center justify-between px-5 sm:px-6 py-4">
+        {/* Left: Icon + Title Block */}
+        <div className="flex items-center gap-3.5 min-w-0">
+          {/* Emblem */}
+          <div
+            className="w-9 h-9 flex items-center justify-center border shrink-0"
+            style={{ borderColor: `${accentColor}30`, background: `${accentColor}0A` }}
+          >
+            <Icon className="h-4 w-4" style={{ color: accentColor }} strokeWidth={1.25} />
           </div>
 
-          <span className="font-sans text-[7.5px] sm:text-[8px] font-medium tracking-[0.24em] sm:tracking-[0.28em] text-[#82756D] uppercase mt-1">
-            {subtitle}
-          </span>
-        </div>
-      </div>
+          {/* Text Block */}
+          <div className="flex flex-col gap-0.5 min-w-0">
+            {/* Eyebrow */}
+            <span
+              className="font-sans text-[7px] font-semibold tracking-[0.3em] uppercase"
+              style={{ color: accentColor }}
+            >
+              {subtitle}
+            </span>
 
-      {/* Refined Luxury Close Button */}
-      <button
-        onClick={onClose}
-        className="w-8 h-8 rounded-full flex items-center justify-center text-[#281713]/60 hover:text-[#281713] hover:bg-[#F5F1E8] border border-transparent hover:border-[#E7DDC9] transition-all cursor-pointer shrink-0 ml-2"
-        aria-label={`Close ${type === "cart" ? "shopping bag" : "lookbook"}`}
-      >
-        <X className="w-4 h-4" strokeWidth={1.25} />
-      </button>
+            {/* Main Title + Count */}
+            <div className="flex items-baseline gap-2.5">
+              <h2
+                className="font-serif text-[15px] sm:text-[16px] font-normal tracking-[0.12em] text-[#1A0F0C] leading-none uppercase"
+                style={{ fontFamily: "var(--font-heading), 'Playfair Display', Georgia, serif" }}
+              >
+                {title}
+              </h2>
+              {itemCount > 0 && (
+                <span
+                  className="font-sans text-[8px] font-bold tracking-[0.18em] uppercase px-2 py-0.5 border"
+                  style={{ color: accentColor, borderColor: `${accentColor}40`, background: `${accentColor}08` }}
+                >
+                  {itemCount} {itemCount === 1 ? "piece" : "pieces"}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="w-8 h-8 flex items-center justify-center border border-transparent hover:border-[#E7DDC9] hover:bg-[#F5F1E8] text-[#281713]/40 hover:text-[#281713] transition-all duration-200 cursor-pointer shrink-0 ml-3"
+          aria-label="Close"
+        >
+          <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+        </button>
+      </div>
     </div>
   );
 }

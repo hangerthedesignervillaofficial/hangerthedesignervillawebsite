@@ -78,7 +78,7 @@ export default function PrivacyPage() {
             <p className="text-[#2C1810] font-medium leading-relaxed mt-3">
               <strong>Hanger The Designer Villa</strong><br/>
               GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram, Haryana<br/>
-              Phone: +91 9999167840<br/>
+              Phone: +91 8377050755<br/>
               Email: hangerthedesignervillaofficial@gmail.com
             </p>
           </section>

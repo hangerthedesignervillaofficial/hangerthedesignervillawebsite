@@ -84,7 +84,7 @@ export default function ContactPage() {
             Get in <span className="italic font-light">Touch</span>
           </h1>
           <p className="font-sans text-sm md:text-base text-[#7A6B5D] max-w-xl mx-auto leading-relaxed">
-            Our private styling team and boutique associates are at your service for personal curation, sizing guidance, and bespoke orders.
+            Our private styling team and studio associates are at your service for personal curation, sizing guidance, and bespoke orders.
           </p>
         </div>
 
@@ -109,7 +109,7 @@ export default function ContactPage() {
                   Thank You
                 </h3>
                 <p className="font-sans text-sm text-[#7A6B5D] max-w-sm mx-auto leading-relaxed">
-                  Your inquiry has been submitted directly to our boutique team. We look forward to assisting you.
+                  Your inquiry has been submitted directly to our studio team. We look forward to assisting you.
                 </p>
                 <button
                   type="button"
@@ -223,7 +223,7 @@ export default function ContactPage() {
                   Email Concierge
                 </h3>
                 <p className="font-sans text-xs text-[#7A6B5D] mb-1">
-                  For boutique appointments and couture inquiries.
+                  For studio appointments and couture inquiries.
                 </p>
                 <a
                   href="mailto:hangerthedesignervillaofficial@gmail.com"
@@ -246,13 +246,13 @@ export default function ContactPage() {
                   Mon - Sun, 10:30 AM - 8:30 PM IST.
                 </p>
                 <a
-                  href="tel:+919999167840"
+                  href="tel:+918377050755"
                   className="font-sans text-[12px] font-bold tracking-widest text-[#D4AF37] hover:text-[#2C1810] transition-colors block"
                 >
-                  +91 9999167840
+                  +91 8377050755
                 </a>
                 <a
-                  href="https://wa.me/919999167840?text=Hi%20Hanger%20The%20Designer%20Villa%20team,%20I%20need%20assistance."
+                  href="https://wa.me/918377050755?text=Hi%20Hanger%20The%20Designer%20Villa%20team,%20I%20need%20assistance."
                   target="_blank"
                   rel="noreferrer"
                   className="text-[9px] font-sans font-bold tracking-widest text-[#7A6B5D] hover:text-[#D4AF37] uppercase underline mt-1 block"

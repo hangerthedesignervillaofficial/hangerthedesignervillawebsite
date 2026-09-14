@@ -66,7 +66,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
         {/* Editorial Luxury Header */}
         <DrawerHeader
           title="Your Selection"
-          subtitle="Hanger Curated Boutique"
+          subtitle="Hanger Designer Studio"
           itemCount={totalItems}
           type="cart"
           onClose={() => setOpen(false)}

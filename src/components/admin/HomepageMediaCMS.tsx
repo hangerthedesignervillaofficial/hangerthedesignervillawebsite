@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { uploadMediaToSupabase } from "@/utils/uploadMedia";
@@ -236,7 +236,7 @@ export function HomepageMediaCMS() {
   const renderLinkDropdown = (
     value: string,
     onChange: (val: string) => void,
-    allowCustom = false,
+    _allowCustom = false,
     isInstagram = false
   ) => (
     <div className="space-y-1.5">

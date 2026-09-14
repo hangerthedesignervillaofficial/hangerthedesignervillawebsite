@@ -62,7 +62,7 @@ export default function LiveTrafficPage() {
             Live Traffic
           </h1>
           <p className="font-sans text-[11px] text-[#7A6B5D] uppercase tracking-widest">
-            Monitor active visitors across your boutique in real-time.
+            Monitor active visitors across your store in real-time.
           </p>
         </div>
         <div className="bg-[#2C1810] text-[#D4AF37] px-6 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2">

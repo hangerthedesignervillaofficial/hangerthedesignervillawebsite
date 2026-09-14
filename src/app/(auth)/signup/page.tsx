@@ -30,7 +30,7 @@ export default function SignUp() {
                 Create Account
               </h2>
               <p className="font-sans text-[10px] text-[#7A6B5D] mt-1">
-                Join our exclusive boutique experience
+                Join our exclusive designer community
               </p>
             </div>
 

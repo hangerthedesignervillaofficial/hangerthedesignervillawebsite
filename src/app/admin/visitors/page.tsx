@@ -84,7 +84,7 @@ export default function AdminVisitorsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Live Visitors</h1>
           <p className="text-muted-foreground mt-2">
-            Real-time tracking of active users on your boutique.
+            Real-time tracking of active users on your store.
           </p>
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">

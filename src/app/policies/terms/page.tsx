@@ -36,7 +36,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-sans text-[11px] font-bold tracking-[0.2em] text-[#2C1810] uppercase mb-4 border-l-2 border-[#D4AF37] pl-3">
-              1. Boutique Purchases & Authenticity
+              1. Store Purchases & Authenticity
             </h2>
             <p>
               All products listed on this website are original handcrafted and designer creations curated by Hanger The Designer Villa. Each piece undergoes stringent quality audits prior to dispatch. Minor organic variations in hand embroidery, motifs, and handloom fabrics are hallmarks of authentic artisanal couture.
@@ -69,7 +69,7 @@ export default function TermsPage() {
               4. Intellectual Property
             </h2>
             <p>
-              All trademarks, logos, photographs, artistic silhouettes, and copywriting featured on this boutique platform are the exclusive intellectual property of Hanger The Designer Villa. Unauthorized reproduction or commercial use is strictly prohibited.
+              All trademarks, logos, photographs, artistic silhouettes, and copywriting featured on this designer platform are the exclusive intellectual property of Hanger The Designer Villa. Unauthorized reproduction or commercial use is strictly prohibited.
             </p>
           </section>
 
@@ -89,7 +89,7 @@ export default function TermsPage() {
             <p className="text-[#2C1810] font-medium leading-relaxed">
               <strong>Hanger The Designer Villa</strong><br />
               GF-67/68, Ground Floor, Global Foyer Mall, Palam Vihar, Gurugram, Haryana<br />
-              Direct Line / WhatsApp: +91 9999167840<br />
+              Direct Line / WhatsApp: +91 8377050755<br />
               Email: hangerthedesignervillaofficial@gmail.com
             </p>
           </section>

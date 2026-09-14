@@ -141,7 +141,7 @@ export default function ContactPage() {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Boutique Address</h3>
+                    <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Studio Address</h3>
                     <p className="text-[#2C1810] font-medium leading-relaxed">
                       GF-67/68, GROUND FLOOR,<br />
                       GLOBAL FOYER MALL, PALAM VIHAR,<br />
@@ -156,8 +156,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#7A6B5D] font-bold mb-2">Phone & WhatsApp</h3>
-                    <a href="tel:+919999167840" className="text-[#2C1810] hover:text-[#D4AF37] font-bold text-base transition-colors">
-                      +91 9999167840
+                    <a href="tel:+918377050755" className="text-[#2C1810] hover:text-[#D4AF37] font-bold text-base transition-colors">
+                      +91 8377050755
                     </a>
                     <p className="text-[#7A6B5D] text-xs mt-1">Mon - Sun, 10:30 AM to 8:30 PM</p>
                   </div>
@@ -180,7 +180,7 @@ export default function ContactPage() {
             <div className="relative w-full bg-[#f4f0ea] border border-[#D4AF37]/30 shadow-md overflow-hidden flex flex-col">
               <div className="relative aspect-[16/11] w-full">
                 <iframe
-                  title="Hanger Flagship Boutique Location - Global Foyer Mall"
+                  title="Hanger Flagship Studio Location - Global Foyer Mall"
                   src="https://maps.google.com/maps?q=Global+Foyer+Mall,+Palam+Vihar,+Gurugram,+Haryana&t=&z=16&ie=UTF8&iwloc=&output=embed"
                   className="w-full h-full border-0"
                   loading="lazy"

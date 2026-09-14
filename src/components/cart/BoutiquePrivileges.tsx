@@ -86,7 +86,7 @@ export function BoutiquePrivileges({
                 </span>
               </div>
               <p className="font-sans text-[9px] text-[#82756D] mt-0.5">
-                {appliedCoupon.description || "Boutique privilege applied"} (Saved {formatCurrency(discountAmount)})
+                {appliedCoupon.description || "Studio offer applied"} (Saved {formatCurrency(discountAmount)})
               </p>
             </div>
           </div>
@@ -139,11 +139,11 @@ export function BoutiquePrivileges({
             )}
           </AnimatePresence>
 
-          {/* Available Boutique Privileges (Chips) */}
+          {/* Available Offers (Chips) */}
           {availableCoupons.length > 0 && (
             <div className="pt-2.5 border-t border-[#E7DDC9]/60">
               <span className="font-sans text-[7.5px] font-semibold tracking-[0.25em] text-[#82756D] uppercase block mb-2">
-                Available Boutique Privileges
+                Available Offers
               </span>
 
               <div className="flex flex-wrap gap-2">

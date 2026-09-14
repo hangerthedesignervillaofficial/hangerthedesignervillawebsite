@@ -10,7 +10,6 @@ import {
   RefreshCcw,
   FolderTree,
   CornerDownRight,
-  Layers,
   Tag,
   Package,
 } from "lucide-react";

@@ -51,7 +51,7 @@ export function WishlistDrawer({ children }: WishlistDrawerProps) {
         {/* Editorial Luxury Header */}
         <DrawerHeader
           title="Your Lookbook"
-          subtitle="Curated Haute Coutures"
+          subtitle="Saved Designer Looks"
           itemCount={totalWishlistItems}
           type="wishlist"
           onClose={() => setOpen(false)}
@@ -106,7 +106,7 @@ export function WishlistDrawer({ children }: WishlistDrawerProps) {
               onClick={() => setOpen(false)}
               className="w-full py-2 text-[#82756D] hover:text-[#281713] font-sans text-[8.5px] font-medium tracking-[0.22em] uppercase transition-colors text-center cursor-pointer"
             >
-              Continue Browsing Lookbook
+              Continue Shopping
             </button>
           </div>
         )}

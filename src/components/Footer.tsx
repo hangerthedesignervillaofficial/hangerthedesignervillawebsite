@@ -228,7 +228,7 @@ export function Footer() {
                   GF-67/68, GROUND FLOOR, GLOBAL FOYER MALL, PALAM VIHAR, GURUGRAM
                 </p>
                 <p className="font-sans text-[11px] text-[#2C1810] font-medium mt-1">
-                  Concierge: <a href="tel:+919999167840" className="text-[#D4AF37] hover:underline font-bold">+91 9999167840</a>
+                  Concierge: <a href="tel:+918377050755" className="text-[#D4AF37] hover:underline font-bold">+91 8377050755</a>
                 </p>
               </div>
 

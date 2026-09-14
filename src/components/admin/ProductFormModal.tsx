@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CategoryType } from "@/types";
 import {
   CreateProductData,
   ProductWithDetails,
@@ -60,11 +61,11 @@ interface FormData {
   shipping_returns: string;
 }
 
-const DEFAULT_CATEGORIES = [
-  { id: 1, name: "CLOTHING", description: "Luxury clothing" },
-  { id: 2, name: "FOOTWEAR", description: "Premium footwear" },
-  { id: 3, name: "JEWELLERY", description: "Fine jewellery" },
-  { id: 5, name: "ACCESSORIES", description: "Premium accessories" },
+const DEFAULT_CATEGORIES: CategoryType[] = [
+  { id: 1, name: "CLOTHING", description: "Luxury clothing", parent_id: null },
+  { id: 2, name: "FOOTWEAR", description: "Premium footwear", parent_id: null },
+  { id: 3, name: "JEWELLERY", description: "Fine jewellery", parent_id: null },
+  { id: 5, name: "ACCESSORIES", description: "Premium accessories", parent_id: null },
 ];
 
 const AVAILABLE_SIZES = [
