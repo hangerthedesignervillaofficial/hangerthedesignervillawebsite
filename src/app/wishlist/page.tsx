@@ -4,6 +4,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import { Trash2, ShoppingBag } from "lucide-react";
+import { getProductUrl } from "@/utils/productSlug";
 
 export default function WishlistPage() {
   const { wishlistItems, removeFromWishlist } = useWishlist();
@@ -35,7 +36,7 @@ export default function WishlistPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
           {wishlistItems.map((item) => (
             <div key={item.product_id} className="group flex flex-col relative border border-[#D4AF37]/5 bg-[#FDFBF7] p-3 transition-all duration-300 hover:shadow-xl hover:border-[#D4AF37]/30">
-              <Link href={`/products/${item.product_id}`} className="relative aspect-[3/4] overflow-hidden bg-[#F0E6D8]/30 mb-4 block">
+              <Link href={getProductUrl(item)} className="relative aspect-[3/4] overflow-hidden bg-[#F0E6D8]/30 mb-4 block">
                 <img 
                   src={item.image} 
                   alt={item.title} 
@@ -44,7 +45,7 @@ export default function WishlistPage() {
               </Link>
               
               <div className="flex flex-col flex-1">
-                <Link href={`/products/${item.product_id}`}>
+                <Link href={getProductUrl(item)}>
                   <h3 className="font-sans text-xs font-bold text-[#2C1810] tracking-wider mb-1 line-clamp-1 group-hover:text-[#D4AF37] transition-colors">{item.title}</h3>
                 </Link>
                 <p className="font-sans text-[11px] text-[#7A6B5D] mb-3">₹{item.price.toLocaleString("en-IN")}</p>

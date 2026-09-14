@@ -1,5 +1,6 @@
 import { createStaticSupabase } from '@/lib/supabase/server';
 import { ProductType } from '@/types';
+import { slugify } from '@/utils/productSlug';
 
 export const productServerService = {
   async getProducts(): Promise<ProductType[]> {
@@ -22,21 +23,60 @@ export const productServerService = {
     }
   },
 
-  async getProductById(id: string): Promise<ProductType | null> {
+  async getProductById(idOrSlug: string): Promise<ProductType | null> {
     try {
+      if (!idOrSlug) return null;
       const supabase = createStaticSupabase();
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, category:categories(*)')
-        .eq('product_id', id)
-        .single();
+      const decodedParam = decodeURIComponent(idOrSlug).trim().toLowerCase();
 
-      if (error || !data) {
-        console.error('Server error fetching product by ID:', error);
+      // 1. Direct UUID match (e.g. e5dd3cb1-7ee0-40d9-b8b7-7b6f398e20b9)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(decodedParam);
+      if (isUUID) {
+        const { data } = await supabase
+          .from('products')
+          .select('*, category:categories(*)')
+          .eq('product_id', decodedParam)
+          .single();
+
+        if (data) return data as ProductType;
+      }
+
+      // 2. Trailing UUID in slug (e.g. title-slug--[uuid] or title-slug-[uuid])
+      const uuidMatch = decodedParam.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i);
+      if (uuidMatch) {
+        const { data } = await supabase
+          .from('products')
+          .select('*, category:categories(*)')
+          .eq('product_id', uuidMatch[1])
+          .single();
+
+        if (data) return data as ProductType;
+      }
+
+      // 3. Clean Title Slug Match (e.g. "sicilian-sunset-linen-blend-midi-dress")
+      const { data: allProducts, error } = await supabase
+        .from('products')
+        .select('*, category:categories(*)');
+
+      if (error || !allProducts) {
+        console.error('Server error fetching products for slug resolution:', error);
         return null;
       }
 
-      return data as ProductType;
+      // Exact slug match
+      const exactMatch = allProducts.find(
+        (p) => slugify(p.title) === decodedParam
+      );
+      if (exactMatch) return exactMatch as ProductType;
+
+      // Fuzzy fallback
+      const partialMatch = allProducts.find((p) => {
+        const s = slugify(p.title);
+        return s.length > 0 && (s.includes(decodedParam) || decodedParam.includes(s));
+      });
+      if (partialMatch) return partialMatch as ProductType;
+
+      return null;
     } catch (error) {
       console.error('Server error in getProductById:', error);
       return null;

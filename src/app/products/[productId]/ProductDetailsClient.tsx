@@ -16,6 +16,7 @@ import { NotifyMeModal } from "@/components/NotifyMeModal";
 import { reviewService } from "@/services/review/reviewService";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { getProductUrl, slugify } from "@/utils/productSlug";
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -864,7 +865,7 @@ function TrustBadge({ icon: Icon, label, sub }: { icon: any; label: string; sub:
 // ═══════════════════════════════════════════════════
 function ProductCard({ product }: { product: ProductType }) {
   return (
-    <Link href={`/products/${product.product_id}`} className="group block w-[48vw] sm:w-[36vw] md:w-[26vw] lg:w-[22vw] xl:w-[18vw] max-w-[260px] shrink-0 snap-start">
+    <Link href={getProductUrl(product)} className="group block w-[48vw] sm:w-[36vw] md:w-[26vw] lg:w-[22vw] xl:w-[18vw] max-w-[260px] shrink-0 snap-start">
       <div className="relative aspect-square bg-[#FAF8F5] overflow-hidden border border-[#D4AF37]/8 group-hover:border-[#D4AF37]/30 transition-colors duration-500">
         <Image src={product.image || "/placeholder-product.jpg"} alt={product.title} fill sizes="260px"
           className="object-contain transition-transform duration-700 group-hover:scale-[1.04]"/>
@@ -920,6 +921,16 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
     saveToRecentlyViewed(product);
     setRecentlyViewed(getRecentlyViewed(product.product_id));
   }, [product.product_id]);
+
+  // Keep browser address bar synchronized with the clean luxury product slug URL
+  useEffect(() => {
+    if (typeof window !== "undefined" && product?.title) {
+      const canonicalSlug = slugify(product.title);
+      if (canonicalSlug && !window.location.pathname.endsWith(canonicalSlug)) {
+        window.history.replaceState(null, "", `/products/${canonicalSlug}`);
+      }
+    }
+  }, [product?.title]);
 
   const [reviews, setReviews] = useState<ReviewType[]>([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);

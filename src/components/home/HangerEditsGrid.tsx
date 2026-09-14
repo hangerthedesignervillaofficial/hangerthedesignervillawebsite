@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductType } from "@/types";
 import { ArrowRight } from "lucide-react";
+import { getProductUrl } from "@/utils/productSlug";
 
 interface HangerEditsGridProps {
   products: ProductType[];
@@ -68,7 +69,7 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             >
               <Link
-                href={`/products/${displayProducts[0].product_id}`}
+                href={getProductUrl(displayProducts[0])}
                 className="block relative aspect-[4/5] lg:aspect-[3/4] overflow-hidden bg-[#1a1a1a] shadow-2xl rounded-sm"
               >
                 {displayProducts[0].image && (
@@ -120,7 +121,7 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
               >
                 <Link
-                  href={`/products/${product.product_id}`}
+                  href={getProductUrl(product)}
                   className="w-[45%] md:w-[40%] shrink-0 relative aspect-[3/4] overflow-hidden bg-[#1a1a1a] shadow-lg rounded-sm"
                 >
                   {product.image && (
@@ -138,7 +139,7 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
                   <span className="text-[#D4AF37] text-[9px] font-sans font-bold tracking-[0.2em] uppercase mb-1.5">
                     {idx === 0 ? "Trending" : idx === 1 ? "Signature" : "Classic"}
                   </span>
-                  <Link href={`/products/${product.product_id}`}>
+                  <Link href={getProductUrl(product)}>
                     <h3 className="font-serif text-base md:text-lg text-[#2C1810] tracking-wide mb-1.5 hover:text-[#D4AF37] transition-colors line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
@@ -147,7 +148,7 @@ export function HangerEditsGrid({ products }: HangerEditsGridProps) {
                     ₹{product.price.toLocaleString("en-IN")}
                   </p>
                   <Link
-                    href={`/products/${product.product_id}`}
+                    href={getProductUrl(product)}
                     className="w-8 h-8 rounded-full border border-[#2C1810]/30 flex items-center justify-center text-[#2C1810] group-hover:border-[#2C1810] group-hover:bg-[#2C1810] group-hover:text-[#D4AF37] transition-all duration-300"
                   >
                     <ArrowRight className="h-3 w-3" />

@@ -7,6 +7,7 @@ import { ProductType } from "@/types";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { useWishlist } from "@/context/WishlistContext";
+import { getProductUrl } from "@/utils/productSlug";
 
 interface ProductCardProps {
   product: ProductType;
@@ -18,6 +19,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const isWishlisted = isInWishlist(product.product_id);
+  const productUrl = getProductUrl(product);
 
   // Deterministic ratings from product ID so every product shows stars
   const seed = product.product_id ? product.product_id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
@@ -33,7 +35,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
     >
       {/* Image / Video Container */}
       <div className={`relative aspect-square w-full overflow-hidden bg-[#FAF8F5] ${product.stock <= 0 ? "opacity-70 grayscale-[20%]" : ""}`}>
-        <Link href={`/products/${product.product_id}`} className="block h-full w-full pointer-events-auto">
+        <Link href={productUrl} className="block h-full w-full pointer-events-auto">
           {product.image ? (
             <>
               {/* Shimmer placeholder */}
@@ -139,7 +141,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
 
       {/* Product Details */}
       <div className="flex flex-col flex-1 px-1 md:px-2 py-3 bg-[#FDFBF7]">
-        <Link href={`/products/${product.product_id}`} className="group-hover:text-[#4A0E17] transition-colors duration-300">
+        <Link href={productUrl} className="group-hover:text-[#4A0E17] transition-colors duration-300">
           <h3 className="font-serif text-[14px] md:text-[15px] font-medium tracking-wide text-[#2C1810] leading-tight mb-1 truncate transition-colors duration-300 group-hover:text-[#4A0E17]" style={{ fontFamily: 'var(--font-heading), Georgia, serif' }}>
             {product.title}
           </h3>

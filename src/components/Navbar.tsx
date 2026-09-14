@@ -22,6 +22,7 @@ import { LogOut, Package, Settings, MessageSquare } from "lucide-react";
 import { useNavigationMenu } from "@/hooks/useNavigationMenu";
 import { useNavigationBuilder } from "@/hooks/useNavigationBuilder";
 import { HangerLogo } from "@/components/HangerLogo";
+import { getProductUrl } from "@/utils/productSlug";
 
 // ─── Static nav structure (mirrors Sidebar) ────────────────────────────
 // Replaced by useNavigationBuilder hook
@@ -405,7 +406,7 @@ export function Navbar() {
                   {suggestions.map((prod) => (
                     <Link
                       key={prod.product_id}
-                      href={`/products/${prod.product_id}`}
+                      href={getProductUrl(prod)}
                       onClick={closeSearch}
                       className="flex items-center gap-4 py-3 px-2 hover:bg-[#F0E6D8]/30 transition-colors duration-200 group/item border-b border-[#D4AF37]/5 last:border-b-0"
                     >
@@ -515,7 +516,7 @@ export function Navbar() {
                       {activeProducts.slice(0, 6).map((prod, idx) => (
                         <Link
                           key={prod.product_id}
-                          href={`/products/${prod.product_id}`}
+                          href={getProductUrl(prod)}
                           onClick={() => setActiveMenu(null)}
                           className="group/prod flex flex-col gap-2.5"
                           style={{ animationDelay: `${idx * 40}ms` }}

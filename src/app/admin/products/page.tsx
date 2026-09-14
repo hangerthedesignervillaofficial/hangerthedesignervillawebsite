@@ -23,6 +23,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductFormModal } from "@/components/admin/ProductFormModal";
 import { DeleteConfirmModal } from "@/components/admin/DeleteConfirmModal";
+import { getProductUrl } from "@/utils/productSlug";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductWithDetails[]>([]);
@@ -217,7 +218,7 @@ export default function AdminProductsPage() {
                 </div>
   
                 <div className="flex space-x-2 pt-4 border-t border-[#D4AF37]/15">
-                  <Link href={`/products/${product.product_id}`} className="flex-1">
+                  <Link href={getProductUrl(product)} className="flex-1">
                     <button className="w-full h-8 bg-transparent border border-[#D4AF37]/25 text-[#7A6B5D] hover:text-[#2C1810] hover:border-[#D4AF37] font-sans text-[9px] font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 cursor-pointer transition-all">
                       <Eye className="h-3 w-3 stroke-[2]" />
                       View

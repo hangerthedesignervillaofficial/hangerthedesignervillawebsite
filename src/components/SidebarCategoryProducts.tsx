@@ -6,6 +6,7 @@ import { ProductType } from "@/types";
 import Link from "next/link";
 import { ArrowRight, Package } from "lucide-react";
 import Image from "next/image";
+import { getProductUrl } from "@/utils/productSlug";
 
 interface SidebarCategoryProductsProps {
   categoryId?: string | number;
@@ -125,7 +126,7 @@ export function SidebarCategoryProducts({
       {products.map((product) => (
         <Link
           key={product.product_id}
-          href={`/products/${product.product_id}`}
+          href={getProductUrl(product)}
           onClick={handleClose}
           className="flex items-center gap-3 group py-1 transition-all"
         >
