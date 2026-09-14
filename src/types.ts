@@ -123,3 +123,14 @@ export interface CategoryType {
   parent_id?: number | null;
   subcategories?: CategoryType[];
 }
+
+export interface AnnouncementSettings {
+  is_active: boolean;
+  text: string;
+  link?: string;
+  link_text?: string;
+  bg_color: string;
+  text_color: string;
+  allow_dismiss?: boolean;
+}
+

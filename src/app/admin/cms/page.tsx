@@ -7,12 +7,14 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { toast } from "sonner";
 import { CategoriesCMS } from "@/components/admin/CategoriesCMS";
 import { HomepageMediaCMS } from "@/components/admin/HomepageMediaCMS";
+import { AnnouncementCMS } from "@/components/admin/AnnouncementCMS";
 
 export default function CMSPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'hero' | 'general' | 'categories' | 'media'>('categories');
+  const [activeTab, setActiveTab] = useState<'announcement' | 'hero' | 'general' | 'categories' | 'media'>('announcement');
+
   const [generalSettings, setGeneralSettings] = useState({
     dressed_subtitle: "THE HANGER SPIRIT",
     dressed_title: "DRESSED TO MAKE AN IMPRESSION.",
@@ -227,14 +229,16 @@ export default function CMSPage() {
             Manage the content, banners, and layout of the live website.
           </p>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving || loading || uploading}
-          className="flex items-center gap-2 bg-[#2C1810] text-[#D4AF37] px-6 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#4A0E17] transition-colors disabled:opacity-50"
-        >
-          {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {saving ? 'Publishing...' : 'Publish Changes'}
-        </button>
+        {activeTab === 'hero' && (
+          <button
+            onClick={handleSave}
+            disabled={saving || loading || uploading}
+            className="flex items-center gap-2 bg-[#2C1810] text-[#D4AF37] px-6 py-3 font-sans text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#4A0E17] transition-colors disabled:opacity-50"
+          >
+            {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? 'Publishing...' : 'Publish Changes'}
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -244,34 +248,44 @@ export default function CMSPage() {
       ) : (
         <div className="space-y-8">
           
-          <div className="flex gap-4 border-b border-[#D4AF37]/20 mb-8">
+          <div className="flex flex-wrap gap-2 md:gap-4 border-b border-[#D4AF37]/20 mb-8">
+            <button 
+              onClick={() => setActiveTab('announcement')}
+              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-colors ${activeTab === 'announcement' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
+            >
+              Announcement Bar
+            </button>
             <button 
               onClick={() => setActiveTab('hero')}
-              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase ${activeTab === 'hero' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
+              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-colors ${activeTab === 'hero' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
             >
               Hero Banner Slider
             </button>
             <button 
               onClick={() => setActiveTab('general')}
-              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase ${activeTab === 'general' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
+              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-colors ${activeTab === 'general' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
             >
               General Texts
             </button>
             <button 
               onClick={() => setActiveTab('categories')}
-              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase ${activeTab === 'categories' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
+              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-colors ${activeTab === 'categories' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
             >
               Category Table
             </button>
             <button 
               onClick={() => setActiveTab('media')}
-              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase ${activeTab === 'media' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
+              className={`pb-3 px-2 font-sans text-[10px] font-bold tracking-[0.2em] uppercase transition-colors ${activeTab === 'media' ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-[#7A6B5D] hover:text-[#2C1810]'}`}
             >
               Homepage Media
             </button>
           </div>
 
-          {activeTab === 'hero' ? (
+          {activeTab === 'announcement' ? (
+            <div className="bg-white p-6 md:p-10 shadow-[0_4px_20px_rgba(212,175,55,0.05)]">
+              <AnnouncementCMS />
+            </div>
+          ) : activeTab === 'hero' ? (
           <section className="bg-white border border-[#D4AF37]/20 shadow-sm overflow-hidden">
             <div className="bg-[#FDFBF7] p-5 border-b border-[#D4AF37]/15 flex justify-between items-center">
               <h2 className="font-serif text-xl text-[#2C1810] tracking-wide flex items-center gap-2">
