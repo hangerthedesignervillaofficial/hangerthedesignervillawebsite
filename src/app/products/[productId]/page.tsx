@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import ProductDetailsClient from "./ProductDetailsClient";
 import { productServerService } from "@/services/product/productServerService";
 
+// ISR edge caching: cache product page for 60 seconds
+export const revalidate = 60;
+
 interface ProductDetailsPageProps {
   params: Promise<{
     productId: string;

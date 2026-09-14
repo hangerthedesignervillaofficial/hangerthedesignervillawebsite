@@ -1,9 +1,9 @@
-import { createServerSupabase } from '@/lib/supabase/server';
+import { createStaticSupabase } from '@/lib/supabase/server';
 import { ProductType } from '@/types';
 
 export async function getProductsServer(): Promise<ProductType[]> {
   try {
-    const supabase = await createServerSupabase();
+    const supabase = createStaticSupabase();
     const { data, error } = await supabase
       .from('products')
       .select('*, category:categories(*)')

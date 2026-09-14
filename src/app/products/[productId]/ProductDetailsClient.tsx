@@ -309,16 +309,45 @@ function ProductVideoPlayer({
 }: ProductVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const modalVideoRef = useRef<HTMLVideoElement>(null);
+  const miniProgressBarRef = useRef<HTMLDivElement>(null);
+  const modalProgressBarRef = useRef<HTMLDivElement>(null);
+  const [isDismissed, setIsDismissed] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [dragBounds, setDragBounds] = useState({ left: -300, right: 15, top: -500, bottom: 40 });
   const isDragging = useRef(false);
   const [addedDirectly, setAddedDirectly] = useState(false);
   const [reelSize, setReelSize] = useState<string | null>(
     selectedSize || (product?.sizes?.length ? product.sizes[0] : null)
   );
+
+  const handleCutClose = (
+    e?: React.SyntheticEvent | React.MouseEvent | React.TouchEvent | React.PointerEvent
+  ) => {
+    if (e) {
+      try {
+        e.preventDefault();
+        e.stopPropagation();
+      } catch {}
+    }
+    if (videoRef.current) {
+      videoRef.current.pause();
+      try {
+        videoRef.current.removeAttribute("src");
+        videoRef.current.load();
+      } catch {}
+    }
+    if (modalVideoRef.current) {
+      modalVideoRef.current.pause();
+      try {
+        modalVideoRef.current.removeAttribute("src");
+        modalVideoRef.current.load();
+      } catch {}
+    }
+    setIsDismissed(true);
+    onDismiss();
+  };
 
   useEffect(() => {
     if (selectedSize) setReelSize(selectedSize);
@@ -416,7 +445,13 @@ function ProductVideoPlayer({
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const target = e.currentTarget;
     if (target.duration) {
-      setProgress((target.currentTime / target.duration) * 100);
+      const pct = (target.currentTime / target.duration) * 100;
+      if (miniProgressBarRef.current) {
+        miniProgressBarRef.current.style.width = `${pct}%`;
+      }
+      if (modalProgressBarRef.current) {
+        modalProgressBarRef.current.style.width = `${pct}%`;
+      }
     }
   };
 
@@ -430,6 +465,8 @@ function ProductVideoPlayer({
       }
     }
   };
+
+  if (isDismissed) return null;
 
   return (
     <>
@@ -482,7 +519,8 @@ function ProductVideoPlayer({
                   {/* Close / Dismiss */}
                   <button
                     type="button"
-                    onClick={() => { setExpanded(false); onDismiss(); }}
+                    onClick={handleCutClose}
+                    onTouchEnd={handleCutClose}
                     title="Close Video"
                     className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 hover:border-red-400 hover:bg-[#4A0E17] text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
                   >
@@ -525,8 +563,9 @@ function ProductVideoPlayer({
                 {/* Progress bar */}
                 <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
                   <div
+                    ref={modalProgressBarRef}
                     className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] transition-[width] duration-150 rounded-full"
-                    style={{ width: `${progress}%` }}
+                    style={{ width: "0%" }}
                   />
                 </div>
 
@@ -634,7 +673,7 @@ function ProductVideoPlayer({
               setExpanded(true);
             }
           }}
-          className="fixed bottom-[92px] lg:bottom-8 right-4 lg:right-8 z-[300] w-[138px] sm:w-[158px] aspect-[9/16] rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border-2 border-[#D4AF37]/60 shadow-[0_14px_40px_rgba(0,0,0,0.65),0_0_24px_rgba(212,175,55,0.22)] bg-black select-none group touch-none"
+          className="fixed bottom-[92px] lg:bottom-8 right-4 lg:right-8 z-[300] w-[138px] sm:w-[158px] aspect-[9/16] rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing border-2 border-[#D4AF37]/60 shadow-[0_14px_40px_rgba(0,0,0,0.65),0_0_24px_rgba(212,175,55,0.22)] bg-black select-none group"
         >
           {/* Top Controls Overlay */}
           <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-2 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
@@ -662,8 +701,9 @@ function ProductVideoPlayer({
 
             {/* Action Buttons */}
             <div
-              className="flex items-center gap-1"
+              className="flex items-center gap-1.5 z-30 pointer-events-auto"
               onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Sound Toggle */}
@@ -673,14 +713,20 @@ function ProductVideoPlayer({
                   e.stopPropagation();
                   toggleMute();
                 }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  toggleMute();
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
                 title={isMuted ? "Unmute Sound" : "Mute Sound"}
                 aria-label={isMuted ? "Unmute Sound" : "Mute Sound"}
-                className="w-6 h-6 rounded-full bg-black/70 backdrop-blur-md border border-white/20 hover:border-[#D4AF37] hover:bg-black/90 text-white/90 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+                className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/25 hover:border-[#D4AF37] hover:bg-black text-white/90 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
               >
                 {isMuted ? (
-                  <VolumeX className="w-3 h-3 text-white/70 stroke-[2]" />
+                  <VolumeX className="w-3.5 h-3.5 text-white/70 stroke-[2]" />
                 ) : (
-                  <Volume2 className="w-3 h-3 text-[#D4AF37] stroke-[2]" />
+                  <Volume2 className="w-3.5 h-3.5 text-[#D4AF37] stroke-[2]" />
                 )}
               </button>
 
@@ -691,25 +737,35 @@ function ProductVideoPlayer({
                   e.stopPropagation();
                   setExpanded(true);
                 }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setExpanded(true);
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
                 title="Expand Video"
                 aria-label="Expand Video"
-                className="w-6 h-6 rounded-full bg-black/70 backdrop-blur-md border border-white/20 hover:border-[#D4AF37] hover:bg-[#1A0E0B] text-white/90 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+                className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/25 hover:border-[#D4AF37] hover:bg-[#1A0E0B] text-white/90 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
               >
-                <Maximize2 className="w-3 h-3 stroke-[2]" />
+                <Maximize2 className="w-3.5 h-3.5 stroke-[2]" />
               </button>
 
               {/* Cut / Close Button */}
               <button
                 type="button"
-                onClick={(e) => {
+                onClick={handleCutClose}
+                onTouchEnd={handleCutClose}
+                onPointerDown={(e) => {
                   e.stopPropagation();
-                  onDismiss();
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
                 }}
                 title="Dismiss Video"
                 aria-label="Dismiss Video"
-                className="w-6 h-6 rounded-full bg-black/70 backdrop-blur-md border border-white/20 hover:border-red-400 hover:bg-[#4A0E17] text-white/90 hover:text-white flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+                className="w-7 h-7 rounded-full bg-[#4A0E17]/90 sm:bg-black/85 backdrop-blur-md border border-red-400/40 hover:border-red-400 hover:bg-[#6b1522] active:bg-[#4A0E17] text-white flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-90 cursor-pointer shadow-lg z-40"
               >
-                <X className="w-3 h-3 stroke-[2.5]" />
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
           </div>
@@ -733,8 +789,9 @@ function ProductVideoPlayer({
           {/* Video Timeline Progress */}
           <div className="absolute bottom-0 inset-x-0 h-1 bg-white/20 z-20">
             <div
+              ref={miniProgressBarRef}
               className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] transition-[width] duration-150"
-              style={{ width: `${progress}%` }}
+              style={{ width: "0%" }}
             />
           </div>
 
@@ -840,6 +897,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
   const isFavorited = isInWishlist(product.product_id);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined" || window.innerWidth < 1024) return;
@@ -997,12 +1055,15 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
                   className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth"
                   style={{ scrollbarWidth: "none" }}
                   onScroll={e => {
-                    const el = e.target as HTMLElement;
-                    const idx = Math.round(el.scrollLeft / el.clientWidth);
+                    const el = e.currentTarget;
+                    const idx = Math.round(el.scrollLeft / (el.clientWidth || 1));
                     if (idx !== selectedImageIndex && idx >= 0 && idx < productImages.length) {
                       setSelectedImageIndex(idx);
-                      const thumb = document.getElementById(`mob-thumb-${idx}`);
-                      if (thumb) thumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+                      scrollTimeoutRef.current = setTimeout(() => {
+                        const thumb = document.getElementById(`mob-thumb-${idx}`);
+                        if (thumb) thumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                      }, 120);
                     }
                   }}>
                   {productImages.map((img, i) => (

@@ -1,6 +1,24 @@
 import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase';
+
+/**
+ * Creates a static Supabase client without cookies for public queries (products, categories, site settings).
+ * This enables Next.js static pre-rendering and Incremental Static Regeneration (ISR) edge caching.
+ */
+export const createStaticSupabase = () => {
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    }
+  );
+};
 
 /**
  * Creates a Supabase client for server-side usage with proper cookie handling

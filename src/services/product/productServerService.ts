@@ -1,10 +1,10 @@
-import { createServerSupabase } from '@/lib/supabase/server';
+import { createStaticSupabase } from '@/lib/supabase/server';
 import { ProductType } from '@/types';
 
 export const productServerService = {
   async getProducts(): Promise<ProductType[]> {
     try {
-      const supabase = await createServerSupabase();
+      const supabase = createStaticSupabase();
       const { data, error } = await supabase
         .from('products')
         .select('*, category:categories(*)')
@@ -24,7 +24,7 @@ export const productServerService = {
 
   async getProductById(id: string): Promise<ProductType | null> {
     try {
-      const supabase = await createServerSupabase();
+      const supabase = createStaticSupabase();
       const { data, error } = await supabase
         .from('products')
         .select('*, category:categories(*)')
@@ -45,7 +45,7 @@ export const productServerService = {
 
   async getProductsByCategory(categoryId: number): Promise<ProductType[]> {
     try {
-      const supabase = await createServerSupabase();
+      const supabase = createStaticSupabase();
 
       // Check if this category has child subcategories
       const { data: subcategories } = await supabase
@@ -78,7 +78,7 @@ export const productServerService = {
 
   async searchProducts(query: string): Promise<ProductType[]> {
     try {
-      const supabase = await createServerSupabase();
+      const supabase = createStaticSupabase();
       const { data, error } = await supabase
         .from('products')
         .select('*, category:categories(*)')

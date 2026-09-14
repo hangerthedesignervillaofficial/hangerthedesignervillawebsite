@@ -16,6 +16,7 @@ interface ProductCardProps {
 export function ProductCard({ product, badge }: ProductCardProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const isWishlisted = isInWishlist(product.product_id);
 
   // Deterministic ratings from product ID so every product shows stars
@@ -27,21 +28,13 @@ export function ProductCard({ product, badge }: ProductCardProps) {
     <motion.div
       className="group relative flex flex-col h-full bg-[#FDFBF7] cursor-pointer hover-lift transition-all duration-300"
       whileTap={{ scale: 0.98 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image / Video Container */}
-      <div className={`relative aspect-square w-full overflow-hidden bg-[#f4f0ea] ${product.stock <= 0 ? "opacity-70 grayscale-[20%]" : ""}`}>
+      <div className={`relative aspect-square w-full overflow-hidden bg-[#FAF8F5] ${product.stock <= 0 ? "opacity-70 grayscale-[20%]" : ""}`}>
         <Link href={`/products/${product.product_id}`} className="block h-full w-full pointer-events-auto">
-          {product.video_url ? (
-            <video
-              src={product.video_url}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full object-cover transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-108"
-              style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1)' }}
-            />
-          ) : product.image ? (
+          {product.image ? (
             <>
               {/* Shimmer placeholder */}
               {!imageLoaded && (
@@ -58,13 +51,44 @@ export function ProductCard({ product, badge }: ProductCardProps) {
                 style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease' }}
                 onLoad={() => setImageLoaded(true)}
               />
+              {/* Video Reel desktop hover preview */}
+              {product.video_url && isHovered && (
+                <video
+                  src={product.video_url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                  className="absolute inset-0 h-full w-full object-cover z-10 transition-opacity duration-300"
+                />
+              )}
             </>
+          ) : product.video_url ? (
+            <video
+              src={product.video_url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="h-full w-full object-cover transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-108"
+              style={{ transform: 'scale(1)', transition: 'transform 1.2s cubic-bezier(0.19, 1, 0.22, 1)' }}
+            />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-[#7A6B5D]">
               No Image
             </div>
           )}
         </Link>
+
+        {/* Video Reel Indicator Badge */}
+        {product.video_url && (
+          <div className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-xs border border-[#D4AF37]/40 text-[7px] font-sans font-bold tracking-[0.16em] text-[#D4AF37] uppercase pointer-events-none shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+            REEL
+          </div>
+        )}
 
         {/* Inner gold frame overlay on hover */}
         <div className="absolute inset-3 border border-[#D4AF37]/35 scale-[0.96] opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none z-10" />

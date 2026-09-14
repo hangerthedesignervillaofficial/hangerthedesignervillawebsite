@@ -9,11 +9,10 @@ import { AsymmetricalFeatureGrid } from "@/components/home/AsymmetricalFeatureGr
 import { Testimonials } from "@/components/home/Testimonials";
 import { InstagramGrid } from "@/components/home/InstagramGrid";
 import { productServerService } from "@/services/product/productServerService";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { createStaticSupabase } from "@/lib/supabase/server";
 
-// Revalidate every 30 seconds so admin changes (product flags, CMS) reflect on live site quickly
-export const revalidate = 30;
-export const dynamic = 'force-dynamic';
+// Revalidate every 60 seconds (ISR) for instant edge caching and lightning-fast loading
+export const revalidate = 60;
 
 export default async function Home() {
   const products = await productServerService.getProducts();
@@ -32,7 +31,7 @@ export default async function Home() {
       ? bestsellers.slice(0, 4) 
       : products.slice(0, 4);
 
-  const supabase = await createServerSupabase();
+  const supabase = createStaticSupabase();
   const { data: siteSettings } = await supabase.from('site_settings').select('*');
 
   const getSetting = (key: string) => siteSettings?.find(s => s.key === key)?.value;
