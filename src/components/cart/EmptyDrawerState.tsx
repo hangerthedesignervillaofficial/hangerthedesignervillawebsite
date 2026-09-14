@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, ShoppingBag, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface EmptyDrawerStateProps {
   type: "cart" | "wishlist";
@@ -37,9 +38,9 @@ export function EmptyDrawerState({ type, onAction }: EmptyDrawerStateProps) {
         </p>
       </div>
 
-      {/* Luxury Invitation CTA */}
-      <button
-        type="button"
+      {/* Luxury Invitation CTA — navigate to shop */}
+      <Link
+        href="/products"
         onClick={onAction}
         className="group inline-flex items-center gap-2 px-6 py-3 bg-[#281713] hover:bg-[#1a0f0d] text-[#FBF9F4] font-sans text-[8.5px] sm:text-[9px] font-semibold tracking-[0.24em] uppercase transition-all duration-300 border border-[#281713] hover:border-[#B99A45] cursor-pointer rounded-none"
       >
@@ -48,7 +49,7 @@ export function EmptyDrawerState({ type, onAction }: EmptyDrawerStateProps) {
           className="w-3 h-3 text-[#B99A45] transition-transform group-hover:translate-x-1"
           strokeWidth={1.25}
         />
-      </button>
+      </Link>
     </div>
   );
 }
